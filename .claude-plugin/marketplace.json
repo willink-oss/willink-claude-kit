@@ -1,0 +1,16 @@
+{
+  "name": "iwillink",
+  "owner": {
+    "name": "i-Willink合同会社",
+    "url": "https://i-willink.com"
+  },
+  "plugins": [
+    {
+      "name": "willink-claude-kit",
+      "source": ".",
+      "description": "標準サブエージェント 4 本 + 5 phase /build フローを束ねた開発キット。Generator-Verifier 分離・並列探索・project-standards 拡張に対応。",
+      "version": "0.1.0",
+      "category": "development"
+    }
+  ]
+}
