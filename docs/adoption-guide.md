@@ -17,9 +17,11 @@
 }
 ```
 
-バージョン pin する場合: `"willink-claude-kit@iwillink": "0.1.0"`
+バージョン pin する場合: `"willink-claude-kit@iwillink": ["0.1.0"]`
 
 > Phase B 検証中は **必ず pin** する（v0.x は破壊的変更ありうるため）
+
+> ⚠️ Claude Code 公式 `settings.json` schema は `enabledPlugins.<plugin>` の値として `boolean` または `array<string>` のみ受け付ける。`"0.1.0"` のような **string は schema 違反**で validator に弾かれる（`$schema` を宣言したリポでは特に）。array 形式 `["0.1.0"]` を使うこと。
 
 ## 2. project-standards を作成
 
@@ -45,6 +47,20 @@ git commit -m "chore: initialize dev-reviewer memory"
 `.gitignore` に **追加しない**（agent の学習を team / 自分自身と共有するため version control 対象）。
 
 local-only にしたい場合は `.claude/agent-memory-local/dev-reviewer/` を使い、`.gitignore` に追加。
+
+### 3.1 既存 `.gitignore` に `.claude/agent-memory/` がある場合（既存リッチハーネス repo 向け）
+
+既存 repo に `.claude/agent-memory/` の除外が既にあると、kit が要求する MEMORY.md を git add しても **silent に除外**されて team 共有が機能しない。次のいずれかで解消すること:
+
+- 除外を local 用に書き換え: `.gitignore` の `.claude/agent-memory/` を `.claude/agent-memory-local/` に変更（推奨）
+- 個人学習用 memory を分けたい場合のみ `.claude/agent-memory-local/dev-reviewer/` を作って .gitignore で除外
+
+検証コマンド:
+
+```bash
+git check-ignore -v .claude/agent-memory/dev-reviewer/MEMORY.md
+# 何も出なければ OK（除外されていない）
+```
 
 ## 4. 既存 /build コマンドとの衝突回避
 
