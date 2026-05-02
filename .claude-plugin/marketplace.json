@@ -7,7 +7,12 @@
   "plugins": [
     {
       "name": "willink-claude-kit",
-      "source": ".",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/willink-oss/willink-claude-kit.git",
+        "path": ".",
+        "ref": "willink-claude-kit--v0.1.0"
+      },
       "description": "標準サブエージェント 4 本 + 5 phase /build フローを束ねた開発キット。Generator-Verifier 分離・並列探索・project-standards 拡張に対応。",
       "version": "0.1.0",
       "category": "development"
