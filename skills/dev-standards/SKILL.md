@@ -95,12 +95,14 @@ description: i-Willink 共通開発標準。スタック非依存の汎用層（
 
 ---
 
-## 6. AI 開発（Claude Code 使用時）
+## 6. AI 開発（Claude Code / Codex 使用時）
 
-- **Generator-Verifier 分離**: 実装はメイン、レビューは subagent（dev-reviewer）
+- **Generator-Verifier 分離**: 実装はメイン agent（Claude Code は main Claude、Codex は main Codex）、レビューは Verifier role（dev-reviewer 相当）
 - **Telephone game 回避**: 順序的同一作業を subagent 連鎖に分割しない
 - **Early victory 警戒**: テスト 1-2 本で「成功」を信じない（dev-tester プロトコルに従う）
 - **同一ファイル並列編集禁止**: subagent 並列起動時は read-only に限定
+- **Codex subagent は明示許可時のみ**: Codex ではユーザーが subagent / delegation / parallel agent work を明示した場合だけ起動する
+- **project knowledge は共有**: Codex でも `.claude/skills/project-standards/SKILL.md` と `.claude/agent-memory/dev-reviewer/MEMORY.md` を読む（Codex 専用 copy は作らない）
 
 ---
 
@@ -109,4 +111,4 @@ description: i-Willink 共通開発標準。スタック非依存の汎用層（
 含む: 全プロジェクト共通の最低ライン
 含まない: スタック特化規約・プロジェクト固有のドメイン知識・チーム慣習
 
-→ プロジェクト固有のものは `.claude/skills/project-standards/SKILL.md` に書く（雛形は kit の `examples/project-standards-template/` 参照）
+→ プロジェクト固有のものは `.claude/skills/project-standards/SKILL.md` に書く（雛形は kit の `examples/project-standards-template/` 参照）。このパスは Claude Code と Codex で共有する。

@@ -4,6 +4,14 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-05-06
+
+### Added
+
+- Codex plugin entrypoint (`.codex-plugin/plugin.json`) that mirrors Claude plugin core metadata.
+- `skills/codex-build/` adapter skill for running the 5 phase build flow in Codex.
+- Codex adoption guide and Claude-to-Codex sync check with CI workflow.
+
 ## [0.1.0] - 2026-04-24
 
 ### Added

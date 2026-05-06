@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-06",
+  "sourceOfTruth": "Claude Code plugin files are canonical; Codex files are platform adapters checked for drift.",
+  "canonicalFiles": [
+    {
+      "path": ".claude-plugin/plugin.json",
+      "sha256": "ec29cd18f2db0227eeaf0bb78ade733f0854d4b035f30eb1fa8cfa1c37af6f8f",
+      "codexAdapters": [
+        ".codex-plugin/plugin.json",
+        "skills/codex-build/SKILL.md"
+      ]
+    },
+    {
+      "path": ".claude-plugin/marketplace.json",
+      "sha256": "9bcf3dfc2e5aafd2e852ba75520ea3ef70dedcf83c0cb1a799ec2630800ef1fb",
+      "codexAdapters": [
+        ".codex-plugin/plugin.json",
+        "skills/codex-build/SKILL.md"
+      ]
+    },
+    {
+      "path": "commands/build.md",
+      "sha256": "5394ba0f2a552c2e97662e7232be09e25820aa8dcd5f6f5fa39fd87130da633a",
+      "codexAdapters": [
+        "skills/codex-build/SKILL.md",
+        "docs/codex-adoption-guide.md"
+      ]
+    },
+    {
+      "path": "agents/dev-explorer.md",
+      "sha256": "78c808d1f5e9ac43edd102631872ab73d59f29afbb5e65d950afcd6432a31990",
+      "codexAdapters": [
+        "skills/codex-build/SKILL.md"
+      ]
+    },
+    {
+      "path": "agents/dev-planner.md",
+      "sha256": "e1eaccd84b1efeafcf3be4e8c9aa5d4d3b78e182428f1d3f6e6826c88462027f",
+      "codexAdapters": [
+        "skills/codex-build/SKILL.md"
+      ]
+    },
+    {
+      "path": "agents/dev-tester.md",
+      "sha256": "66507807a0a76fef6937c1a2a7bceb6e008d417b7544fb04f2db7de024de2e72",
+      "codexAdapters": [
+        "skills/codex-build/SKILL.md"
+      ]
+    },
+    {
+      "path": "agents/dev-reviewer.md",
+      "sha256": "d0fada14fb087c82cbec79736eddfd39325753ae013067e7d49a40aa2cdcf711",
+      "codexAdapters": [
+        "skills/codex-build/SKILL.md",
+        "docs/codex-adoption-guide.md"
+      ]
+    },
+    {
+      "path": "skills/dev-standards/SKILL.md",
+      "sha256": "432e191bc7fa21778b0d1a1e5289998c44724917c07448dd7936e1d90aaeffa1",
+      "codexAdapters": [
+        "skills/codex-build/SKILL.md",
+        "docs/codex-adoption-guide.md"
+      ]
+    }
+  ]
+}

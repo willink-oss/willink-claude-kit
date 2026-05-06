@@ -51,7 +51,7 @@ kit 導入前後の効果を定量比較し、全プロジェクト展開の Go/
 - date: YYYY-MM-DD
 - product: <project-id>
 - task type: bug fix | feature | refactor | docs
-- kit version: 0.1.0
+- kit version: 0.1.1
 
 ## phase 別実行
 - Phase 1 (dev-explorer): 起動 / skip — 理由: ...

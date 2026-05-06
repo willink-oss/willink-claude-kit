@@ -1,0 +1,39 @@
+{
+  "name": "willink-claude-kit",
+  "version": "0.1.1",
+  "description": "i-Willink 標準開発エージェント基盤を Codex でも使うための plugin。Claude Code 版を正本にし、Codex 向け adapter skill と同期チェックを提供する。",
+  "author": {
+    "name": "i-Willink合同会社",
+    "url": "https://i-willink.com"
+  },
+  "homepage": "https://github.com/willink-oss/willink-claude-kit",
+  "repository": "https://github.com/willink-oss/willink-claude-kit",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "subagent",
+    "agent-system",
+    "dev-tools",
+    "generator-verifier"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "willink-claude-kit",
+    "shortDescription": "i-Willink standard development workflow for Codex.",
+    "longDescription": "Runs i-Willink's development standards and 5 phase build workflow in Codex while keeping Claude Code plugin files as the canonical source of truth.",
+    "developerName": "i-Willink合同会社",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write",
+      "Review"
+    ],
+    "websiteURL": "https://github.com/willink-oss/willink-claude-kit",
+    "defaultPrompt": [
+      "Use codex-build for this task.",
+      "Review this repo with i-Willink standards.",
+      "Plan this change using the 5 phase flow."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

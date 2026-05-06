@@ -1,4 +1,6 @@
-# 各リポジトリへの導入手順
+# Claude Code 導入手順
+
+このページは Claude Code plugin の導入手順。Codex 側も使う場合は [codex-adoption-guide.md](codex-adoption-guide.md) を併用する。`project-standards` と `dev-reviewer` memory は Claude Code / Codex で同じ `.claude/` path を共有する。
 
 ## 1. Plugin marketplace を登録
 
@@ -17,11 +19,11 @@
 }
 ```
 
-バージョン pin する場合: `"willink-claude-kit@iwillink": ["0.1.0"]`
+バージョン pin する場合: `"willink-claude-kit@iwillink": ["0.1.1"]`
 
 > Phase B 検証中は **必ず pin** する（v0.x は破壊的変更ありうるため）
 
-> ⚠️ Claude Code 公式 `settings.json` schema は `enabledPlugins.<plugin>` の値として `boolean` または `array<string>` のみ受け付ける。`"0.1.0"` のような **string は schema 違反**で validator に弾かれる（`$schema` を宣言したリポでは特に）。array 形式 `["0.1.0"]` を使うこと。
+> ⚠️ Claude Code 公式 `settings.json` schema は `enabledPlugins.<plugin>` の値として `boolean` または `array<string>` のみ受け付ける。`"0.1.1"` のような **string は schema 違反**で validator に弾かれる（`$schema` を宣言したリポでは特に）。array 形式 `["0.1.1"]` を使うこと。
 
 ## 2. project-standards を作成
 
@@ -87,6 +89,21 @@ claude
 小さな bug fix or docs 修正で慣らす。Phase 1/2 を skip するケースの方が多いことを確認。
 
 詳細な検証プロトコル → [verification-protocol.md](verification-protocol.md)
+
+## 7. Codex と併用する場合
+
+Codex 側は repo root の `.codex-plugin/plugin.json` を entrypoint として使う。追加で `.codex/skills/project-standards/` のような copy は作らない。
+
+Codex の `codex-build` skill は次をそのまま読む:
+
+- `.claude/skills/project-standards/SKILL.md`
+- `.claude/agent-memory/dev-reviewer/MEMORY.md`
+
+Claude Code 側の `/build` や agent prompt を変更したら、Codex adapter の drift check を実行する:
+
+```bash
+python3 scripts/check_codex_sync.py --check
+```
 
 ---
 
