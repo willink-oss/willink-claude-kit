@@ -4,6 +4,9 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+### Changed
+- `docs/verification-protocol.md` を v1.0 後の継続評価手順に更新 (#13) — 0.1.x 採用判断の基準・フレームは「歴史的経緯」に凍結し、v1.1 繰り越し指標（MEMORY ≥ 5 / context 1.3x / 致命的失敗 0）と stack promotion の記録様式を現行化。promotion 基準の正本は `docs/known-stack-coverage.md` のまま（重複定義しない）
+
 ## [2.0.0] - 2026-06-11
 
 **Status**: マルチプラットフォーム基盤へ — Claude Code (正本) / Codex / **Antigravity** の 3 環境対応。

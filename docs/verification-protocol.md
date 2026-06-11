@@ -1,21 +1,30 @@
 # 検証プロトコル
 
+> v1.0 リリース（2026-05-10・partial Go）までの 0.1.x 採用判断は本書の旧版で実施・完了済み。
+> 本書は **v1.0 以後の継続評価**（v1.1 評価 + stack promotion）の現行手順。
+> 0.1.x 当時の判断基準と結果は末尾「歴史的経緯」と CHANGELOG `[1.0.0]` を参照。
+
 ## 目的
 
-kit 導入前後の効果を定量比較し、全プロジェクト展開の Go/No-Go 判断材料とする。
+v1.0 partial Go で確定した採用判断を前提に、以下 2 種類の評価を記録する:
+
+1. **v1.1 継続評価** — v1.0 で時間制約により未検証のまま繰り越した 2 指標の判定
+2. **stack promotion（🟡 install-only → ✅ verified）** — `docs/known-stack-coverage.md` の
+   promotion criteria に基づく昇格の記録
+
+どちらの評価も、本書の記録テンプレ 1 ファイルで記録できる。
 
 ## 検証フレーム
 
-スタック・タスク特性が異なる **2 プロダクト並列**で検証することを推奨する。1 プロダクトだけでは kit の汎用性が確認できない。
+v1.0 検証（2 プロダクト並列 × 14 日）で実証済みのフレームを縮小継続する。
+新規 stack の promotion は **1 stack = 1 dogfood セッション（〜60 分）** が目安
+（`docs/known-stack-coverage.md` の Promotion plan 準拠）。
 
 | 観点 | 推奨 |
 |---|---|
-| プロダクト数 | 2 本（最低）〜 3 本（理想） |
-| スタック多様性 | 主軸スタック × 補助スタック（例: Flutter × Next.js） |
 | タスク種別 | bug fix / 小機能追加 / refactor / docs を混ぜる |
-| 期間 | 2 週間程度 |
-| タスク数 | 各プロダクト 2-3 件、計 5-6 件 |
 | リスク管理 | 本番 release 直結タスク・第三者審査直結変更は除外 |
+| promotion | 1 stack = 1 セッションで昇格可（記録ファイルの成立が条件） |
 
 ## 計測指標
 
@@ -31,18 +40,13 @@ kit 導入前後の効果を定量比較し、全プロジェクト展開の Go/
 
 ## ベースライン
 
-直近 5 件の同種タスクの開発記録から逆算:
-
-```
-ベースライン例:
-- メインセッション tool call 数: 平均 XX
-- CONDITIONAL/FAIL 率: XX %
-- context 60% 到達時間: 平均 XX 分
-```
+v1.0 検証（2026-04-26 → 2026-05-10・14 日間）の実測値をベースラインとする。
+旧 0.1.x 検証の「直近 5 件の同種タスクから逆算」は導入前比較（採用判断）用であり、完了済み。
 
 ## 記録テンプレ（タスクごとに 1 ファイル）
 
-各タスク完了時に以下を `<project>/.claude/kit-verification/<YYYY-MM-DD>-<task>.md` 等に記録:
+各タスク完了時に以下を `<project>/.claude/kit-verification/<YYYY-MM-DD>-<task>.md` 等に記録する。
+**promotion 用件**（known-stack-coverage が要求する項目）と **v1.1 評価用件**を 1 テンプレで満たす。
 
 ```markdown
 # kit verification: <task name>
@@ -51,7 +55,9 @@ kit 導入前後の効果を定量比較し、全プロジェクト展開の Go/
 - date: YYYY-MM-DD
 - product: <project-id>
 - task type: bug fix | feature | refactor | docs
-- kit version: 0.1.1
+- kit version: <インストール中の実バージョン 例: 2.0.0>
+- mode: /build full flow | /agents 単発 | review only
+- 評価種別: v1.1 継続評価 | stack promotion | 通常記録
 
 ## phase 別実行
 - Phase 1 (dev-explorer): 起動 / skip — 理由: ...
@@ -65,6 +71,14 @@ kit 導入前後の効果を定量比較し、全プロジェクト展開の Go/
 - dev-reviewer verdict: PASS | CONDITIONAL | FAIL
 - context % at end: ...
 - 修正ループ回数: ...
+- MEMORY 新規エントリ数: ...
+
+## 摩擦と価値（promotion では各 1 件以上必須）
+- 摩擦: ...
+- 価値: ...
+
+## upstream issue 候補（空でも「なし」と明記）
+- ...
 
 ## 学び
 - 良かった点: ...
@@ -72,15 +86,28 @@ kit 導入前後の効果を定量比較し、全プロジェクト展開の Go/
 - kit 改善提案: ...
 ```
 
-## Go/No-Go 基準
+## v1.1 継続評価指標（現行の判断基準）
 
-| 指標 | Go ライン | No-Go ライン |
+v1.0 を **partial Go** とした際に繰り越した未検証 2 指標 + 常時監視 1 項目。
+v1.1 評価ウィンドウ（Q3 dogfood）で判定する:
+
+| 指標 | 達成ライン | 未達時 |
 |---|---|---|
-| メインセッション tool call 数 | 現状比 **-20% 以上** | 同等 or 増加 |
-| CONDITIONAL/FAIL 率 | 現状比 **-30% 以上** | 同等 |
-| context 60% 到達時間 | **1.3 倍以上** に延長 | 同等 |
-| dev-reviewer MEMORY.md | 5 件以上の有用パターン蓄積 | 0-2 件 |
-| 致命的失敗 | **0 件** | 1 件以上 → 即停止 |
+| dev-reviewer MEMORY.md 蓄積 | 5 件以上の有用パターン | 原因分析 → 次の v2.x minor で改善 → 再評価 |
+| context 60% 到達時間 | ベースライン比 **1.3 倍以上**に延長 | 同上 |
+| 致命的失敗（常時監視） | **0 件** | 1 件以上 → 即停止（バージョン・評価種別を問わず常時適用） |
 
-- Go なら全プロジェクトへ展開
-- No-Go なら原因分析 → kit を v0.2.x で改善 → 検証再実施
+stack promotion（🟡 → ✅）の判断基準は本書では定義しない。
+**`docs/known-stack-coverage.md` の「Promotion criteria」が正本**であり、本書は記録様式のみを提供する
+（2 文書に基準を重複定義しない）。
+
+## 歴史的経緯（0.1.x 採用判断・完了済み）
+
+- 0.1.x 当時の本書は「kit 導入前後の効果を定量比較し、全プロジェクト展開の Go/No-Go 判断材料とする」
+  導入判断プロトコルだった
+- 2 プロダクト並列 × 2 週間 × 5-6 タスクのフレームで実施し、2026-05-10 に **partial Go**
+  （4 stack 中 2 stack verified・致命的失敗 0 件）で v1.0 リリース
+- 当時の Go/No-Go 基準（tool call -20% / CONDITIONAL/FAIL 率 -30% / context 1.3x /
+  MEMORY 5 件 / 致命的失敗 0）のうち、未検証だった MEMORY と context の 2 指標が
+  上記「v1.1 継続評価指標」へ繰り越された。**この旧基準を現在の運用基準として使わないこと**
+- 詳細: CHANGELOG `[1.0.0]`・i-willink-crew `assets/knowledge/2026-05-10-claude-kit-validation-report.md`
