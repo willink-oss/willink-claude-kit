@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-05-06",
-  "sourceOfTruth": "Claude Code plugin files are canonical; Codex files are platform adapters checked for drift.",
+  "updatedAt": "2026-05-22",
+  "sourceOfTruth": "Claude Code plugin files are canonical; Codex and Antigravity files are platform adapters checked for drift.",
   "canonicalFiles": [
     {
       "path": ".claude-plugin/plugin.json",
@@ -9,6 +9,9 @@
       "codexAdapters": [
         ".codex-plugin/plugin.json",
         "skills/codex-build/SKILL.md"
+      ],
+      "antigravityAdapters": [
+        "skills/antigravity-build/SKILL.md"
       ]
     },
     {
@@ -17,6 +20,9 @@
       "codexAdapters": [
         ".codex-plugin/plugin.json",
         "skills/codex-build/SKILL.md"
+      ],
+      "antigravityAdapters": [
+        "skills/antigravity-build/SKILL.md"
       ]
     },
     {
@@ -25,6 +31,9 @@
       "codexAdapters": [
         "skills/codex-build/SKILL.md",
         "docs/codex-adoption-guide.md"
+      ],
+      "antigravityAdapters": [
+        "skills/antigravity-build/SKILL.md"
       ]
     },
     {
@@ -32,6 +41,9 @@
       "sha256": "78c808d1f5e9ac43edd102631872ab73d59f29afbb5e65d950afcd6432a31990",
       "codexAdapters": [
         "skills/codex-build/SKILL.md"
+      ],
+      "antigravityAdapters": [
+        "skills/antigravity-build/SKILL.md"
       ]
     },
     {
@@ -39,6 +51,9 @@
       "sha256": "e1eaccd84b1efeafcf3be4e8c9aa5d4d3b78e182428f1d3f6e6826c88462027f",
       "codexAdapters": [
         "skills/codex-build/SKILL.md"
+      ],
+      "antigravityAdapters": [
+        "skills/antigravity-build/SKILL.md"
       ]
     },
     {
@@ -46,6 +61,9 @@
       "sha256": "66507807a0a76fef6937c1a2a7bceb6e008d417b7544fb04f2db7de024de2e72",
       "codexAdapters": [
         "skills/codex-build/SKILL.md"
+      ],
+      "antigravityAdapters": [
+        "skills/antigravity-build/SKILL.md"
       ]
     },
     {
@@ -54,6 +72,9 @@
       "codexAdapters": [
         "skills/codex-build/SKILL.md",
         "docs/codex-adoption-guide.md"
+      ],
+      "antigravityAdapters": [
+        "skills/antigravity-build/SKILL.md"
       ]
     },
     {
@@ -62,6 +83,9 @@
       "codexAdapters": [
         "skills/codex-build/SKILL.md",
         "docs/codex-adoption-guide.md"
+      ],
+      "antigravityAdapters": [
+        "skills/antigravity-build/SKILL.md"
       ]
     }
   ]
