@@ -4,6 +4,23 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-06-11
+
+**Status**: マルチプラットフォーム基盤へ — Claude Code (正本) / Codex / **Antigravity** の 3 環境対応。
+
+### Added
+- `skills/antigravity-build/` — Antigravity 向け 5 phase adapter skill
+- `docs/antigravity-adoption-guide.md` — Antigravity 導入手順
+- `scripts/check_sync.py` — adapter 同期チェックの汎用化 (プラットフォーム非依存)
+
+### Changed
+- README をマルチプラットフォーム前提に更新 (Claude Code plugin が正本・各環境は adapter で追従)
+- `scripts/check_codex_sync.py` は後方互換 wrapper 化 (`check_sync.py` に委譲)
+
+### Fixed
+- 配布 metadata のバージョン不整合を解消 (#9) — plugin.json / marketplace ref / docs を 2.0.0 で統一
+
+
 ## [1.0.0] - 2026-05-10
 
 **Status**: 🟡 **Partial Go** — verified production-ready on 2 of 4 target stacks. The remaining 2 stacks ship in install-only mode pending Q3 dogfood data.

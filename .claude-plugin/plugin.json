@@ -1,6 +1,6 @@
 {
   "name": "willink-claude-kit",
-  "version": "0.1.1",
+  "version": "2.0.0",
   "description": "i-Willink 標準開発エージェント基盤。dev-explorer / dev-planner / dev-tester / dev-reviewer の 4 サブエージェント + 5 phase /build コマンドを Claude Code Plugin として提供。",
   "author": {
     "name": "i-Willink合同会社",
