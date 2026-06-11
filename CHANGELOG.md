@@ -4,6 +4,9 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+### Changed
+- dev-reviewer memory の path と auto-write 条件を実態に合わせて整理 (#12) — 正本は `.claude/agent-memory/dev-reviewer/MEMORY.md`（全プラットフォーム共有）のまま、plugin install 時の auto-write が plugin 名前空間付き `.claude/agent-memory/willink-claude-kit-dev-reviewer/` に着地する実測事実と発火条件（`/build` 内のみ・standalone `/agents` では発火しない = 既知制約）を README / agent prompt / adoption guides に明文化。consolidation 手順を adoption-guide §3.2 に追加
+
 ## [2.0.0] - 2026-06-11
 
 **Status**: マルチプラットフォーム基盤へ — Claude Code (正本) / Codex / **Antigravity** の 3 環境対応。

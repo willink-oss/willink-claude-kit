@@ -64,6 +64,30 @@ git check-ignore -v .claude/agent-memory/dev-reviewer/MEMORY.md
 # 何も出なければ OK（除外されていない）
 ```
 
+### 3.2 memory path と auto-write 条件
+
+memory は「どこに書かれるか」が install 形態で変わる。**正本（共有 path）は常に
+`.claude/agent-memory/dev-reviewer/MEMORY.md`**（全プラットフォーム共有・version control 対象）。
+
+| 文脈 | auto-write | 実際の書き込み先 |
+|---|---|---|
+| Claude Code plugin install + `/build` Phase 4 | ✅ 発火（v1.0 検証で 3 entries 実測） | `.claude/agent-memory/willink-claude-kit-dev-reviewer/`（plugin 名前空間付き） |
+| Claude Code plugin install + standalone `/agents` | ❌ 発火しない（既知制約 = harness 挙動・kit 側では制御不可） | — |
+| `agents/` を手動コピーした install | `/build` 内のみ（期待値・未実測） | `.claude/agent-memory/dev-reviewer/`（期待値・未実測） |
+| Codex（`codex-build`） | ❌ auto-write 機構なし | 手動更新のみ |
+| Antigravity（`antigravity-build`） | ❌ auto-write 機構なし | 手動更新のみ |
+
+**plugin install 時の consolidation 手順**（auto-write は名前空間付き directory に溜まるため、
+週次 or リリース前に正本へ統合する）:
+
+1. `.claude/agent-memory/willink-claude-kit-dev-reviewer/MEMORY.md` を開く
+2. 恒久パターン（anti-pattern・規約訂正・アーキテクチャ知見）だけを
+   `.claude/agent-memory/dev-reviewer/MEMORY.md` へ転記
+3. 転記済みエントリは名前空間側から削除して肥大を防ぐ
+
+standalone `/agents` 呼び出しや Codex / Antigravity セッションで得たパターンは
+auto-write されないため、正本 MEMORY.md へ**手動追記**する。
+
 ## 4. 既存 /build コマンドとの衝突回避
 
 リポジトリに既に `.claude/commands/build.md` がある場合、Plugin 版が **上書きされない**（plugin priority は 5 = 最低）。
