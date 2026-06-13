@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import sys
 from datetime import date
 from pathlib import Path
@@ -19,6 +20,23 @@ CLAUDE_MARKETPLACE_PATH = ROOT / ".claude-plugin" / "marketplace.json"
 CODEX_PLUGIN_PATH = ROOT / ".codex-plugin" / "plugin.json"
 CODEX_BUILD_SKILL_PATH = ROOT / "skills" / "codex-build" / "SKILL.md"
 ANTIGRAVITY_BUILD_SKILL_PATH = ROOT / "skills" / "antigravity-build" / "SKILL.md"
+README_PATH = ROOT / "README.md"
+CHANGELOG_PATH = ROOT / "CHANGELOG.md"
+ADOPTION_DOC_PATHS = [
+    ROOT / "docs" / "adoption-guide.md",
+    ROOT / "docs" / "codex-adoption-guide.md",
+    ROOT / "docs" / "antigravity-adoption-guide.md",
+]
+
+# A version pin *example* always carries the plugin-name key, e.g.
+#   "willink-claude-kit@iwillink": ["2.0.0"]
+# This deliberately does NOT match bare array/string forms used to illustrate the
+# array-vs-string schema rule (e.g. `string "0.1.1"` / `array 形式 ["0.1.1"]`),
+# so those documentation counter-examples are not treated as drift.
+PLUGIN_PIN_RE = re.compile(r'"willink-claude-kit@iwillink":\s*\[\s*"(\d+\.\d+\.\d+)"\s*\]')
+# Released CHANGELOG headers look like `## [2.0.0] - 2026-06-11`; `## [Unreleased]`
+# carries no version and is intentionally skipped.
+CHANGELOG_RELEASE_RE = re.compile(r"^##\s*\[(\d+\.\d+\.\d+)\]", re.MULTILINE)
 
 REQUIRED_CANONICAL_PATHS = [
     ".claude-plugin/plugin.json",
@@ -288,6 +306,45 @@ def validate_antigravity_build_skill() -> list[str]:
     return errors
 
 
+def validate_release_consistency() -> list[str]:
+    """Catch release-version drift that hash/parity checks miss.
+
+    Guards the documented release surface against the plugin version: the latest
+    CHANGELOG release header and every version-pin example in README + adoption
+    docs must match `.claude-plugin/plugin.json`. Historical CHANGELOG entries and
+    array-vs-string schema illustrations are intentionally allowed.
+    """
+    errors: list[str] = []
+    claude_plugin = read_json(CLAUDE_PLUGIN_PATH)
+    version = claude_plugin.get("version")
+    if not isinstance(version, str):
+        return [".claude-plugin/plugin.json must define a string version"]
+
+    if not CHANGELOG_PATH.exists():
+        errors.append("Missing CHANGELOG.md")
+    else:
+        releases = CHANGELOG_RELEASE_RE.findall(CHANGELOG_PATH.read_text(encoding="utf-8"))
+        if not releases:
+            errors.append("CHANGELOG.md must contain at least one '## [x.y.z]' release header")
+        elif releases[0] != version:
+            errors.append(
+                f"CHANGELOG.md latest release '[{releases[0]}]' must match plugin version "
+                f"{version!r}. Older release headers below are allowed."
+            )
+
+    for doc in [README_PATH, *ADOPTION_DOC_PATHS]:
+        if not doc.exists():
+            continue
+        for pinned in PLUGIN_PIN_RE.findall(doc.read_text(encoding="utf-8")):
+            if pinned != version:
+                errors.append(
+                    f"{doc.relative_to(ROOT)}: version pin example '[\"{pinned}\"]' must match "
+                    f"plugin version {version!r}."
+                )
+
+    return errors
+
+
 def run_check() -> int:
     errors: list[str] = []
     try:
@@ -313,6 +370,11 @@ def run_check() -> int:
 
     try:
         errors.extend(validate_antigravity_build_skill())
+    except Exception as exc:  # noqa: BLE001
+        errors.append(str(exc))
+
+    try:
+        errors.extend(validate_release_consistency())
     except Exception as exc:  # noqa: BLE001
         errors.append(str(exc))
 
