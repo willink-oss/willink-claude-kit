@@ -6,6 +6,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ### Changed
 - `docs/verification-protocol.md` を v1.0 後の継続評価手順に更新 (#13) — 0.1.x 採用判断の基準・フレームは「歴史的経緯」に凍結し、v1.1 繰り越し指標（MEMORY ≥ 5 / context 1.3x / 致命的失敗 0）と stack promotion の記録様式を現行化。promotion 基準の正本は `docs/known-stack-coverage.md` のまま（重複定義しない）
+- dev-reviewer memory の path と auto-write 条件を実態に合わせて整理 (#12) — 正本は `.claude/agent-memory/dev-reviewer/MEMORY.md`（全プラットフォーム共有）のまま、plugin install 時の auto-write が plugin 名前空間付き `.claude/agent-memory/willink-claude-kit-dev-reviewer/` に着地する実測事実と発火条件（`/build` 内のみ・standalone `/agents` では発火しない = 既知制約）を README / agent prompt / adoption guides に明文化。consolidation 手順を adoption-guide §3.2 に追加
 
 ## [2.0.0] - 2026-06-11
 

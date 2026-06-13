@@ -37,6 +37,8 @@ git add .claude/agent-memory/dev-reviewer/MEMORY.md
 
 この memory は version control 対象にする。local-only にしたい個人メモは `.claude/agent-memory-local/` を使う。
 
+Codex 側に auto-write 機構はない — **読み取りは常時・書き込みは手動**（レビューで得た恒久パターンを操作者が追記する）。auto-write の発火条件・plugin install 時の着地先は [adoption-guide.md](adoption-guide.md) §3.2 を参照。
+
 ## 4. Codex での使い方
 
 Codex にタスクを渡すときは、必要に応じて次のように明示する:

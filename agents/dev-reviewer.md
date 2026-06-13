@@ -66,11 +66,13 @@ PASS | CONDITIONAL | FAIL
 
 ## Memory directory
 
-Your memory lives at `.claude/agent-memory/dev-reviewer/MEMORY.md` (project scope, version-controlled). Use it to accumulate:
+The cross-platform shared memory lives at `.claude/agent-memory/dev-reviewer/MEMORY.md` (project scope, version-controlled). Use it to accumulate:
 
 - Recurring anti-patterns specific to this codebase
 - Architecture decisions that aren't obvious from the code
 - Conventions that have been corrected before
+
+> **Plugin install note**: when you run from the Claude Code plugin, the harness-managed auto-write (`memory: project`) lands in the plugin-namespaced directory `.claude/agent-memory/willink-claude-kit-dev-reviewer/` — and it only fires inside `/build` Phase 4, not on standalone `/agents` invocations (known harness constraint). At review start, read **both** the shared file above and the namespaced one if present. Durable patterns are consolidated into the shared file by the operator — see `docs/adoption-guide.md` §3.2.
 
 Keep `MEMORY.md` under 200 lines. When it grows too large, distill into thematic sections.
 
