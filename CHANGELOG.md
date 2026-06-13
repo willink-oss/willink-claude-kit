@@ -4,6 +4,10 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-06-13
+
+**Status**: ループ開発サイクル（ADR-009）が自律生成した初のリリース。dev サイクル 4 件（kit #13/#12/#11/#10）を Maker-Checker 分離 + 人間レビューで取り込み、deploy ステージで切り出した。docs 整合の徹底 + check_sync への release 整合性ガード追加が主軸。
+
 ### Added
 - `scripts/check_sync.py` に release 整合性チェックを追加 (#10) — CHANGELOG 最新 release ヘッダと README / adoption docs のバージョン pin 例（`"willink-claude-kit@iwillink": ["x.y.z"]`）が plugin.json の version と一致するかを検証。既存 CI の `--check` がそのままガードする。過去 CHANGELOG エントリと array-vs-string の schema 反例（`["0.1.1"]` 等）は許容して false positive を回避
 

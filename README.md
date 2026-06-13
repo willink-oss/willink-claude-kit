@@ -43,7 +43,7 @@ Claude Code / Codex / Antigravity 向け標準開発エージェント基盤。*
 }
 ```
 
-バージョン pin 例: `"willink-claude-kit@iwillink": ["2.0.0"]`
+バージョン pin 例: `"willink-claude-kit@iwillink": ["2.1.0"]`
 
 > Claude Code 公式 `settings.json` schema は `enabledPlugins.<plugin>` の値として `boolean` または `array<string>` のみ受け付ける。バージョン pin は **array 形式**で書くこと（string `"0.1.1"` は schema validator に弾かれる）。
 
