@@ -19,7 +19,7 @@
 }
 ```
 
-バージョン pin する場合: `"willink-claude-kit@iwillink": ["2.0.0"]`
+バージョン pin する場合: `"willink-claude-kit@iwillink": ["2.1.0"]`
 
 > Phase B 検証中は **必ず pin** する（v0.x は破壊的変更ありうるため）
 
