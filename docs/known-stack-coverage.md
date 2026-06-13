@@ -90,14 +90,40 @@ verified 4-stack matrix in this document.
 
 ---
 
+## WordPress and PHP support level
+
+Status: **📝 documented, unverified**.
+
+WordPress + PHP is **not** an out-of-scope stack, but it is **not a verified
+kit lane** either. The kit ships first-party guidance for it — agent stack
+conventions (`dev-explorer`), quality-gate commands (`dev-tester`), coding
+standards (`dev-standards`), and `docs/stack-specific-notes.md` — yet **no
+production-shaped task has been driven through the kit on a WordPress repo**,
+so there is no verification evidence behind that guidance.
+
+**Support level a WordPress/PHP adopter can expect at v1.0:**
+
+- ✅ The agents *load* WordPress/PHP conventions and `dev-tester` knows the
+  `composer lint` / `phpstan` / PHPUnit gate sequence.
+- ✅ Coding-standards and stack-notes guidance (security boundaries,
+  `wp_unslash()` / `sanitize_*()` / nonce, version constraints) is documented.
+- 🟡 None of the above is verified end-to-end. Treat it as **best-effort,
+  unverified** — the same caveat as an `🟡 install-only` stack, plus the
+  review surface itself is JS/TS-centric, so PHP-specific findings depth is
+  lower than for a `✅ verified` lane.
+- ❌ There is no near-term plan to promote WordPress/PHP to `✅ verified`; the
+  kit's review surface intentionally stays JS/TS-centric.
+
+This status is reviewed each minor release. Open a discussion if a real
+adoption need would justify a verified PHP lane.
+
+---
+
 ## Stacks explicitly out of scope at v1.0
 
 The following stacks are intentionally **not** part of the v1.0 coverage
-goal and have no near-term promotion plan:
+goal, ship **no** kit guidance, and have no promotion plan:
 
-- **WordPress + PHP** — covered by an internal SOP (`assets/knowledge/2026-05-10-esperanza-ds-operational-policy.md`),
-  not by the kit. The kit's review surface is JS/TS-centric and adding PHP
-  parsing depth would diverge the agents.
 - **Static site generators (Hugo, Jekyll, etc.)** — too narrow a review
   surface to justify a kit lane.
 - **Mobile-only repositories without Cloud Functions / backend** — would
