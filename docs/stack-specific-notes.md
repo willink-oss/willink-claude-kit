@@ -69,6 +69,10 @@ flutter build ios     # or appbundle / web
 
 ## WordPress + PHP
 
+> **支援レベル: 📝 documented, unverified**。本セクションは first-party guidance だが、
+> kit を WordPress repo に対して end-to-end で検証した実績はない（best-effort）。
+> 詳細は [`known-stack-coverage.md`](known-stack-coverage.md#wordpress-and-php-support-level) を参照。
+
 ### dev-tester が呼ぶコマンド
 ```bash
 composer install
