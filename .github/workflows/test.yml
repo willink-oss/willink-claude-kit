@@ -1,0 +1,23 @@
+name: test
+
+# Regression / integrity suite (scripts/test/). Runs on every PR and on pushes to main,
+# complementing codex-sync.yml (which only validates adapter sync). The autonomous
+# test-quality loop grows this suite over time; CI is the gate that keeps it green.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  regression-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run kit regression / integrity suite
+        run: bash scripts/test/run.sh

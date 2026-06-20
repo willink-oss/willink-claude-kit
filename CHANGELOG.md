@@ -4,6 +4,9 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+### Added
+- 回帰 / 整合テストスイート (`scripts/test/`) + runner (`run.sh`) を新設。kit の不変条件（adapter sync・plugin/marketplace manifest 妥当性・agent guard 句の verbatim 保持・repo 構造・release version pin）をロックする 4 テストファイル（計 43 アサーション）。`.github/workflows/test.yml` で push/PR 時に実行（`codex-sync.yml` は同期特化のまま棲み分け）。テスト常時改善・失敗→ソース改善 issue 化の自走ループ（crew `loop-test-cycle`）の土台。
+
 ## [2.1.0] - 2026-06-13
 
 **Status**: ループ開発サイクル（ADR-009）が自律生成した初のリリース。dev サイクル 4 件（kit #13/#12/#11/#10）を Maker-Checker 分離 + 人間レビューで取り込み、deploy ステージで切り出した。docs 整合の徹底 + check_sync への release 整合性ガード追加が主軸。
