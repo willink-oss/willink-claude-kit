@@ -25,6 +25,7 @@ autonomous test-quality loop.
 | `test_plugin_manifest.sh` | plugin / marketplace / codex manifests are valid JSON with required fields; version is semver |
 | `test_agent_guards.sh` | 4 subagents exist + keep their critical guard phrases verbatim |
 | `test_structure.sh` | required files / dirs (command, adapter skills, agents, docs) exist |
+| `test_hooks.sh` | example hooks (`examples/hooks/`) exist, are valid bash, and pass their block + pass self-test (behavioral run gated on `jq`) |
 
 ## Add a test (the loop does this continuously)
 

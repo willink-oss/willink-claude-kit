@@ -13,7 +13,13 @@ permissions:
 
 jobs:
   regression-suite:
-    runs-on: ubuntu-latest
+    # Run on Linux (GNU grep) and macOS (BSD grep) so the example hooks' portability
+    # conventions are proven on both, not just asserted.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
