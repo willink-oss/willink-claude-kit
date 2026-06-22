@@ -10,10 +10,14 @@ assert_file_exists "$KIT_ROOT/.claude-plugin/plugin.json"
 assert_file_exists "$KIT_ROOT/.claude-plugin/marketplace.json"
 assert_file_exists "$KIT_ROOT/.codex-plugin/plugin.json"
 
-# command + adapters
+# command + canonical/adapter skills
 assert_file_exists "$KIT_ROOT/commands/build.md"
+assert_file_exists "$KIT_ROOT/skills/dev-standards/SKILL.md"
 assert_file_exists "$KIT_ROOT/skills/codex-build/SKILL.md"
 assert_file_exists "$KIT_ROOT/skills/antigravity-build/SKILL.md"
+
+# downstream extension scaffold (consumers copy this into project-standards/)
+assert_file_exists "$KIT_ROOT/examples/project-standards-template/SKILL.md"
 
 # the 4 subagents
 for a in dev-explorer dev-planner dev-reviewer dev-tester; do
