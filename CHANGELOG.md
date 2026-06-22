@@ -5,7 +5,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 ## [Unreleased]
 
 ### Added
-- 回帰 / 整合テストスイート (`scripts/test/`) + runner (`run.sh`) を新設。kit の不変条件（adapter sync・plugin/marketplace manifest 妥当性・agent guard 句の verbatim 保持・repo 構造・release version pin）をロックする 4 テストファイル（計 43 アサーション）。`.github/workflows/test.yml` で push/PR 時に実行（`codex-sync.yml` は同期特化のまま棲み分け）。テスト常時改善・失敗→ソース改善 issue 化の自走ループ（crew `loop-test-cycle`）の土台。
+- 回帰 / 整合テストスイート (`scripts/test/`) + runner (`run.sh`) を新設。kit の不変条件（adapter sync・plugin/marketplace manifest 妥当性・agent 及び `/build` の guard 句 verbatim 保持・repo 構造・release version pin）をロックする 5 テストファイル（計 51 アサーション）。`.github/workflows/test.yml` で push/PR 時に実行。`test_sync.sh` は `codex-sync.yml` と同じ `check_sync.py --check` を suite 内でも回し、adapter / 同期 drift を回帰スイート側でも捕捉する（`codex-sync.yml` は named status check として継続。重複の整理は次サイクルの課題）。テスト常時改善・失敗→ソース改善 issue 化の自走ループ（crew `loop-test-cycle`）の土台。
 
 ## [2.1.0] - 2026-06-13
 
