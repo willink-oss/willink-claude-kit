@@ -1,8 +1,8 @@
 # willink-claude-kit
 
-Claude Code / Codex / Antigravity 向け標準開発エージェント基盤。**Opus 4.7 前提**の Claude Code plugin を正本にし、各環境では adapter skill と同期チェックで同じ開発パフォーマンスを狙う。
+Claude Code / Codex / Antigravity 向け標準開発エージェント基盤。Claude Code plugin を正本にし、各環境では adapter skill と同期チェックで同じ開発パフォーマンスを狙う（agents は `model: inherit` でセッションのモデルに追従）。
 
-> Status: **v1.0 — partial Go**（2 / 4 target stacks verified）。stable な surface（4 agents + 5 phase `/build`）はそのまま採用可。stack 別の検証状況は [docs/known-stack-coverage.md](docs/known-stack-coverage.md) を参照。
+> Status: **stable surface** — 中核 surface（4 agents + 5 phase `/build`）は安定で、Claude Code / Codex / Antigravity の 3 環境に対応。そのまま採用可。target stack の検証は **2 / 4 verified**（残り 2 stack は install-only・Q3 dogfood 待ち）。現行バージョンは [CHANGELOG.md](CHANGELOG.md)、stack 別の検証状況は [docs/known-stack-coverage.md](docs/known-stack-coverage.md) を参照。
 
 ## 提供するもの
 
@@ -85,9 +85,11 @@ python3 scripts/check_sync.py --update
 
 ## ロードマップ
 
-- **v0.1.x** — 社内プロダクト 2 本での並列検証（2 週間）
-- **v0.2.x** — 効果測定後の調整
-- **v1.0.0** — 全社プロジェクトへの展開完了
+- **〜v2.1.0（済）** — Claude Code 正本 + Codex / Antigravity adapter による 3 環境同期基盤、release / docs 整合ガード、回帰テストスイートを整備。
+- **次の minor** — install-only の 2 stack（Flutter+Supabase / Next.js+Stripe）を Q3 dogfood で ✅ verified へ promotion（基準は [docs/known-stack-coverage.md](docs/known-stack-coverage.md) の Promotion plan）。
+- **継続** — v1.1 繰り越し指標（dev-reviewer MEMORY ≥ 5 / context 1.3x）の判定と、回帰スイートの自走改善ループ（crew `loop-test-cycle`）によるカバレッジの単調増加。
+
+リリース履歴は [CHANGELOG.md](CHANGELOG.md) を参照。
 
 ## 関連ドキュメント
 

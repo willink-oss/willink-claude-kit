@@ -7,6 +7,12 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 ### Added
 - 回帰 / 整合テストスイート (`scripts/test/`) + runner (`run.sh`) を新設。kit の不変条件（adapter sync・plugin/marketplace manifest 妥当性・agent guard 句の verbatim 保持・repo 構造・release version pin）をロックする 4 テストファイル（計 43 アサーション）。`.github/workflows/test.yml` で push/PR 時に実行（`codex-sync.yml` は同期特化のまま棲み分け）。テスト常時改善・失敗→ソース改善 issue 化の自走ループ（crew `loop-test-cycle`）の土台。
 
+### Changed
+- docs ステータス整合 — README の Status を陳腐化した「v1.0 — partial Go」から現行の stable-surface 表記へ更新し、pre-1.0 のロードマップ（v0.1.x〜v1.0.0）を 2.x 到達後の実態（3 環境基盤完了 / Q3 stack promotion / 継続評価）へ差し替え。`model: inherit` 運用と矛盾する README の「Opus 4.7 前提」ハードコードを除去。`CLAUDE.md` の検証フェーズ節を完了済み 14 日検証 + 現フェーズ（Q3 promotion）表記に更新。`docs/known-stack-coverage.md` の as-of スナップショットが現行版でも有効である旨を明記
+
+### Fixed
+- `docs/antigravity-adoption-guide.md` の SKILL.md リンクを machine-specific な絶対パス `file:///Users/...` から相対パスへ修正（OSS 配信で解決可能に）
+
 ## [2.1.0] - 2026-06-13
 
 **Status**: ループ開発サイクル（ADR-009）が自律生成した初のリリース。dev サイクル 4 件（kit #13/#12/#11/#10）を Maker-Checker 分離 + 人間レビューで取り込み、deploy ステージで切り出した。docs 整合の徹底 + check_sync への release 整合性ガード追加が主軸。
