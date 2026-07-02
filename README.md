@@ -97,6 +97,7 @@ python3 scripts/check_sync.py --update
 - [docs/verification-protocol.md](docs/verification-protocol.md) — 検証指標と記録テンプレ
 - [docs/stack-specific-notes.md](docs/stack-specific-notes.md) — Next.js / Flutter / WordPress 個別注意
 - [docs/failure-modes.md](docs/failure-modes.md) — Early victory / Telephone game 等の対策
+- [docs/hooks-guide.md](docs/hooks-guide.md) — hook の書き方・自己テスト・fail-open/closed・grep 移植性規約
 
 ## ライセンス
 
