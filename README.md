@@ -89,6 +89,10 @@ python3 scripts/check_sync.py --update
 - **v0.2.x** — 効果測定後の調整
 - **v1.0.0** — 全社プロジェクトへの展開完了
 
+## 姉妹プロジェクト
+
+- [**ai-coo-starter**](https://github.com/willink-oss/ai-coo-starter) — AI を COO にして一人会社を回す運営構造のスターターテンプレ。kit が「開発エージェント基盤」なら、ai-coo-starter は「会社運営の骨格」（承認境界・working rules・承認待ちを炙り出す standup・部署/routine テンプレ）。
+
 ## 関連ドキュメント
 
 - [docs/adoption-guide.md](docs/adoption-guide.md) — 各リポへの導入手順
