@@ -19,8 +19,14 @@ set -uo pipefail
 # Parse .tool_input.file_path from stdin JSON; jq preferred, python3 fallback (no single-CLI SPOF).
 INPUT=$(cat)
 if command -v jq >/dev/null 2>&1; then
+  TOOL_NAME=$(printf '%s' "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
   FILE_PATH=$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null)
 elif command -v python3 >/dev/null 2>&1; then
+  TOOL_NAME=$(printf '%s' "$INPUT" | python3 -c 'import sys, json
+try:
+    sys.stdout.write((json.load(sys.stdin).get("tool_name") or ""))
+except Exception:
+    pass' 2>/dev/null)
   FILE_PATH=$(printf '%s' "$INPUT" | python3 -c 'import sys, json
 try:
     data = json.load(sys.stdin)
@@ -34,8 +40,19 @@ else
   exit 2
 fi
 
+# Empty / unparseable input on a security gate → fail closed.
+if [ -z "$TOOL_NAME" ]; then
+  echo "BLOCKED: pre-file-protect.sh could not parse tool_name from hook stdin (empty/malformed)." >&2
+  exit 2
+fi
+# Only gate file-writing tools. A mis-scoped matcher sending another tool → allow (don't freeze).
+case "$TOOL_NAME" in
+  Write|Edit|MultiEdit|NotebookEdit) ;;
+  *) exit 0 ;;
+esac
+
 if [ -z "$FILE_PATH" ]; then
-  echo "BLOCKED: pre-file-protect.sh could not parse tool_input.file_path from hook stdin." >&2
+  echo "BLOCKED: pre-file-protect.sh got a $TOOL_NAME call with no file_path to inspect." >&2
   echo "This is a hook wiring bug — check .claude/settings.json." >&2
   exit 2
 fi

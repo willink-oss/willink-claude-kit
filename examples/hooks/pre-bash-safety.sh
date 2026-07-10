@@ -35,8 +35,14 @@ fi
 # would otherwise BLOCK every Bash call — so we degrade to python3 before failing closed.
 INPUT=$(cat)
 if command -v jq >/dev/null 2>&1; then
+  TOOL_NAME=$(printf '%s' "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
   COMMAND=$(printf '%s' "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null)
 elif command -v python3 >/dev/null 2>&1; then
+  TOOL_NAME=$(printf '%s' "$INPUT" | python3 -c 'import sys, json
+try:
+    sys.stdout.write((json.load(sys.stdin).get("tool_name") or ""))
+except Exception:
+    pass' 2>/dev/null)
   COMMAND=$(printf '%s' "$INPUT" | python3 -c 'import sys, json
 try:
     data = json.load(sys.stdin)
@@ -50,8 +56,17 @@ else
   exit 2
 fi
 
+# Empty / unparseable input on a security gate → fail closed.
+if [ -z "$TOOL_NAME" ]; then
+  echo "BLOCKED: pre-bash-safety.sh could not parse tool_name from hook stdin (empty/malformed)." >&2
+  exit 2
+fi
+# Only gate Bash. If a mis-scoped matcher sends another tool there is nothing to gate → allow.
+# (Matches pretooluse-block-example.sh, so a wiring slip degrades to "ignore", not "freeze".)
+[ "$TOOL_NAME" = "Bash" ] || exit 0
+
 if [ -z "$COMMAND" ]; then
-  echo "BLOCKED: pre-bash-safety.sh could not parse tool_input.command from hook stdin." >&2
+  echo "BLOCKED: pre-bash-safety.sh got a Bash call with no command string to inspect." >&2
   echo "This is a hook wiring bug — check .claude/settings.json." >&2
   exit 2
 fi

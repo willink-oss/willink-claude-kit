@@ -160,6 +160,7 @@ if [ "$CI" = "gha" ] && [ "$HOST" = "github" ]; then
     else sig="🟡"; label="${rcc:-$rst}"; fi
     emit "[ci] $sig ${label} (${match} commit)"
   fi
+elif [ "$CI" = "gha" ]; then emit "[ci] ❓ unknown — GitHub Actions present but gh unavailable (cannot read CI status)"
 elif [ "$CI" = "none" ]; then emit "[ci] — no CI detected (skip)"
 else emit "[ci] — CI=$CI probe not implemented (skip)"
 fi
@@ -215,11 +216,15 @@ else
 fi
 
 # --- TODO/FIXME density (git grep => respects .gitignore, skips vendor dirs) -
-if raw=$(git grep -InE '(TODO|FIXME|HACK|XXX)' 2>/dev/null); then
+# git grep: rc 0 = matches, rc 1 = no matches (clean), rc >=2 = error (unknown, not clean).
+raw=$(git grep -InE '(TODO|FIXME|HACK|XXX)' 2>/dev/null); rc=$?
+if   [ "$rc" -eq 0 ]; then
   n=$(printf '%s\n' "$raw" | grep -cE '.')
   emit "[debt] ℹ ${n} TODO/FIXME/HACK/XXX marker(s)"
+elif [ "$rc" -eq 1 ]; then
+  emit "[debt] 🟢 no TODO/FIXME/HACK/XXX markers"
 else
-  emit "[debt] 🟢 no TODO/FIXME/HACK/XXX markers (or none tracked)"
+  emit "[debt] ❓ unknown — git grep failed (NOT '0 markers')"
 fi
 
 # --- dependency / security audit (cost + network gated; default SKIP) -------

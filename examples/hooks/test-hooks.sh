@@ -54,6 +54,9 @@ if [ -f "$HERE/$BSH" ]; then
   [ "$ec" = "0" ] && ok "pre-bash-safety allows 'rm -rf /' quoted in a commit message (exit 0)" || bad "pre-bash-safety should allow quoted mention (got $ec)"
   ec="$(run_hook "$BSH" '{"tool_name":"Bash","tool_input":{"command":"rm -rf node_modules"}}')"
   [ "$ec" = "0" ] && ok "pre-bash-safety allows 'rm -rf node_modules' (exit 0)" || bad "pre-bash-safety should allow relative delete (got $ec)"
+  # mis-scoped matcher (non-Bash tool) must degrade to allow, not freeze the session
+  ec="$(run_hook "$BSH" '{"tool_name":"Read","tool_input":{"file_path":"/etc/hosts"}}')"
+  [ "$ec" = "0" ] && ok "pre-bash-safety ignores non-Bash tools (exit 0)" || bad "pre-bash-safety should ignore Read (got $ec)"
   ec="$(run_hook "$BSH" '')"
   [ "$ec" = "2" ] && ok "pre-bash-safety fails closed on empty stdin (exit 2)" || bad "pre-bash-safety should fail closed on empty (got $ec)"
 fi
@@ -69,6 +72,9 @@ if [ -f "$HERE/$PFP" ]; then
   [ "$ec" = "0" ] && ok "pre-file-protect allows .env.example (exit 0)" || bad "pre-file-protect should allow .env.example (got $ec)"
   ec="$(run_hook "$PFP" '{"tool_name":"Write","tool_input":{"file_path":"/proj/src/app.ts"}}')"
   [ "$ec" = "0" ] && ok "pre-file-protect allows normal source file (exit 0)" || bad "pre-file-protect should allow src/app.ts (got $ec)"
+  # mis-scoped matcher (non-Write/Edit tool) must degrade to allow, not freeze the session
+  ec="$(run_hook "$PFP" '{"tool_name":"Bash","tool_input":{"command":"ls"}}')"
+  [ "$ec" = "0" ] && ok "pre-file-protect ignores non-Write/Edit tools (exit 0)" || bad "pre-file-protect should ignore Bash (got $ec)"
   ec="$(run_hook "$PFP" 'not json')"
   [ "$ec" = "2" ] && ok "pre-file-protect fails closed on malformed input (exit 2)" || bad "pre-file-protect should fail closed (got $ec)"
 fi
