@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
-# Self-test for the example hooks — asserts BOTH a block case and a pass case for each.
+# Self-test for the example hooks — asserts BOTH a block case and a pass case for each,
+# plus each hook's fail policy on malformed input (docs/hooks-guide.md §4).
 #
 # Self-contained on purpose: no external test library, so you can copy examples/hooks/
 # into your project wholesale and `bash test-hooks.sh` still works. The kit's CI runs
-# this via scripts/test/test_hooks.sh.
+# this via scripts/test/test_hooks.sh, on Linux (GNU grep) AND macOS (BSD grep).
 #
 # Requires jq (the hooks parse stdin JSON via jq). If jq is absent it SKIPS (exit 0)
 # rather than failing, to stay friendly in dependency-light environments.
 set -uo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PRE="pretooluse-block-example.sh"
-NOTIF="notification-notify-example.sh"
 
 pass=0; fail=0
 ok()  { pass=$((pass + 1)); printf '  PASS %s\n' "$1"; }
 bad() { fail=$((fail + 1)); printf '  FAIL %s\n' "$1"; }
 
-# run_hook <script> <json-stdin> -> echoes the hook's exit code
+# run_hook <script> <json-stdin> [cwd] -> echoes the hook's exit code
 run_hook() {
-  printf '%s' "$2" | bash "$HERE/$1" >/dev/null 2>&1
+  local cwd="${3:-$HERE}"
+  ( cd "$cwd" && printf '%s' "$2" | bash "$HERE/$1" ) >/dev/null 2>&1
   printf '%s' "$?"
 }
 
@@ -28,44 +28,85 @@ if ! command -v jq >/dev/null 2>&1; then
   exit 0
 fi
 
-# --- PreToolUse (fail-closed) -------------------------------------------------
-# block case: bare root delete -> exit 2
+TMP="$(mktemp -d 2>/dev/null || mktemp -d -t hooks)"
+trap 'rm -rf "$TMP"; rm -f "$HERE/.compact-snapshot"' EXIT
+
+# --- pretooluse-block-example.sh (teaching template, fail-closed) -------------
+PRE="pretooluse-block-example.sh"
 ec="$(run_hook "$PRE" '{"tool_name":"Bash","tool_input":{"command":"rm -rf /"}}')"
-[ "$ec" = "2" ] && ok "PreToolUse blocks 'rm -rf /' (exit 2)" || bad "PreToolUse should block 'rm -rf /' (got $ec)"
-
-# block case: top-level system dir delete -> exit 2
-ec="$(run_hook "$PRE" '{"tool_name":"Bash","tool_input":{"command":"rm -rf /etc"}}')"
-[ "$ec" = "2" ] && ok "PreToolUse blocks 'rm -rf /etc' (exit 2)" || bad "PreToolUse should block 'rm -rf /etc' (got $ec)"
-
-# pass case: safe command -> exit 0
+[ "$ec" = "2" ] && ok "block-example blocks 'rm -rf /' (exit 2)" || bad "block-example should block 'rm -rf /' (got $ec)"
 ec="$(run_hook "$PRE" '{"tool_name":"Bash","tool_input":{"command":"ls -la"}}')"
-[ "$ec" = "0" ] && ok "PreToolUse allows 'ls -la' (exit 0)" || bad "PreToolUse should allow 'ls -la' (got $ec)"
+[ "$ec" = "0" ] && ok "block-example allows 'ls -la' (exit 0)" || bad "block-example should allow 'ls -la' (got $ec)"
+ec="$(run_hook "$PRE" 'not json')"
+[ "$ec" = "2" ] && ok "block-example fails closed on malformed input (exit 2)" || bad "block-example should fail closed (got $ec)"
 
-# pass case: relative-path delete is allowed (denylist gates only root-ish paths —
-# documents the illustrative scope; real use should extend it)
-ec="$(run_hook "$PRE" '{"tool_name":"Bash","tool_input":{"command":"rm -rf node_modules"}}')"
-[ "$ec" = "0" ] && ok "PreToolUse allows 'rm -rf node_modules' (illustrative scope, exit 0)" || bad "PreToolUse should allow relative delete (got $ec)"
+# --- pre-bash-safety.sh (production denylist, fail-closed) ---------------------
+BSH="pre-bash-safety.sh"
+if [ -f "$HERE/$BSH" ]; then
+  ec="$(run_hook "$BSH" '{"tool_name":"Bash","tool_input":{"command":"rm -rf /"}}')"
+  [ "$ec" = "2" ] && ok "pre-bash-safety blocks 'rm -rf /' (exit 2)" || bad "pre-bash-safety should block 'rm -rf /' (got $ec)"
+  ec="$(run_hook "$BSH" '{"tool_name":"Bash","tool_input":{"command":"git push origin main"}}')"
+  [ "$ec" = "2" ] && ok "pre-bash-safety blocks direct push to main (exit 2)" || bad "pre-bash-safety should block push to main (got $ec)"
+  ec="$(run_hook "$BSH" '{"tool_name":"Bash","tool_input":{"command":"git reset --hard HEAD~1"}}')"
+  [ "$ec" = "2" ] && ok "pre-bash-safety blocks 'git reset --hard' (exit 2)" || bad "pre-bash-safety should block reset --hard (got $ec)"
+  # pass: destructive-looking text INSIDE a quoted string is stripped before scanning
+  ec="$(run_hook "$BSH" '{"tool_name":"Bash","tool_input":{"command":"git commit -m \"docs: warn about rm -rf /\""}}')"
+  [ "$ec" = "0" ] && ok "pre-bash-safety allows 'rm -rf /' quoted in a commit message (exit 0)" || bad "pre-bash-safety should allow quoted mention (got $ec)"
+  ec="$(run_hook "$BSH" '{"tool_name":"Bash","tool_input":{"command":"rm -rf node_modules"}}')"
+  [ "$ec" = "0" ] && ok "pre-bash-safety allows 'rm -rf node_modules' (exit 0)" || bad "pre-bash-safety should allow relative delete (got $ec)"
+  ec="$(run_hook "$BSH" '')"
+  [ "$ec" = "2" ] && ok "pre-bash-safety fails closed on empty stdin (exit 2)" || bad "pre-bash-safety should fail closed on empty (got $ec)"
+fi
 
-# pass case: non-Bash tool is ignored -> exit 0
-ec="$(run_hook "$PRE" '{"tool_name":"Read","tool_input":{"file_path":"/etc/hosts"}}')"
-[ "$ec" = "0" ] && ok "PreToolUse ignores non-Bash tools (exit 0)" || bad "PreToolUse should ignore Read (got $ec)"
+# --- pre-file-protect.sh (Write/Edit guard, fail-closed) ----------------------
+PFP="pre-file-protect.sh"
+if [ -f "$HERE/$PFP" ]; then
+  ec="$(run_hook "$PFP" '{"tool_name":"Write","tool_input":{"file_path":"/proj/.env"}}')"
+  [ "$ec" = "2" ] && ok "pre-file-protect blocks .env write (exit 2)" || bad "pre-file-protect should block .env (got $ec)"
+  ec="$(run_hook "$PFP" '{"tool_name":"Write","tool_input":{"file_path":"/proj/config/id_rsa"}}')"
+  [ "$ec" = "2" ] && ok "pre-file-protect blocks id_rsa write (exit 2)" || bad "pre-file-protect should block id_rsa (got $ec)"
+  ec="$(run_hook "$PFP" '{"tool_name":"Write","tool_input":{"file_path":"/proj/.env.example"}}')"
+  [ "$ec" = "0" ] && ok "pre-file-protect allows .env.example (exit 0)" || bad "pre-file-protect should allow .env.example (got $ec)"
+  ec="$(run_hook "$PFP" '{"tool_name":"Write","tool_input":{"file_path":"/proj/src/app.ts"}}')"
+  [ "$ec" = "0" ] && ok "pre-file-protect allows normal source file (exit 0)" || bad "pre-file-protect should allow src/app.ts (got $ec)"
+  ec="$(run_hook "$PFP" 'not json')"
+  [ "$ec" = "2" ] && ok "pre-file-protect fails closed on malformed input (exit 2)" || bad "pre-file-protect should fail closed (got $ec)"
+fi
 
-# fail-closed: malformed input must BLOCK, never silently allow -> exit 2
-ec="$(run_hook "$PRE" 'not json at all')"
-[ "$ec" = "2" ] && ok "PreToolUse fails closed on malformed input (exit 2)" || bad "PreToolUse should fail closed (got $ec)"
+# --- post-build-eval.sh (advisory, fail-open) ---------------------------------
+PBE="post-build-eval.sh"
+if [ -f "$HERE/$PBE" ]; then
+  ec="$(run_hook "$PBE" '{"tool_name":"Bash","tool_input":{"command":"npm test"},"tool_response":{"exit_code":1}}' "$TMP")"
+  [ "$ec" = "0" ] && ok "post-build-eval exits 0 on failing test (advisory)" || bad "post-build-eval should fail open on failing test (got $ec)"
+  ec="$(run_hook "$PBE" '{"tool_name":"Read","tool_input":{"file_path":"x"}}' "$TMP")"
+  [ "$ec" = "0" ] && ok "post-build-eval exits 0 for non-Bash tool" || bad "post-build-eval should exit 0 for non-Bash (got $ec)"
+  ec="$(run_hook "$PBE" 'not json' "$TMP")"
+  [ "$ec" = "0" ] && ok "post-build-eval fails open on malformed input (exit 0)" || bad "post-build-eval should fail open (got $ec)"
+fi
 
-# fail-closed: empty stdin must BLOCK, never silently allow -> exit 2
-ec="$(run_hook "$PRE" '')"
-[ "$ec" = "2" ] && ok "PreToolUse fails closed on empty stdin (exit 2)" || bad "PreToolUse should fail closed on empty stdin (got $ec)"
+# --- post-tool-log.sh (observability, fail-open; run in TMP to avoid polluting repo) ---
+PTL="post-tool-log.sh"
+if [ -f "$HERE/$PTL" ]; then
+  ec="$(run_hook "$PTL" '{"tool_name":"Bash","matcher":"Bash","tool_response":{"exit_code":0}}' "$TMP")"
+  [ "$ec" = "0" ] && ok "post-tool-log exits 0 on valid input" || bad "post-tool-log should exit 0 (got $ec)"
+  if ls "$TMP"/.claude/logs/*-tools.jsonl >/dev/null 2>&1; then ok "post-tool-log wrote a JSONL log line"; else bad "post-tool-log should write a JSONL log"; fi
+  ec="$(run_hook "$PTL" 'not json' "$TMP")"
+  [ "$ec" = "0" ] && ok "post-tool-log fails open on malformed input (exit 0)" || bad "post-tool-log should fail open (got $ec)"
+fi
 
-# --- Notification (fail-open) -------------------------------------------------
-# valid input -> exit 0
+# --- pre-compact-snapshot.sh (advisory, fail-open) ----------------------------
+PCS="pre-compact-snapshot.sh"
+if [ -f "$HERE/$PCS" ]; then
+  ec="$(run_hook "$PCS" '{}' "$TMP")"
+  [ "$ec" = "0" ] && ok "pre-compact-snapshot exits 0 (fail-open)" || bad "pre-compact-snapshot should exit 0 (got $ec)"
+fi
+
+# --- notification-notify-example.sh (advisory, fail-open) ---------------------
+NOTIF="notification-notify-example.sh"
 ec="$(run_hook "$NOTIF" '{"message":"build finished"}')"
-[ "$ec" = "0" ] && ok "Notification exits 0 on valid input" || bad "Notification should exit 0 on valid input (got $ec)"
-
-# fail-open: malformed input must NOT disrupt the session -> exit 0
-ec="$(run_hook "$NOTIF" 'not json at all')"
-[ "$ec" = "0" ] && ok "Notification fails open on malformed input (exit 0)" || bad "Notification should fail open (got $ec)"
+[ "$ec" = "0" ] && ok "notification exits 0 on valid input" || bad "notification should exit 0 (got $ec)"
+ec="$(run_hook "$NOTIF" 'not json')"
+[ "$ec" = "0" ] && ok "notification fails open on malformed input (exit 0)" || bad "notification should fail open (got $ec)"
 
 printf '  -> %d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]
