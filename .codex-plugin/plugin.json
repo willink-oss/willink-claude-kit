@@ -1,6 +1,6 @@
 {
   "name": "willink-claude-kit",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "i-Willink 標準開発エージェント基盤を Codex でも使うための plugin。Claude Code 版を正本にし、Codex 向け adapter skill と同期チェックを提供する。",
   "author": {
     "name": "i-Willink合同会社",
