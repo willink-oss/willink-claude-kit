@@ -1,0 +1,29 @@
+{
+  "workdir": ".",
+  "targets": [
+    {
+      "name": "design tokens",
+      "cmd": "npm run tokens:build",
+      "workdir": "packages/tokens",
+      "outputs": [
+        "dist/tokens.css",
+        "dist/tokens.ts"
+      ]
+    },
+    {
+      "name": "openapi client",
+      "cmd": "npm run openapi:generate",
+      "workdir": "packages/api-client",
+      "outputs": [
+        "src/generated/client.ts"
+      ]
+    },
+    {
+      "name": "protobuf types",
+      "cmd": "buf generate",
+      "outputs": [
+        "gen/proto/service_pb.ts"
+      ]
+    }
+  ]
+}

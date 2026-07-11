@@ -17,3 +17,7 @@ npm-debug.log*
 # Misc
 .env
 .env.local
+
+# Python bytecode from script self-tests
+__pycache__/
+*.pyc

@@ -11,8 +11,8 @@ home organization enforces in production (ADR-019).
 |---|---|---|
 | H1 | Docs / natural-language rules | `CLAUDE.md`, `examples/project-standards-template/` |
 | H2 | AI semantic review | PR review agents (advisory) |
-| H3 | **Blocking verification** | hooks ([`docs/hooks-guide.md`](hooks-guide.md), [`examples/hooks/`](../examples/hooks/)) + CI required checks ([`examples/ci/`](../examples/ci/)) |
-| H4 | Structural tests | architecture / parity tests (per-stack) |
+| H3 | **Blocking verification** | hooks ([`docs/hooks-guide.md`](hooks-guide.md), [`examples/hooks/`](../examples/hooks/)) + CI required checks ([`examples/ci/`](../examples/ci/)) + deterministic gates (`skills/` coverage-floor-lock · token-codegen-gate · commit-convention-gate · self-heal-ci) |
+| H4 | Structural tests | architecture / parity tests — [`architecture-parity-gate`](../skills/architecture-parity-gate/) (config-declared dependency direction + layer naming) |
 
 Rules start at H1 and get **promoted** when violated repeatedly (2+ of the same kind).
 Demoting or loosening a gate is a governance decision — require explicit human approval.

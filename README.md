@@ -15,6 +15,7 @@ Claude Code / Codex / Antigravity 向け標準開発エージェント基盤。*
 | **skills/maker-checker-relay** | 実装（Maker）と読取専用レビュー（Checker=`dev-reviewer`/`/review`/人）を分離し「test 緑 かつ 指摘 0」まで反復する goal-loop ラッパー |
 | **commands/pulse.md** | 6 phase 版 `/pulse` フロー — プロジェクト現況を read-only で live 実測し状態表と次アクションを出す（文書=plan/live=state・自己申告禁止・probe 失敗は 0 でなく ❓）。`/build` と対の「測る」コマンド。`scripts/pulse-precheck.sh` が Verifier |
 | **examples/hooks/** ・ **examples/git-hooks/** | 決定論ガードレールの雛形（コピーして wire）: 破壊コマンド gate・`.env`/鍵保護・test 失敗 advisory・compact スナップショット・tool ログ（Claude Code hooks）+ secret/サイズ/`.env` gate・BSD-grep+shellcheck lint（git pre-commit）。全て block+pass 自己テスト付き |
+| **commit/CI 品質ゲート** (skills/ + scripts/) | 決定論ゲート 5 種: `coverage-floor-lock`（カバレッジ下限 + floor 引き下げ検出）・`token-codegen-gate`（生成物ドリフト＝再生成して差分検査）・`architecture-parity-gate`（config 宣言の依存方向 + 命名規則違反）・`commit-convention-gate`（prefix/空虚メッセージ/なぜ欠落）・`self-heal-ci`（赤 CI を緑まで自己修復・`goal-loop.sh` の試行上限付き）。全て hermetic 自己テスト付き・config 駆動は example 同梱 |
 | **skills/codex-build** | Claude Code の `/build` を Codex で実行する adapter skill |
 | **skills/antigravity-build** | Claude Code の `/build` を Antigravity で実行する adapter skill |
 | **.codex-plugin/plugin.json** | Codex plugin entrypoint。`.claude-plugin/plugin.json` の core metadata と同期 |
