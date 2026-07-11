@@ -23,6 +23,13 @@ run_hook() {
   printf '%s' "$?"
 }
 
+# run_hook_out <script> <json-stdin> [cwd] -> echoes the hook's stdout (advisory hooks that
+# emit additionalContext need their payload inspected, not just their exit code).
+run_hook_out() {
+  local cwd="${3:-$HERE}"
+  ( cd "$cwd" && printf '%s' "$2" | bash "$HERE/$1" ) 2>/dev/null
+}
+
 if ! command -v jq >/dev/null 2>&1; then
   printf 'SKIP: jq not installed — hook self-tests need jq. Install jq to run them.\n'
   exit 0
@@ -113,6 +120,30 @@ ec="$(run_hook "$NOTIF" '{"message":"build finished"}')"
 [ "$ec" = "0" ] && ok "notification exits 0 on valid input" || bad "notification should exit 0 (got $ec)"
 ec="$(run_hook "$NOTIF" 'not json')"
 [ "$ec" = "0" ] && ok "notification fails open on malformed input (exit 0)" || bad "notification should fail open (got $ec)"
+
+# --- pre-status-verify-guard.sh (advisory, fail-open) -------------------------
+PSV="pre-status-verify-guard.sh"
+if [ -f "$HERE/$PSV" ]; then
+  # status prompt: exits 0 AND injects an additionalContext reminder
+  ec="$(run_hook "$PSV" '{"prompt":"give me the standup / PR status"}')"
+  [ "$ec" = "0" ] && ok "pre-status-verify-guard exits 0 on a status prompt (advisory)" || bad "pre-status-verify-guard should exit 0 on status prompt (got $ec)"
+  out="$(run_hook_out "$PSV" '{"prompt":"give me the standup / PR status"}')"
+  if printf '%s' "$out" | grep -qF 'additionalContext' && printf '%s' "$out" | grep -qF 'pre-status-verify-guard'; then
+    ok "pre-status-verify-guard injects additionalContext for a status prompt"
+  else
+    bad "pre-status-verify-guard should inject additionalContext for a status prompt"
+  fi
+  # non-status prompt: exits 0 AND emits nothing
+  ec="$(run_hook "$PSV" '{"prompt":"refactor the parser for readability"}')"
+  [ "$ec" = "0" ] && ok "pre-status-verify-guard exits 0 on a non-status prompt" || bad "pre-status-verify-guard should exit 0 on non-status prompt (got $ec)"
+  out="$(run_hook_out "$PSV" '{"prompt":"refactor the parser for readability"}')"
+  if [ -z "$out" ]; then ok "pre-status-verify-guard emits nothing for a non-status prompt"; else bad "pre-status-verify-guard should emit nothing for a non-status prompt (got: $out)"; fi
+  # malformed / empty stdin: fail-open (exit 0)
+  ec="$(run_hook "$PSV" 'not json')"
+  [ "$ec" = "0" ] && ok "pre-status-verify-guard fails open on malformed input (exit 0)" || bad "pre-status-verify-guard should fail open on malformed (got $ec)"
+  ec="$(run_hook "$PSV" '')"
+  [ "$ec" = "0" ] && ok "pre-status-verify-guard fails open on empty stdin (exit 0)" || bad "pre-status-verify-guard should fail open on empty (got $ec)"
+fi
 
 printf '  -> %d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

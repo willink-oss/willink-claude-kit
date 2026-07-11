@@ -11,7 +11,7 @@ home organization enforces in production (ADR-019).
 |---|---|---|
 | H1 | Docs / natural-language rules | `CLAUDE.md`, `examples/project-standards-template/` |
 | H2 | AI semantic review | PR review agents (advisory) |
-| H3 | **Blocking verification** | hooks ([`docs/hooks-guide.md`](hooks-guide.md), [`examples/hooks/`](../examples/hooks/)) + CI required checks ([`examples/ci/`](../examples/ci/)) + deterministic gates (`skills/` coverage-floor-lock · token-codegen-gate · commit-convention-gate · self-heal-ci) |
+| H3 | **Blocking verification** | hooks ([`docs/hooks-guide.md`](hooks-guide.md), [`examples/hooks/`](../examples/hooks/)) + CI required checks ([`examples/ci/`](../examples/ci/)) + deterministic gates (`skills/` coverage-floor-lock · token-codegen-gate · commit-convention-gate · self-heal-ci · live-state-verify-guard) |
 | H4 | Structural tests | architecture / parity tests — [`architecture-parity-gate`](../skills/architecture-parity-gate/) (config-declared dependency direction + layer naming) |
 
 Rules start at H1 and get **promoted** when violated repeatedly (2+ of the same kind).
@@ -32,7 +32,14 @@ Demoting or loosening a gate is a governance decision — require explicit human
    come from a live probe, not a document (docs are *plan*; live is *state*). The read-only
    [`/pulse`](../commands/pulse.md) command is the measurement layer for this profile — it
    renders only what a deterministic probe returned and writes `❓` when a probe fails, so a
-   green dashboard cannot be hallucinated.
+   green dashboard cannot be hallucinated. Two enforcers pair with it: the fail-open advisory
+   hook [`examples/hooks/pre-status-verify-guard.sh`](../examples/hooks/pre-status-verify-guard.sh)
+   injects a "measure before you report" reminder when a prompt asks for status, and the
+   read-only audit gate [`live-state-verify-guard`](../skills/live-state-verify-guard/)
+   (`scripts/live-state-audit.sh`) scans a finished report and exits non-zero if any
+   status-claim (merged / deployed / released / done) is not backed by a live probe *earlier
+   in the same section* — a blank line or heading resets the evidence scope, so one opening
+   probe cannot rubber-stamp the whole document.
 
 ## Autonomous loops
 
