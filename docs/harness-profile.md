@@ -45,6 +45,23 @@ and caps retries so the loop always terminates — no self-reported "I think it'
 loop — implementer vs. read-only reviewer — that completes only when tests are green AND the
 reviewer has zero blocking findings.
 
+When a loop's stopping decision is judged by AI — a review, a research claim, an adjudication
+— don't trust one judge's self-report. Aggregate independent votes with a deterministic gate.
+Three adjudication gates package this and share the same stop-primitive family:
+
+- [`adversarial-refute-vote`](../skills/adversarial-refute-vote/) — put a claim to N
+  independent *refute* votes; a strict majority of refutations stops adoption.
+- [`judge-rubric-vote`](../skills/judge-rubric-vote/) — a majority verdict stands only when
+  the agreement rate clears a threshold; a split panel is `hung` and **fails** (it exits
+  non-zero, and "no votes" is `observe`=exit 2, never a fail-open 0).
+- [`fanout-verify-synth`](../skills/fanout-verify-synth/) — a fanned-out set of claims may be
+  synthesized only when *every* claim is verified with enough evidence; any refutation
+  escalates to a human, and a bare `verified` label without sources is demoted (a label is
+  self-report; evidence is data).
+
+The LLM produces the votes; the gate decides. Each treats "no valid votes" as abstain, never
+as consent — the same *empty output ≠ zero* discipline the rest of this profile is built on.
+
 ## Adoption checklist
 
 1. **Hooks (local, fail-closed)** — copy [`examples/hooks/`](../examples/hooks/) into

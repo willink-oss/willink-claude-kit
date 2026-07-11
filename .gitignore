@@ -10,6 +10,9 @@ Thumbs.db
 # Local-only memory (project memory IS committed; local memory is not)
 .claude/agent-memory-local/
 
+# Local tool-call logs written by examples/hooks/post-tool-log.sh when dogfooding
+.claude/logs/
+
 # Logs
 *.log
 npm-debug.log*
