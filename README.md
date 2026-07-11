@@ -13,6 +13,8 @@ Claude Code / Codex / Antigravity 向け標準開発エージェント基盤。*
 | **commands/build.md** | 5 phase 版 `/build` フロー（探索→計画→実装→並列検証→修正/コミット） |
 | **commands/goal-loop.md** + **scripts/goal-loop\*.sh** | 組み込み `/goal` に「決定論 `--check` + 試行上限」の規律を足す停止プリミティブ。達成をモデルの自己申告でなく exit code で判定し N 回で必ず止める。雛形生成器 + `maker-checker-relay`（Generator↔Verifier=実装↔`dev-reviewer` レビューを分離して回す）付き。全て hermetic 自己テスト付き |
 | **skills/maker-checker-relay** | 実装（Maker）と読取専用レビュー（Checker=`dev-reviewer`/`/review`/人）を分離し「test 緑 かつ 指摘 0」まで反復する goal-loop ラッパー |
+| **commands/pulse.md** | 6 phase 版 `/pulse` フロー — プロジェクト現況を read-only で live 実測し状態表と次アクションを出す（文書=plan/live=state・自己申告禁止・probe 失敗は 0 でなく ❓）。`/build` と対の「測る」コマンド。`scripts/pulse-precheck.sh` が Verifier |
+| **examples/hooks/** ・ **examples/git-hooks/** | 決定論ガードレールの雛形（コピーして wire）: 破壊コマンド gate・`.env`/鍵保護・test 失敗 advisory・compact スナップショット・tool ログ（Claude Code hooks）+ secret/サイズ/`.env` gate・BSD-grep+shellcheck lint（git pre-commit）。全て block+pass 自己テスト付き |
 | **skills/codex-build** | Claude Code の `/build` を Codex で実行する adapter skill |
 | **skills/antigravity-build** | Claude Code の `/build` を Antigravity で実行する adapter skill |
 | **.codex-plugin/plugin.json** | Codex plugin entrypoint。`.claude-plugin/plugin.json` の core metadata と同期 |
@@ -105,6 +107,8 @@ python3 scripts/check_sync.py --update
 - [docs/failure-modes.md](docs/failure-modes.md) — Early victory / Telephone game 等の対策
 - [docs/hooks-guide.md](docs/hooks-guide.md) — hook の書き方・自己テスト・fail-open/closed・grep 移植性規約
 - [docs/harness-profile.md](docs/harness-profile.md) — 決定論的ゲートの導入プロファイル（H1-H4 ラダー・CI required check・昇格運用）
+- [docs/session-hygiene.md](docs/session-hygiene.md) — セッション衛生（new task=new session・/compact・Esc+Esc rewind）
+- [docs/subagent-guidelines.md](docs/subagent-guidelines.md) — subagent 委譲の判断（委譲する/しない・型選択・hand-off）
 
 ## ライセンス
 

@@ -10,10 +10,14 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 HOOKS="$KIT_ROOT/examples/hooks"
 
 assert_dir_exists "$HOOKS"
-for h in pretooluse-block-example.sh notification-notify-example.sh test-hooks.sh; do
+for h in pretooluse-block-example.sh notification-notify-example.sh test-hooks.sh \
+         pre-bash-safety.sh pre-file-protect.sh post-build-eval.sh \
+         pre-compact-snapshot.sh post-tool-log.sh; do
   assert_file_exists "$HOOKS/$h"
   assert_cmd_ok "bash -n '$HOOKS/$h'" "$h is syntactically valid bash"
 done
+# _strip-command.awk is an awk helper (not bash) — assert presence only.
+assert_file_exists "$HOOKS/_strip-command.awk"
 
 if command -v jq >/dev/null 2>&1; then
   assert_cmd_ok "bash '$HOOKS/test-hooks.sh'" \

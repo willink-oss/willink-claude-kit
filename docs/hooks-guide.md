@@ -72,11 +72,43 @@ Only these events exist. There is **no** `PreCommit` / `PostCommit` / `OnError`:
 
 ## Templates
 
-| File | Class | Policy |
+Claude Code hooks (wire up in `.claude/settings.json` under `"hooks"` — each template's
+header has the exact snippet):
+
+| File | Event / class | Policy |
 |---|---|---|
-| [`examples/hooks/pretooluse-block-example.sh`](../examples/hooks/pretooluse-block-example.sh) | `PreToolUse` security gate | fail-closed (`exit 2`) |
-| [`examples/hooks/notification-notify-example.sh`](../examples/hooks/notification-notify-example.sh) | `Notification` advisory | fail-open (`exit 0`) |
+| [`examples/hooks/pretooluse-block-example.sh`](../examples/hooks/pretooluse-block-example.sh) | `PreToolUse` — teaching denylist | fail-closed (`exit 2`) |
+| [`examples/hooks/pre-bash-safety.sh`](../examples/hooks/pre-bash-safety.sh) + [`_strip-command.awk`](../examples/hooks/_strip-command.awk) | `PreToolUse` Bash — production denylist (strips quoted/heredoc text first) | fail-closed |
+| [`examples/hooks/pre-file-protect.sh`](../examples/hooks/pre-file-protect.sh) | `PreToolUse` Write/Edit — `.env`/key/`.git`/settings guard | fail-closed |
+| [`examples/hooks/post-build-eval.sh`](../examples/hooks/post-build-eval.sh) | `PostToolUse` — test/lint/build failure evaluator | fail-open (`exit 0`) |
+| [`examples/hooks/post-tool-log.sh`](../examples/hooks/post-tool-log.sh) | `PostToolUse` — JSONL tool-call log ("observe, then promote") | fail-open |
+| [`examples/hooks/pre-compact-snapshot.sh`](../examples/hooks/pre-compact-snapshot.sh) | `PreCompact` — persist work state across compaction | fail-open |
+| [`examples/hooks/notification-notify-example.sh`](../examples/hooks/notification-notify-example.sh) | `Notification` — desktop notify | fail-open |
 | [`examples/hooks/test-hooks.sh`](../examples/hooks/test-hooks.sh) | self-test harness | block + pass cases |
 
-Wire a hook up in `.claude/settings.json` under `"hooks"` (see each template's header for
-the exact snippet).
+**git** pre-commit hooks (run by `git commit`, not Claude Code — wire up with
+`git config core.hooksPath …`) live in [`examples/git-hooks/`](../examples/git-hooks/):
+a secrets/size/`.env` guard (`pre-commit-quality.sh`) and a BSD-grep + shellcheck gate
+(`pre-commit-shell-lint.sh`). See its [README](../examples/git-hooks/README.md).
+
+## 6. Hard-won lessons
+
+Small traps that turn a hook into a silent liability:
+
+- **A fail-closed hook must not depend on a single CLI.** If `jq` is missing and the hook
+  blocks *everything* on error, one missing package freezes the whole tool. Degrade first
+  (jq → python3), then fail closed only if no parser exists. See `pre-bash-safety.sh`.
+- **Test write-behavior against a temp fixture, never a real checkout.** A hook that gates
+  "no push to main" must be tested in a throwaway repo — "I'm on a feature branch right now"
+  is not a controlled test, and a shared checkout's branch can change under you.
+- **Commit-message rules belong in a `commit-msg` git hook, not `pre-commit`.** At
+  pre-commit time the message does not exist yet.
+- **Commit with path arguments** (`git commit -m … -- <paths>`) so a parallel session's
+  staged files don't ride along in your commit.
+- **Advisories belong on `UserPromptSubmit` (+ `additionalContext`), not `Stop`.** A `Stop`
+  hook can only give feedback by *blocking*, so a false positive is expensive; injecting
+  context on the next prompt is a gentler, reversible nudge.
+- **Inline shell runs under the user's shell — mind word-splitting.** In zsh an unquoted
+  `for x in $var` iterates the whole value as ONE word and silently misbehaves. Use a
+  literal list or a quoted array; a `#!/usr/bin/env bash` script file is unaffected.
+- **`PreCommit` / `PostCommit` / `OnError` are not events.** Only the names in §5 exist.

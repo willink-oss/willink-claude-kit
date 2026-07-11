@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# pre-commit — the file git invokes. Runs each staged-content gate in this directory and
+# blocks the commit (exit 1) if any of them fails. Add more checks by appending to CHECKS.
+#
+# Enable it with either wiring (see README.md):
+#   git config core.hooksPath examples/git-hooks     # point git at this dir directly, OR
+#   cp examples/git-hooks/* .githooks/ && git config core.hooksPath .githooks
+set -uo pipefail
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+CHECKS="pre-commit-quality.sh pre-commit-shell-lint.sh"
+
+rc=0
+for c in $CHECKS; do
+  [ -f "$HERE/$c" ] || continue
+  if ! bash "$HERE/$c"; then rc=1; fi
+done
+
+if [ "$rc" -ne 0 ]; then
+  echo "" >&2
+  echo "pre-commit blocked the commit. Fix the issue above (or use the documented pragma escape hatch)." >&2
+fi
+exit "$rc"
