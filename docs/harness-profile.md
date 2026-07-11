@@ -28,18 +28,26 @@ Demoting or loosening a gate is a governance decision — require explicit human
 4. After every incident, add **one** verification that would have caught it.
 5. Documents count too: articles, reports and changelogs can be linted (tone, citations,
    measured-value markers) like code.
+6. Read live state before you report it. Status / progress / "is it deployed?" claims must
+   come from a live probe, not a document (docs are *plan*; live is *state*). The read-only
+   [`/pulse`](../commands/pulse.md) command is the measurement layer for this profile — it
+   renders only what a deterministic probe returned and writes `❓` when a probe fails, so a
+   green dashboard cannot be hallucinated.
 
 ## Adoption checklist
 
 1. **Hooks (local, fail-closed)** — copy [`examples/hooks/`](../examples/hooks/) into
-   `.claude/hooks/`, extend the denylist, wire into `.claude/settings.json`, and keep the
-   self-test green (`bash test-hooks.sh`).
+   `.claude/hooks/` (`pre-bash-safety.sh` + `_strip-command.awk` for destructive commands,
+   `pre-file-protect.sh` for `.env`/keys/`.git`/settings), wire into
+   `.claude/settings.json`, and keep the self-test green (`bash test-hooks.sh`).
 2. **CI summary gate** — add the
    [`all-checks-pass` summary job](../examples/ci/all-checks-pass-pattern.md) to your CI
    and make it the only required status check (free-tier branch protection JSON included).
-3. **Secrets & size guard (pre-commit)** — block committed credentials and oversized
-   files before they reach history; give every check an allowlist escape hatch
-   (`# pragma: allowlist …`) so false positives are one comment away, not a config war.
+3. **Secrets & size guard (pre-commit)** — enable
+   [`examples/git-hooks/`](../examples/git-hooks/) (`git config core.hooksPath …`) to block
+   committed credentials, oversized files, and `.env` before they reach history; every check
+   has an allowlist escape hatch (`# pragma: allowlist …`) so a false positive is one comment
+   away, not a config war.
 4. **Observe, then promote** — log advisory-hook fires (JSONL) and review monthly:
    2+ true positives of one kind → promote to blocking; mostly false positives → tune.
 
