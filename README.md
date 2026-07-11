@@ -11,6 +11,8 @@ Claude Code / Codex / Antigravity 向け標準開発エージェント基盤。*
 | **agents/** (4本) | `dev-explorer` / `dev-planner` / `dev-tester` / `dev-reviewer` — 公式 ガイドラインに沿って役割を厳選 |
 | **skills/dev-standards** | スタック非依存の汎用標準（TS strict / Conventional Commits / OWASP） |
 | **commands/build.md** | 5 phase 版 `/build` フロー（探索→計画→実装→並列検証→修正/コミット） |
+| **commands/goal-loop.md** + **scripts/goal-loop\*.sh** | 組み込み `/goal` に「決定論 `--check` + 試行上限」の規律を足す停止プリミティブ。達成をモデルの自己申告でなく exit code で判定し N 回で必ず止める。雛形生成器 + `maker-checker-relay`（Generator↔Verifier=実装↔`dev-reviewer` レビューを分離して回す）付き。全て hermetic 自己テスト付き |
+| **skills/maker-checker-relay** | 実装（Maker）と読取専用レビュー（Checker=`dev-reviewer`/`/review`/人）を分離し「test 緑 かつ 指摘 0」まで反復する goal-loop ラッパー |
 | **commands/pulse.md** | 6 phase 版 `/pulse` フロー — プロジェクト現況を read-only で live 実測し状態表と次アクションを出す（文書=plan/live=state・自己申告禁止・probe 失敗は 0 でなく ❓）。`/build` と対の「測る」コマンド。`scripts/pulse-precheck.sh` が Verifier |
 | **examples/hooks/** ・ **examples/git-hooks/** | 決定論ガードレールの雛形（コピーして wire）: 破壊コマンド gate・`.env`/鍵保護・test 失敗 advisory・compact スナップショット・tool ログ（Claude Code hooks）+ secret/サイズ/`.env` gate・BSD-grep+shellcheck lint（git pre-commit）。全て block+pass 自己テスト付き |
 | **skills/codex-build** | Claude Code の `/build` を Codex で実行する adapter skill |

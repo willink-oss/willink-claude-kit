@@ -34,6 +34,17 @@ Demoting or loosening a gate is a governance decision — require explicit human
    renders only what a deterministic probe returned and writes `❓` when a probe fails, so a
    green dashboard cannot be hallucinated.
 
+## Autonomous loops
+
+An agent that loops until "done" must not decide "done" itself. Bound every autonomous loop
+with a **deterministic stop check** and a **hard attempt cap**. The
+[`/goal-loop`](../commands/goal-loop.md) command wraps `scripts/goal-loop.sh` for exactly
+this: it stops only when a `--check` command exits 0 (green tests, coverage ≥ T, lint = 0)
+and caps retries so the loop always terminates — no self-reported "I think it's done".
+`maker-checker-relay` (`skills/maker-checker-relay/`) extends it to a Generator↔Verifier
+loop — implementer vs. read-only reviewer — that completes only when tests are green AND the
+reviewer has zero blocking findings.
+
 ## Adoption checklist
 
 1. **Hooks (local, fail-closed)** — copy [`examples/hooks/`](../examples/hooks/) into
