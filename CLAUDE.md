@@ -70,9 +70,9 @@ stack 別の検証到達度（✅ verified / 🟡 install-only）は [docs/known
 - issue / PR / commit / コード本体に **顧客名・契約情報・インフラ ID・社内専用パス**を書かない
 - 社内固有のドメイン知識は本 repo に置かず、各プロジェクトの `.claude/skills/project-standards/` で拡張する（雛形は `examples/project-standards-template/`）
 
-## Q2 2026 検証フェーズ ステータス
+## 検証フェーズ ステータス
 
-- **検証フェーズ**: Day 14/14 **完了**（2026-04-26 → 2026-05-10）。社内 4 プロダクトでの並列検証を実施
+- **14 日検証（完了）**: 2026-04-26 → 2026-05-10 に社内 4 プロダクトで並列実施・完了。結果は CHANGELOG `[1.0.0]` と [docs/known-stack-coverage.md](docs/known-stack-coverage.md)
 - **到達状況**: 2 / 4 target stacks が ✅ verified（Flutter+Firebase / Next.js+pnpm）、残り 2 stack は 🟡 install-only
-- **現行リリース**: v2.1.0（`.claude-plugin/plugin.json` を正とする。volatile な値は本ファイルに直書きしない）
-- 詳細は [docs/known-stack-coverage.md](docs/known-stack-coverage.md) を参照
+- **現フェーズ**: Q3 dogfood による install-only 2 stack の promotion（基準は known-stack-coverage の Promotion plan）+ 回帰スイートの自走改善ループ。v1.1 繰り越し指標（MEMORY ≥ 5 / context 1.3x）の判定を継続
+- **現行リリース**: `.claude-plugin/plugin.json` を正とする（volatile な版番号は本ファイルに直書きしない）

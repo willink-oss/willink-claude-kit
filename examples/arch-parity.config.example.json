@@ -1,0 +1,39 @@
+{
+  "_comment": "Example config for arch-parity-check.py — a classic layered (clean) architecture. Copy this into your repo, adjust roots/import_markers/naming to your stack, then run: python3 scripts/arch-parity-check.py --config arch-parity.config.json --root .",
+
+  "layers": {
+    "domain": {
+      "roots": ["src/domain"],
+      "import_markers": ["from +domain", "import +domain"]
+    },
+    "application": {
+      "roots": ["src/application"],
+      "import_markers": ["from +application", "import +application"]
+    },
+    "infrastructure": {
+      "roots": ["src/infrastructure"],
+      "import_markers": ["from +infrastructure", "import +infrastructure"]
+    }
+  },
+
+  "allowed_dependencies": {
+    "domain": [],
+    "application": ["domain"],
+    "infrastructure": ["application", "domain"]
+  },
+
+  "naming": [
+    {
+      "applies_to": "domain",
+      "must_match": "_entity\\.py$",
+      "message": "domain files must be named *_entity.py"
+    },
+    {
+      "applies_to": "domain",
+      "must_not_match": "Controller\\.py$",
+      "message": "no Controller in domain (infrastructure only)"
+    }
+  ],
+
+  "exclude": ["node_modules", "/test", "__pycache__"]
+}
