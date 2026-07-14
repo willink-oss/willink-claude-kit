@@ -19,7 +19,7 @@ Antigravity に以下のスキルを認識させます。
 1. **共通標準**: `skills/dev-standards/SKILL.md`
 2. **Antigravity用アダプター**: `skills/antigravity-build/SKILL.md`
 
-ロード時には、Antigravity上で `view_file` を用いて [skills/antigravity-build/SKILL.md](file:///Users/yutaroshirai/GitHub/willink-claude-kit/skills/antigravity-build/SKILL.md) を読み込ませることで、エージェントにプロトコルをインプットします。
+ロード時には、Antigravity上で `view_file` を用いて [skills/antigravity-build/SKILL.md](../skills/antigravity-build/SKILL.md) を読み込ませることで、エージェントにプロトコルをインプットします。
 
 ### Step 2: プロジェクト固有規約の配置 (任意)
 プロジェクト固有の規約がある場合、以下のパスに配置します。

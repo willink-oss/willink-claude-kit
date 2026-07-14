@@ -1,6 +1,8 @@
 # Known stack coverage
 
-> Status as of **v1.0** (2026-05-10). Updated each minor release.
+> Status as of the **v1.0 verification** (2026-05-10). The coverage matrix is
+> unchanged through the current release (no new stack verified yet — promotion
+> is gated on Q3 dogfood). Updated each minor release.
 > Source data: 14-day verification log across four i-Willink internal products
 > (2026-04-26 → 2026-05-10).
 
