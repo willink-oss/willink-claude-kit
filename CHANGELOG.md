@@ -4,6 +4,9 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+### Added
+- `/build` 失敗モードガードの verbatim ロックテスト (`scripts/test/test_build_guards.sh`) — `commands/build.md` が early-victory / telephone-game / options-flooding / Generator-Verifier の各不変条件を保持しているか検証（agent 側の `test_agent_guards.sh` と対で、`/build` フロー自体の silent な弱体化も捕捉）。併せて `test_structure.sh` の構造保証を canonical plugin + downstream scaffold まで拡張。
+
 ### Changed
 - docs ステータス整合 — README の Status を陳腐化した「v1.0 — partial Go」から現行の stable-surface 表記へ更新し、pre-1.0 のロードマップ（v0.1.x〜v1.0.0）を 2.x 到達後の実態（3 環境基盤完了 / Q3 stack promotion / 継続評価）へ差し替え。`model: inherit` 運用と矛盾する README の「Opus 4.7 前提」ハードコードを除去。`CLAUDE.md` の検証フェーズ節を完了済み 14 日検証 + 現フェーズ（Q3 promotion）表記に更新。`docs/known-stack-coverage.md` の as-of スナップショットが現行版でも有効である旨を明記
 
