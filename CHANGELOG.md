@@ -4,6 +4,12 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+### Changed
+- docs ステータス整合 — README の Status を陳腐化した「v1.0 — partial Go」から現行の stable-surface 表記へ更新し、pre-1.0 のロードマップ（v0.1.x〜v1.0.0）を 2.x 到達後の実態（3 環境基盤完了 / Q3 stack promotion / 継続評価）へ差し替え。`model: inherit` 運用と矛盾する README の「Opus 4.7 前提」ハードコードを除去。`CLAUDE.md` の検証フェーズ節を完了済み 14 日検証 + 現フェーズ（Q3 promotion）表記に更新。`docs/known-stack-coverage.md` の as-of スナップショットが現行版でも有効である旨を明記
+
+### Fixed
+- `docs/antigravity-adoption-guide.md` の SKILL.md リンクを machine-specific な絶対パス `file:///Users/...` から相対パスへ修正（OSS 配信で解決可能に）
+
 ## [2.2.0] - 2026-07-11
 
 **Status**: 自走ハーネス層の一括リリース。ホーム org が本番運用する決定論ゲート群を OSS 化した 5 バンドル — read-only の `/pulse`（live-state 測定・probe 失敗は 0 でなく ❓）+ goal-loop 自律コア（達成をモデルが自己申告しない停止プリミティブ + Maker-Checker relay）+ commit/CI 品質ゲート 5 種 + 検証投票ゲート 3 種（refute/judge/fanout）+ live-state 監査ゲート + 事前 advisory。全ゲートが hermetic 自己テスト付き・別コンテキストの adversarial review 済（実バグ複数を検出→修正: fanout の arg-parser 無限 hang・live-state の bullet-list rubber-stamp 等）・de-brand 済（内部パス/承認 tier/日本語なし）・ubuntu+macos+CodeQL green。新エージェントは足さず既存 4 agent + `/build`/`/pulse` surface を維持。
@@ -18,12 +24,6 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - **harness プロファイル** — `docs/harness-profile.md`（決定論的ゲートの H1-H4 ラダー・deterministic-first 5 原則・導入チェックリスト・KPI）+ `examples/ci/all-checks-pass-pattern.md`（CI summary job を唯一の required status check にするパターン。path-filter monorepo での skipped=satisfied 挙動・`if: always()` の必然性・無料枠 branch protection JSON・実運用の落とし穴を含む。willink-labs 3 リポで実証済み）。ホーム org の ADR-019 に基づく。
 - hook 雛形 + 自己テストハーネス + 規約ガイド (#22) — `examples/hooks/` に fail-closed な PreToolUse 例（危険コマンドを `exit 2` でブロック）と fail-open な Notification 例（エラー時は常に `exit 0`）を追加。両者とも stdin JSON を `jq` で解析し、BSD/GNU 両対応の POSIX ERE（`grep -E`、`grep -P` 不使用）。`examples/hooks/test-hooks.sh` が block/pass 両ケースを自己テスト（フォルダごとコピー可能な自己完結型）。`scripts/test/test_hooks.sh` で既存スイートに統合し、CI を ubuntu + **macos** matrix 化して BSD grep 移植性を実機で実証。規約は `docs/hooks-guide.md`（fail-open/closed・stdin JSON・grep 移植性・有効イベント名一覧）に集約。
 - 回帰 / 整合テストスイート (`scripts/test/`) + runner (`run.sh`) を新設。kit の不変条件（adapter sync・plugin/marketplace manifest 妥当性・agent guard 句の verbatim 保持・repo 構造・release version pin）をロックする 4 テストファイル（計 43 アサーション）。`.github/workflows/test.yml` で push/PR 時に実行（`codex-sync.yml` は同期特化のまま棲み分け）。テスト常時改善・失敗→ソース改善 issue 化の自走ループ（crew `loop-test-cycle`）の土台。
-
-### Changed
-- docs ステータス整合 — README の Status を陳腐化した「v1.0 — partial Go」から現行の stable-surface 表記へ更新し、pre-1.0 のロードマップ（v0.1.x〜v1.0.0）を 2.x 到達後の実態（3 環境基盤完了 / Q3 stack promotion / 継続評価）へ差し替え。`model: inherit` 運用と矛盾する README の「Opus 4.7 前提」ハードコードを除去。`CLAUDE.md` の検証フェーズ節を完了済み 14 日検証 + 現フェーズ（Q3 promotion）表記に更新。`docs/known-stack-coverage.md` の as-of スナップショットが現行版でも有効である旨を明記
-
-### Fixed
-- `docs/antigravity-adoption-guide.md` の SKILL.md リンクを machine-specific な絶対パス `file:///Users/...` から相対パスへ修正（OSS 配信で解決可能に）
 
 ## [2.1.0] - 2026-06-13
 

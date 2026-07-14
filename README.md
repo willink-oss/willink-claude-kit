@@ -92,7 +92,7 @@ python3 scripts/check_sync.py --update
 
 ## ロードマップ
 
-- **〜v2.1.0（済）** — Claude Code 正本 + Codex / Antigravity adapter による 3 環境同期基盤、release / docs 整合ガード、回帰テストスイートを整備。
+- **〜v2.2.0（済）** — Claude Code 正本 + Codex / Antigravity adapter による 3 環境同期基盤、release / docs 整合ガード、回帰テストスイート、決定論ハーネスゲート群（/pulse・goal-loop・commit/CI・検証投票・live-state 監査）を整備。
 - **次の minor** — install-only の 2 stack（Flutter+Supabase / Next.js+Stripe）を Q3 dogfood で ✅ verified へ promotion（基準は [docs/known-stack-coverage.md](docs/known-stack-coverage.md) の Promotion plan）。
 - **継続** — v1.1 繰り越し指標（dev-reviewer MEMORY ≥ 5 / context 1.3x）の判定と、回帰スイートの自走改善ループ（crew `loop-test-cycle`）によるカバレッジの単調増加。
 
