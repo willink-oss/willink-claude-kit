@@ -5,12 +5,17 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 ## [Unreleased]
 
 ### Added
+- **導入 doctor `scripts/check-kit-enabled.sh`** — 「インストール済み」と「実際にロードされているか」を区別して検査する自己診断。`enabledPlugins` の値型（boolean / array / string / false / 未宣言）・`installed_plugins.json` の登録と installPath 実在・plugin.json の JSON 妥当性・commands/agents/skills の件数を検査し、問題ごとに具体的な fix を出して exit 1。`/plugin` の「有効」表示は silently-disabled 状態を検出できないため、導入直後と kit 更新後はこれを正とする。`CLAUDE_CONFIG_DIR` を尊重し user / project / project-local の 3 scope を走査。python3 stdlib のみ。
+- `scripts/test/test_install_docs.sh` — 導入ドキュメントが「kit を silently 無効化するスニペット」を再び配ることを CI で禁止する回帰ロック。README / adoption-guide には array 代入例と「必ず pin」の誤指示が現れないこと、警告と doctor への導線があること、failure-modes には逆に **NG ラベル付きで**同じ array 例が残ること（アンチパターンの教材を消さない）を検証。3 パターンの変異テストで rubber-stamp でないことを確認済み。
+- `scripts/test/lib.sh` に `assert_not_contains` を追加（アンチパターンの不在をロックする用途）。
 - `/build` 失敗モードガードの verbatim ロックテスト (`scripts/test/test_build_guards.sh`) — `commands/build.md` が early-victory / telephone-game / options-flooding / Generator-Verifier の各不変条件を保持しているか検証（agent 側の `test_agent_guards.sh` と対で、`/build` フロー自体の silent な弱体化も捕捉）。併せて `test_structure.sh` の構造保証を canonical plugin + downstream scaffold まで拡張。
 
 ### Changed
 - docs ステータス整合 — README の Status を陳腐化した「v1.0 — partial Go」から現行の stable-surface 表記へ更新し、pre-1.0 のロードマップ（v0.1.x〜v1.0.0）を 2.x 到達後の実態（3 環境基盤完了 / Q3 stack promotion / 継続評価）へ差し替え。`model: inherit` 運用と矛盾する README の「Opus 4.7 前提」ハードコードを除去。`CLAUDE.md` の検証フェーズ節を完了済み 14 日検証 + 現フェーズ（Q3 promotion）表記に更新。`docs/known-stack-coverage.md` の as-of スナップショットが現行版でも有効である旨を明記
 
 ### Fixed
+- **導入手順が kit を silently 無効化していた問題** — README / adoption-guide がバージョン pin 例として `"willink-claude-kit@iwillink": ["2.2.0"]`（array 単独）への置き換えを案内し、adoption-guide は「Phase B 検証中は **必ず pin** する」と誘導していた。この指示に従うと `/plugin` 上は「有効」と表示されたまま、コマンド（`/build` `/pulse` `/goal-loop`）・4 サブエージェント・全スキルが一切ロードされない状態になる（**エラーも警告も出ない**）。実環境で約 6 日間検知されなかった。有効化の値は boolean `true` に統一し（Claude Code 自身が有効化時に書き込む形式）、バージョン固定は marketplace の `source.ref`（tag）で行う方針へ変更。`docs/failure-modes.md` に #11 として症状・原因・復旧手順を追加し、#9 の「`enabledPlugins` で pin 推奨」という誤った対策記述も修正。
+  > なお値型による有効化差異そのものは Claude Code 公式ドキュメント（settings reference / plugins reference / JSON schema, 2026-07 時点）には記載が無く、上記は実環境での観測に基づく。公式に確認できるのは「有効化時に Claude Code が `true` を書き込む」ことのみ。
 - `docs/antigravity-adoption-guide.md` の SKILL.md リンクを machine-specific な絶対パス `file:///Users/...` から相対パスへ修正（OSS 配信で解決可能に）
 
 ## [2.2.0] - 2026-07-11

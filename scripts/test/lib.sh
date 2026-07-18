@@ -30,6 +30,13 @@ assert_contains() {
   if grep -qF -- "$2" "$1" 2>/dev/null; then _t_ok "${3:-'$2' present in $(basename "$1")}"; else _t_bad "${3:-'$2' MISSING in $1}"; fi
 }
 
+# assert_not_contains <file> <fixed-string> [msg] — assert a substring is ABSENT.
+# For locking out anti-patterns that must never reappear (e.g. a copy-pasteable docs
+# snippet that silently disables the kit).
+assert_not_contains() {
+  if grep -qF -- "$2" "$1" 2>/dev/null; then _t_bad "${3:-'$2' MUST NOT appear in $1}"; else _t_ok "${3:-'$2' absent from $(basename "$1")}"; fi
+}
+
 # assert_grep <file> <ERE> [msg] — regex match (grep -E)
 assert_grep() {
   if grep -qE -- "$2" "$1" 2>/dev/null; then _t_ok "${3:-/$2/ in $(basename "$1")}"; else _t_bad "${3:-/$2/ NOT in $1}"; fi

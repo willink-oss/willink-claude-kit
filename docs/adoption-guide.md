@@ -19,11 +19,36 @@
 }
 ```
 
-バージョン pin する場合: `"willink-claude-kit@iwillink": ["2.2.0"]`
+> ⚠️ **値は boolean の `true` で書くこと。** Claude Code がプラグインを有効化するとき自身が書き込むのもこの形式。
+>
+> `["2.2.0"]` のような **array 単独の値に置き換えてはいけない**。`/plugin` 上は「有効」と表示されたまま、
+> コマンド（`/build` `/pulse` `/goal-loop`）・4 サブエージェント・全スキルが一切ロードされない状態になる事例が
+> 確認されている。**エラーも警告も出ない**ため、気付かないまま kit 無しで作業し続けることになる。
+> 詳細と復旧手順は [failure-modes.md #11](failure-modes.md) を参照。
+>
+> なお `"2.2.0"` のような **string 直書きは schema 違反**で validator に弾かれる（`$schema` を宣言したリポでは特に）。
 
-> Phase B 検証中は **必ず pin** する（v0.x は破壊的変更ありうるため）
+### バージョンを固定したい場合
 
-> ⚠️ Claude Code 公式 `settings.json` schema は `enabledPlugins.<plugin>` の値として `boolean` または `array<string>` のみ受け付ける。`"0.1.1"` のような **string は schema 違反**で validator に弾かれる（`$schema` を宣言したリポでは特に）。array 形式 `["0.1.1"]` を使うこと。
+`enabledPlugins` では pin しない。バージョンは **marketplace 側の tag ref** で固定する
+（`.claude-plugin/marketplace.json` の `source.ref`、例: `willink-claude-kit--v2.2.0`）。
+`enabledPlugins` の値は常に `true` のままでよい。
+
+### 導入できたかの確認
+
+「インストール済み」と「実際にロードされている」は別物なので、導入直後に必ず確認する:
+
+```bash
+# kit repo を clone している場合
+bash scripts/check-kit-enabled.sh
+
+# marketplace 経由で導入した場合（インストール実体から実行）
+bash ~/.claude/plugins/cache/iwillink/willink-claude-kit/*/scripts/check-kit-enabled.sh
+```
+
+`enabledPlugins` の値型・インストール実体・commands/agents/skills の有無を検査し、
+問題があれば exit 1 と具体的な fix を返す。`/plugin` の表示だけでは上記の
+silently-disabled 状態を検出できないため、これを正とする。
 
 ## 2. project-standards を作成
 
