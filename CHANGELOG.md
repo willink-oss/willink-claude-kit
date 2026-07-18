@@ -4,6 +4,10 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-07-18
+
+**Status**: 導入手順の致命的な欠陥を塞ぐリリース。README / adoption-guide がバージョン pin 例として案内していた `enabledPlugins` の array 単独形式は、`/plugin` 上「有効」と表示されたままコマンド・4 サブエージェント・全スキルを一切ロードしない状態を招いていた（**エラーも警告も出ない**ため実環境で約 6 日間検知されず）。指示に従った導入者ほど確実に壊れる性質のため、docs 修正に加えて「インストール済みか」ではなく「実際にロードされているか」を検査する doctor と、危険なスニペットの docs 再混入を CI で止める回帰ロックを同梱する。**既存導入者は本版へ更新後、自身の `settings.json` の `enabledPlugins` が `["x.y.z"]` になっていないか確認し、`true` へ修正して再起動すること**（更新だけでは復旧しない）。
+
 ### Added
 - **導入 doctor `scripts/check-kit-enabled.sh`** — 「インストール済み」と「実際にロードされているか」を区別して検査する自己診断。`enabledPlugins` の値型（boolean / array / string / false / 未宣言）・`installed_plugins.json` の登録と installPath 実在・plugin.json の JSON 妥当性・commands/agents/skills の件数を検査し、問題ごとに具体的な fix を出して exit 1。`/plugin` の「有効」表示は silently-disabled 状態を検出できないため、導入直後と kit 更新後はこれを正とする。`CLAUDE_CONFIG_DIR` を尊重し user / project / project-local の 3 scope を走査。python3 stdlib のみ。
 - `scripts/test/test_install_docs.sh` — 導入ドキュメントが「kit を silently 無効化するスニペット」を再び配ることを CI で禁止する回帰ロック。README / adoption-guide には array 代入例と「必ず pin」の誤指示が現れないこと、警告と doctor への導線があること、failure-modes には逆に **NG ラベル付きで**同じ array 例が残ること（アンチパターンの教材を消さない）を検証。3 パターンの変異テストで rubber-stamp でないことを確認済み。
