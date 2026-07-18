@@ -50,9 +50,15 @@ Claude Code / Codex / Antigravity 向け標準開発エージェント基盤。C
 }
 ```
 
-バージョン pin 例: `"willink-claude-kit@iwillink": ["2.2.0"]`
+> ⚠️ **値は boolean の `true` で書くこと。** Claude Code がプラグインを有効化するとき自身が書き込むのもこの形式。
+> `["2.2.0"]` のような **array 単独の値に置き換えてはいけない** — `/plugin` 上は「有効」と表示されたまま、
+> コマンド・サブエージェント・スキルが一切ロードされない状態になる事例が確認されている
+> （[failure-modes #11](docs/failure-modes.md) 参照）。
+>
+> バージョンは marketplace 側の tag ref（`.claude-plugin/marketplace.json` の `ref`）で固定されるため、
+> `enabledPlugins` 側での pin は不要。
 
-> Claude Code 公式 `settings.json` schema は `enabledPlugins.<plugin>` の値として `boolean` または `array<string>` のみ受け付ける。バージョン pin は **array 形式**で書くこと（string `"0.1.1"` は schema validator に弾かれる）。
+導入後は `bash scripts/check-kit-enabled.sh` で「インストール済み」ではなく **実際にロードされているか** を確認できる。
 
 詳細は [docs/adoption-guide.md](docs/adoption-guide.md) を参照。
 

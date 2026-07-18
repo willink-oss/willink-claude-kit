@@ -112,7 +112,8 @@
 **症状**: kit を v0.2 に上げたら下流リポで挙動が変わって混乱
 
 **kit の対策**:
-- 各リポで `@version` pin 推奨（adoption-guide.md）
+- バージョン固定は **marketplace 側の tag ref**（`marketplace.json` の `source.ref`）で行う。
+  `enabledPlugins` の値で pin してはいけない（→ #11）
 - CHANGELOG に破壊的変更を必ず明記
 - v1.0.0 までは破壊的変更ありうる旨を README に明示
 
@@ -125,3 +126,37 @@
 **kit の対策**:
 - 200 行上限を agent prompt に明記（公式の自動 curate 機構と同じ閾値）
 - 月次で MEMORY.md を確認・古い pattern を削除（kit 月次レビュー手順に追加予定）
+
+---
+
+## 11. kit が silently 無効化される（enabledPlugins の値型）
+
+**症状**: `/plugin` ではプラグインが「有効」と表示されるのに、`/build` `/pulse` `/goal-loop` が
+`Unknown command` になり、4 サブエージェントも全スキルもロードされない。**エラーも警告も一切出ない**ため、
+kit が効いていないことに気付かないまま作業が続く（実例: 約 6 日間気付かず）。
+
+**原因**: `settings.json` の `enabledPlugins` の値を boolean `true` から
+array 単独（`["2.2.0"]`）に書き換えた。有効化のトリガーは boolean であり、
+Claude Code 自身がプラグイン有効化時に書き込むのも `true`。
+
+```jsonc
+// NG — /plugin 上は「有効」だが何もロードされない
+"enabledPlugins": { "willink-claude-kit@iwillink": ["2.2.0"] }
+
+// OK
+"enabledPlugins": { "willink-claude-kit@iwillink": true }
+```
+
+> この値型による有効化差異は **Claude Code の公式ドキュメントには記載が無い**（2026-07 時点で
+> settings reference / plugins reference / JSON schema を確認済み）。上記は実環境での観測に基づく。
+> 公式に確認できるのは「有効化時に Claude Code が `true` を書き込む」ことのみ。
+
+**kit の対策**:
+- README / adoption-guide から array 形式の pin 例を削除し、`true` 固定に修正
+- バージョン固定は marketplace の tag ref で行う方針に統一（→ #9）
+- `scripts/check-kit-enabled.sh` … 値型・インストール実体・コマンド/エージェント/スキルの
+  存在を検査する doctor。「インストール済み」と「ロード済み」を区別して報告する
+- `scripts/test/test_install_docs.sh` … docs に危険な array 代入例が再混入したら CI で落とす
+
+**運用側の対策**: 導入直後と kit 更新後に `bash scripts/check-kit-enabled.sh` を実行する。
+`/plugin` の表示は根拠にしない（有効表示のまま未ロードになりうる）。
