@@ -46,7 +46,14 @@ docs/                  導入ガイド・検証プロトコル・stack 別注意
 
 - コミットは **Conventional Commits**（`feat:` / `fix:` / `docs:` / `chore:` 等）
 - `agents/` `skills/` `commands/` `.claude-plugin/` を変更したら、同コミット内で manifest を再生成して含める（後述）
-- 配布（tag push / GitHub Release / main への直接配信）は **human-only**。AI agent は実施しない
+- 配布（tag push / GitHub Release / main への直接配信）は原則 **human-only**。AI agent は実施しない
+  - **例外: 緊急パッチ**。既に配布済みの版が利用者に実害を与えている場合に限り agent の実施を許可する
+    （silently 無効化・インストール不能・セキュリティ問題など。→ [failure-modes #11](docs/failure-modes.md) が実例）
+  - ただし **緊急かどうかを agent が自己判断してはならない**。人がそのセッションで明示的に指示した場合にのみ実施する。
+    自己申告による例外適用は禁止（`/pulse` の「自己申告禁止」と同じ規律 — 例外の発動条件を agent 自身に
+    握らせると、例外が規則を飲み込む）
+  - 緊急パッチでも **patch / minor に限る**（major は必ず人手）。CI 全 green が前提
+  - 実施後は「何を・どの tag で配布したか」を必ず報告する
 
 ## テスト
 
