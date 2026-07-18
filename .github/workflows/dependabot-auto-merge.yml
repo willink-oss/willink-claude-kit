@@ -1,5 +1,25 @@
 name: Dependabot Auto-Merge
 
+# SECURITY INVARIANTS — do not relax without understanding why they exist.
+#
+# `pull_request_target` runs in the context of the BASE repo: it gets this file's
+# write permissions and repo secrets even when the PR comes from a fork. That is
+# required here (a `pull_request` run from a fork would get a read-only token and
+# could not enable auto-merge), but it means the guards below are the only thing
+# standing between an untrusted fork PR and a `contents: write` token on a public repo.
+#
+#   1. The `github.actor == 'dependabot[bot]'` guard MUST stay. It is what keeps this
+#      job from running on arbitrary fork PRs. Widening it (e.g. to all bots, or
+#      dropping it) hands write access to anyone who can open a PR.
+#   2. NEVER add `actions/checkout` of the PR head (`github.event.pull_request.head.*`)
+#      to this workflow. Checking out untrusted code in a `pull_request_target` job is
+#      the classic path to arbitrary code execution with the elevated token.
+#   3. Keep `permissions:` at the minimum this job needs. It must never gain
+#      `workflows: write` — that would let a merged change rewrite CI itself.
+#
+# Distribution is human-only (see CLAUDE.md); this workflow deliberately cannot
+# create tags or releases. Release tags are additionally protected by a repo ruleset.
+
 on: pull_request_target
 
 permissions:
@@ -9,6 +29,7 @@ permissions:
 jobs:
   auto-merge:
     name: auto-merge patch+minor
+    # Guard 1 above — the sole barrier against fork PRs reaching the elevated token.
     if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
