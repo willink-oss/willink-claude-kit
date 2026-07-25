@@ -4,6 +4,30 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+### Added
+- **アクセシビリティを「設計時の既定」にする 3 層** — 「a11y に配慮する」という自然言語の指示は確率的で、しかも失敗が書いた本人に見えない（見た目はボタンのままなので気づけない）。ハーネスの H1→H3 ラダーを UI 面にも適用する。
+  - `skills/a11y-standards/SKILL.md`（H1・契約）— accessible name / role / state の三点セット + 文字拡大 200%（iOS AX5 ≒ 3.12x）+ コントラスト + ターゲットサイズ + キーボードを 10 行の DoD にし、Flutter / React(Next.js) / WordPress(PHP) の「正解と典型的な誤り」を対照で示す。**4 agent が preload** し、`/build` Phase 2 は UI 変更時に要素ごとの name/role/state を計画に書かせる（UI 非変更なら `a11y: N/A` を明示 — 空欄は「検討していない」と同じ）。対外的に「WCAG AA 準拠」と書ける条件（人手監査 + Level 3 承認）も線引きした。
+  - `skills/a11y-static-gate/SKILL.md` + `scripts/a11y-static-check.py`（H3・決定論ゲート）— 括弧/タグのスタックと祖先チェーンを解析し、「この tappable を包む祖先にラベルがあるか」に正しく答える（行ウィンドウ grep は両方向に誤る）。rule 20 種（`A11Y-FLUTTER-NAME/ROLE/SYMBOL-LABEL/STATE/FIELD-NAME/TOGGLE-NAME/IMAGE-LABEL/SCALE-CLAMP/UNKNOWN-TAP-CTOR` ・ `A11Y-WEB-*` ・ `A11Y-MARKUP-*` ・ `A11Y-PROJ-*`）。stdlib python3 のみ・gh/aws/git に依存しない・**検出のみで修正も CI への自己配線もしない**。exit `0/1/2/3` で **3 = 走査 0 件 = UNKNOWN**（空スキャンを「違反ゼロ」に倒さない）。件数出力は常に分母（走査ファイル数・拡張子別・検査した操作要素数・rule 別・上位ファイル）を伴う。
+  - **baseline + ratchet**（レガシー導入）— 違反が既にある repo で「違反 0」を要求するとゲートは翌日外されるので、現状を凍結し新規違反のみ落とす。fingerprint は内容ベース（行がずれても再発火しない）。`--update-baseline` は**件数が増える更新を拒否**し、増やすには `--allow-baseline-growth` が要る（`coverage-floor-lock` の「floor を下げる diff 自体が違反」と同じ規律）。抑制は**理由付きの `a11y-ignore: <理由>` のみ**有効で、裸の pragma は抑制せず件数として報告される。
+  - `examples/a11y/flutter/a11y_smoke_test.dart` — 組込 4 ガイドライン + **組込では検出できない 2 つを塞ぐ自作ガイドライン**（`ButtonRoleGuideline` / `MeaningfulLabelGuideline`）+ iOS AX5（`53/17` ≒ 3.12・engine 実測値。3.0 では範囲上端を検査できない）と Android 200% での overflow 検査 + 読み上げ順アサート。**Flutter 3.44.2 で実走して検証**: 違反 fixture を fail（role 欠落 2 件 / 記号ラベル / タップ 24px / overflow 254px・64px）、修正 fixture を全 pass。
+  - `examples/a11y/web/eslint-a11y.config.md` — jsx-a11y の**明示有効化と error 昇格**（`eslint-config-next` は一部ルールを warn で入れるだけなので exit 0 になる）・lint 設定自体の生存確認 fixture・axe（light/dark 2 周・`target-size` は既定 off・`incomplete` も出す）・320px/200% の reflow 検査。
+  - `examples/ci/a11y-gate-pattern.md` ・ `examples/a11y/a11y-baseline.example.json` ・ `docs/a11y-guide.md`（新規/レガシーの導入手順、信用してはいけない指標、Apple の Accessibility Nutrition Labels と WordPress Accessibility Ready の要件）。
+  - `scripts/test/test_a11y_static_gate.sh` — ゲートの exit code 契約・ratchet・baseline 成長拒否・走査 0 件 = UNKNOWN・境界（コードを書き換えない/CI に自己配線しない）を回帰ロック。ゲート自身の hermetic self-test は **46 checks**。
+
+### Changed
+- `skills/dev-standards/SKILL.md` に §3 アクセシビリティ（UI に触る全変更に適用・後付け禁止）を追加し、以降の節を採番し直した。
+- `agents/dev-planner.md` — 出力に `## A11y plan`（要素ごとの name/role/state・拡大時の振る舞い・検証手段）を追加し、`a11y-standards` を preload。
+- `agents/dev-reviewer.md` — レビュー観点に Accessibility を追加。**UI 差分での name/role 欠落は LOW ではなく CRITICAL** として扱う（読み上げられないコントロールは壊れたコントロールで、パターンが複製されると全画面の欠陥になる）。
+- `agents/dev-tester.md` — UI 差分では a11y 静的ゲートと a11y テストも full run に含める（Flutter の overflow assert は release ビルドで消えるため debug 必須）。
+- `agents/dev-explorer.md` — UI 領域では「既存の操作要素がどう名前を得ているか（共通ボタン Widget か画面ごとの手書きか）」を報告させる。a11y 修正が 1 ファイルか 50 ファイルかを決める情報。
+- `commands/build.md` — Phase 2/4 に a11y を配線し、skip 表に「UI 追加/変更」行、失敗モードに「a11y の後付け」を追加。
+- `skills/codex-build/SKILL.md` ・ `skills/antigravity-build/SKILL.md` — 上記を各プラットフォームの実行モデルに反映（正本追従）。
+- `docs/harness-profile.md` — 決定論原則に「ユーザーに見える面も同じラダーに乗せる」を追加し、H1/H3 と採用チェックリスト・月次 KPI（baseline の `counts.error`）に a11y を追加。
+- `docs/stack-specific-notes.md` ・ `examples/project-standards-template/SKILL.md` ・ `README.md` — a11y の節を追加。
+
+### Fixed
+- `skills/antigravity-build/SKILL.md` の dev-standards 参照が作者のローカル絶対パス（`file:///Users/…`）だった。public OSS リポで外部利用者には解決できないリンクなので相対パスに修正。
+
 ## [2.3.0] - 2026-07-18
 
 **Status**: 導入手順の致命的な欠陥を塞ぐリリース。README / adoption-guide がバージョン pin 例として案内していた `enabledPlugins` の array 単独形式は、`/plugin` 上「有効」と表示されたままコマンド・4 サブエージェント・全スキルを一切ロードしない状態を招いていた（**エラーも警告も出ない**ため実環境で約 6 日間検知されず）。指示に従った導入者ほど確実に壊れる性質のため、docs 修正に加えて「インストール済みか」ではなく「実際にロードされているか」を検査する doctor と、危険なスニペットの docs 再混入を CI で止める回帰ロックを同梱する。**既存導入者は本版へ更新後、自身の `settings.json` の `enabledPlugins` が `["x.y.z"]` になっていないか確認し、`true` へ修正して再起動すること**（更新だけでは復旧しない）。

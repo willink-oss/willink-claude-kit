@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "note": "既知の a11y 違反スナップショット（ratchet 用）。新規違反のみ CI を落とす。件数は減る方向にのみ更新してよい — 増やす更新は --allow-baseline-growth が必要で、理由の記載が前提。scripts/a11y-static-check.py --root . --baseline .a11y-baseline.json --update-baseline で生成する。手で編集しない。",
+  "counts": {
+    "error": 3,
+    "warn": 1
+  },
+  "scanned": {
+    "files": 86,
+    "interactive": 67
+  },
+  "findings": [
+    "A11Y-FLUTTER-NAME|lib/screens/home_screen.dart|3f9a1c2d4e5b|1",
+    "A11Y-FLUTTER-ROLE|lib/widgets/common/app_button.dart|8b7c6d5e4f3a|1",
+    "A11Y-FLUTTER-SYMBOL-LABEL|lib/screens/detail_screen.dart|1a2b3c4d5e6f|1",
+    "A11Y-FLUTTER-STATE|lib/widgets/common/app_button.dart|9f8e7d6c5b4a|1"
+  ]
+}

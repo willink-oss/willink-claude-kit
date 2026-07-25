@@ -9,9 +9,9 @@ home organization enforces in production (ADR-019).
 
 | Layer | What | Where in this kit |
 |---|---|---|
-| H1 | Docs / natural-language rules | `CLAUDE.md`, `examples/project-standards-template/` |
+| H1 | Docs / natural-language rules | `CLAUDE.md`, `examples/project-standards-template/`, [`a11y-standards`](../skills/a11y-standards/) |
 | H2 | AI semantic review | PR review agents (advisory) |
-| H3 | **Blocking verification** | hooks ([`docs/hooks-guide.md`](hooks-guide.md), [`examples/hooks/`](../examples/hooks/)) + CI required checks ([`examples/ci/`](../examples/ci/)) + deterministic gates (`skills/` coverage-floor-lock · token-codegen-gate · commit-convention-gate · self-heal-ci · live-state-verify-guard) |
+| H3 | **Blocking verification** | hooks ([`docs/hooks-guide.md`](hooks-guide.md), [`examples/hooks/`](../examples/hooks/)) + CI required checks ([`examples/ci/`](../examples/ci/)) + deterministic gates (`skills/` coverage-floor-lock · token-codegen-gate · commit-convention-gate · self-heal-ci · live-state-verify-guard · a11y-static-gate) |
 | H4 | Structural tests | architecture / parity tests — [`architecture-parity-gate`](../skills/architecture-parity-gate/) (config-declared dependency direction + layer naming) |
 
 Rules start at H1 and get **promoted** when violated repeatedly (2+ of the same kind).
@@ -28,6 +28,17 @@ Demoting or loosening a gate is a governance decision — require explicit human
 4. After every incident, add **one** verification that would have caught it.
 5. Documents count too: articles, reports and changelogs can be linted (tone, citations,
    measured-value markers) like code.
+6. **The user-facing surface counts too.** "Be accessible" is the most probabilistic instruction
+   in a codebase, and its failures are invisible to the person writing the code — the control
+   still looks like a button. So the same ladder applies: the contract is H1
+   ([`a11y-standards`](../skills/a11y-standards/)), the blocking check is H3
+   ([`a11y-static-gate`](../skills/a11y-static-gate/), which fails on an interactive element with
+   no accessible name / role / state), and the runtime tests live with the stack
+   ([`examples/a11y/`](../examples/a11y/)). Adopting it on a repo that already has violations uses
+   a **baseline + ratchet**: the known set is frozen, only new violations fail, and the baseline may
+   only shrink — the same anti-gaming shape as `coverage-floor-lock`, where lowering the floor is
+   itself the finding. Note what the gate does *not* claim: green means "no statically detectable
+   defect", never "accessible" — a screen-reader pass stays a human step.
 6. Read live state before you report it. Status / progress / "is it deployed?" claims must
    come from a live probe, not a document (docs are *plan*; live is *state*). The read-only
    [`/pulse`](../commands/pulse.md) command is the measurement layer for this profile — it
@@ -71,6 +82,11 @@ as consent — the same *empty output ≠ zero* discipline the rest of this prof
 
 ## Adoption checklist
 
+0. **a11y gate (any repo with a UI)** — run
+   `python3 scripts/a11y-static-check.py --root .`; if it already reports findings, freeze them with
+   `--baseline .a11y-baseline.json --update-baseline`, commit the baseline, and add the CI step from
+   [`examples/ci/a11y-gate-pattern.md`](../examples/ci/a11y-gate-pattern.md). Exit 3 = zero files
+   scanned = UNKNOWN, not a pass.
 1. **Hooks (local, fail-closed)** — copy [`examples/hooks/`](../examples/hooks/) into
    `.claude/hooks/` (`pre-bash-safety.sh` + `_strip-command.awk` for destructive commands,
    `pre-file-protect.sh` for `.env`/keys/`.git`/settings), wire into
@@ -91,3 +107,4 @@ as consent — the same *empty output ≠ zero* discipline the rest of this prof
 - Natural-language-only rules remaining (should trend down)
 - Required status checks across repos (should trend up)
 - Advisory → blocking promotions (with dates)
+- `counts.error` in each repo's `.a11y-baseline.json` (should trend down, never up)

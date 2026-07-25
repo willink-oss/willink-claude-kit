@@ -24,4 +24,14 @@ assert_contains "$BUILD" 'Phase 3/5 を subagent 化しない' \
 assert_contains "$BUILD" '4 agent に厳選（追加禁止）' \
   "/build keeps the options-flooding guard (4 agents, no additions)"
 
+# a11y is a design-time decision, not a post-hoc audit. If these drop out of /build, the
+# kit silently returns to "accessibility gets added later" — the failure mode that produced
+# a whole app of unnamed controls.
+assert_contains "$BUILD" 'a11y を計画段階で決める' \
+  "/build keeps a11y in Phase 2 (designed, not retrofitted)"
+assert_contains "$BUILD" 'scripts/a11y-static-check.py' \
+  "/build keeps the a11y gate in Phase 4 verification"
+assert_contains "$BUILD" 'a11y の後付け' \
+  "/build keeps a11y-retrofit in the failure-mode list"
+
 t_summary

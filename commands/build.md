@@ -30,6 +30,8 @@ dev-planner に Phase 1 の結果と要件を渡し、実装計画を受け取�
 
 返ってくる計画には: ファイル別変更内容 / 既存ユーティリティ再利用 / 実装ステップ / テスト戦略 / ロールバック手順。
 
+**UI を触る変更では a11y を計画段階で決める**（後付けは全画面に散る修正になる）。新規/変更する操作要素ごとに accessible name / role / state と、文字拡大時の振る舞いを計画に明記する。UI 非変更なら「a11y: N/A」と書く — 空欄は「検討していない」と同じ。基準は `a11y-standards` skill。
+
 ## Phase 3: 実装（メイン Claude）
 
 **メイン Claude が Edit/Write で実装する**。subagent には委譲しない（Generator-Verifier 構造を保つ・差分の責任所在を明確化）。
@@ -46,7 +48,9 @@ dev-planner に Phase 1 の結果と要件を渡し、実装計画を受け取�
 
 ```
 dev-tester:    test / lint / typecheck / build を full run → PASS/PARTIAL/FAIL
+               UI 差分があれば a11y ゲート（scripts/a11y-static-check.py）+ a11y テストも回す
 dev-reviewer:  diff を読取専用レビュー → PASS/CONDITIONAL/FAIL
+               UI 差分では name/role/state の欠落を CRITICAL として扱う
 ```
 
 両者の判定マトリクス:
@@ -84,6 +88,7 @@ git commit -m "<type>(<scope>): <subject>
 | 新機能（小） | skip | 起動 | 並列 |
 | 新機能（大） | 起動 | 起動 | 並列 |
 | リファクタ | 起動 | 起動 | 並列 |
+| **UI 追加/変更** | 影響範囲次第 | **必ず起動**（a11y 設計を含む） | 並列 + **a11y ゲート** |
 | ドキュメント | skip | skip | skip |
 
 ---
@@ -95,6 +100,7 @@ git commit -m "<type>(<scope>): <subject>
 - **Options flooding**: 4 agent に厳選（追加禁止）
 - **Subagent コスト爆発**: Phase 1 並列は 3 軸以上独立な時のみ
 - **同一ファイル並列編集**: Phase 4 は read-only agent のみ並列
+- **a11y の後付け**: UI は Phase 2 で name/role/state を決める（実装後の監査で足すと修正が全画面に散る）
 
 ---
 
@@ -102,5 +108,6 @@ git commit -m "<type>(<scope>): <subject>
 
 - agents/ — dev-explorer / dev-planner / dev-tester / dev-reviewer 定義
 - skills/dev-standards/ — 共通開発標準
+- skills/a11y-standards/ ・ skills/a11y-static-gate/ — UI 変更時の a11y 設計標準と決定論ゲート
 - docs/failure-modes.md — 失敗モード詳細
 - docs/adoption-guide.md — 導入手順

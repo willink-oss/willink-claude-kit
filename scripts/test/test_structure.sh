@@ -16,6 +16,16 @@ assert_file_exists "$KIT_ROOT/skills/dev-standards/SKILL.md"
 assert_file_exists "$KIT_ROOT/skills/codex-build/SKILL.md"
 assert_file_exists "$KIT_ROOT/skills/antigravity-build/SKILL.md"
 
+# a11y: the design-time contract, the deterministic gate, and the runtime templates.
+# All three are referenced from dev-standards / build.md / the agents, so a missing one
+# turns the a11y wiring into dangling references.
+assert_file_exists "$KIT_ROOT/skills/a11y-standards/SKILL.md"
+assert_file_exists "$KIT_ROOT/skills/a11y-static-gate/SKILL.md"
+assert_file_exists "$KIT_ROOT/scripts/a11y-static-check.py"
+assert_file_exists "$KIT_ROOT/examples/a11y/flutter/a11y_smoke_test.dart"
+assert_file_exists "$KIT_ROOT/examples/a11y/web/eslint-a11y.config.md"
+assert_file_exists "$KIT_ROOT/docs/a11y-guide.md"
+
 # downstream extension scaffold (consumers copy this into project-standards/)
 assert_file_exists "$KIT_ROOT/examples/project-standards-template/SKILL.md"
 

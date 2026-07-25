@@ -73,6 +73,13 @@ e2e/                # E2E テスト
 - <例: ユーザー個人情報はサーバ送信前にマスキング>
 - <例: 第三者 AI サービス利用箇所は consent modal 必須>
 
+### アクセシビリティ（このプロジェクトの具体値）
+- <例: 操作要素は必ず共通 AppButton 経由。生の GestureDetector / div onClick は禁止>
+- <例: a11y ゲートの baseline は .a11y-baseline.json（件数は減る方向のみ）>
+- <例: 文字拡大クランプは maxScaleFactor 2.0（root 1 箇所）>
+- <例: 対応 AT = iOS VoiceOver / Android TalkBack。リリース前に主要導線 1 本を音声のみで通す>
+- <例: 除外して良い領域とその理由（デザイン検証用モック等）>
+
 ### テスト
 - <例: スナップショットテストは UI 変更時に必ず更新>
 - <例: E2E は auth flow 全体を 1 ケース必ず通す>
@@ -100,6 +107,7 @@ e2e/                # E2E テスト
 ## 8. dev-reviewer 向けメモ
 
 このプロジェクトでよくある指摘パターン:
+- <例: 新しい操作要素に accessible name / role を付け忘れる>
 - <例: 外部 API 呼出時の権限 request 漏れ>
 - <例: DB 認可ポリシーが schema 追加に追従していない>
 - <例: i18n 文字列を直接埋め込み — l10n 経由で>

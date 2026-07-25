@@ -10,6 +10,8 @@ This skill adapts the canonical Claude Code `/build` flow in `commands/build.md`
 ## Canonical Inputs
 
 - Read `skills/dev-standards/SKILL.md` before starting substantial work.
+- If the task touches UI, also read `skills/a11y-standards/SKILL.md`. Accessibility is decided in Phase 2, not
+  audited afterwards.
 - If present in a downstream repository, read `.claude/skills/project-standards/SKILL.md` for project-specific conventions. Do not create a separate Codex copy.
 - If reviewing a diff in a downstream repository, read `.claude/agent-memory/dev-reviewer/MEMORY.md` when present. Keep that Claude path as shared project memory.
 - Treat `commands/build.md` and the four Claude role contracts in `agents/` as canonical:
@@ -45,6 +47,10 @@ Codex mapping:
 
 The plan must identify files to change, existing utilities to reuse, implementation steps, tests, and rollback path.
 
+For UI work the plan must also state, per new/changed interactive element, its accessible name, role and state,
+plus how the layout behaves at 200% text. Write "a11y: N/A (no UI change)" when it does not apply — a blank
+section reads as "not considered".
+
 ## Phase 3: Implementation
 
 The main Codex agent implements the change. Do not delegate sequential implementation to another agent.
@@ -66,11 +72,15 @@ Codex mapping:
 Tester behavior:
 - Detect the stack from repo files.
 - Run all configured quality gates, even when an earlier command fails.
+- For UI diffs, also run the a11y static gate
+  (`python3 scripts/a11y-static-check.py --root . [--baseline .a11y-baseline.json]`) and the project's a11y
+  tests. Exit 3 means zero files were scanned — that is UNKNOWN, never a pass.
 - Report PASS, PARTIAL, or FAIL with commands run, failures, skipped tests, and suggested fix scope.
 
 Reviewer behavior:
 - Read the full diff and changed files in context.
-- Check spec adherence, code quality, error handling, security, tests, standards, and scope discipline.
+- Check spec adherence, code quality, error handling, security, accessibility, tests, standards, and scope
+  discipline. On UI diffs, a missing accessible name or role is CRITICAL, not a nitpick.
 - Report PASS, CONDITIONAL, or FAIL. PASS only when the reviewer would merge it.
 
 ## Phase 5: Fixes And Commit

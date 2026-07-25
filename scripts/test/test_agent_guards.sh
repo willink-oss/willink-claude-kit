@@ -22,4 +22,16 @@ assert_contains "$AG/dev-reviewer.md" 'Review the FULL diff before marking PASS'
 assert_contains "$AG/dev-explorer.md" 'No nested subagents' \
   "dev-explorer keeps the no-nested-subagents guard"
 
+# a11y role contracts. The severity phrasing in dev-reviewer is the load-bearing part:
+# a missing accessible name reported as LOW gets deferred forever.
+assert_contains "$AG/dev-planner.md"  '## A11y plan' \
+  "dev-planner keeps the a11y plan section in its output contract"
+assert_contains "$AG/dev-reviewer.md" 'Treat a missing name or role as CRITICAL, not LOW' \
+  "dev-reviewer keeps the a11y severity guard"
+assert_contains "$AG/dev-tester.md"   'a11y-static-check.py' \
+  "dev-tester keeps the a11y gate in its run set"
+for a in dev-planner dev-reviewer; do
+  assert_grep "$AG/$a.md" '^  - a11y-standards$' "$a preloads a11y-standards"
+done
+
 t_summary
