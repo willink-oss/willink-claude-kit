@@ -4,6 +4,10 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-07-25
+
+**Status**: アクセシビリティを「設計時の既定」にするリリース。「a11y に配慮する」という自然言語の指示は確率的で、しかも失敗が書いた本人に見えない（見た目はボタンのままなので気づけない）。本版は契約（`a11y-standards`）と exit code（`a11y-static-gate`）に分け、UI に触る変更で自動的に計画・レビュー・検証の対象になるよう4 agent と 5 phase フローに配線する。**既存リポは baseline + ratchet で段階導入できる**（現状を凍結し新規違反のみ落とす）。既存導入者への破壊的変更はなく、更新後に `python3 scripts/a11y-static-check.py --root .` を回すところから始められる。
+
 ### Added
 - **アクセシビリティを「設計時の既定」にする 3 層** — 「a11y に配慮する」という自然言語の指示は確率的で、しかも失敗が書いた本人に見えない（見た目はボタンのままなので気づけない）。ハーネスの H1→H3 ラダーを UI 面にも適用する。
   - `skills/a11y-standards/SKILL.md`（H1・契約）— accessible name / role / state の三点セット + 文字拡大 200%（iOS AX5 ≒ 3.12x）+ コントラスト + ターゲットサイズ + キーボードを 10 行の DoD にし、Flutter / React(Next.js) / WordPress(PHP) の「正解と典型的な誤り」を対照で示す。**4 agent が preload** し、`/build` Phase 2 は UI 変更時に要素ごとの name/role/state を計画に書かせる（UI 非変更なら `a11y: N/A` を明示 — 空欄は「検討していない」と同じ）。対外的に「WCAG AA 準拠」と書ける条件（人手監査 + Level 3 承認）も線引きした。
