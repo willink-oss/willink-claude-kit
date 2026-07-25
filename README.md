@@ -9,7 +9,8 @@ Claude Code / Codex / Antigravity 向け標準開発エージェント基盤。C
 | 区分 | 内容 |
 |---|---|
 | **agents/** (4本) | `dev-explorer` / `dev-planner` / `dev-tester` / `dev-reviewer` — 公式 ガイドラインに沿って役割を厳選 |
-| **skills/dev-standards** | スタック非依存の汎用標準（TS strict / Conventional Commits / OWASP） |
+| **skills/dev-standards** | スタック非依存の汎用標準（TS strict / Conventional Commits / OWASP / a11y 最低ライン） |
+| **a11y を既定で設計する 3 層** (skills/ + scripts/ + examples/) | `a11y-standards`（設計時の契約 — 4 agent が preload し `/build` Phase 2 で name/role/state を決めさせる）+ `a11y-static-gate`（`scripts/a11y-static-check.py` — Flutter/React/PHP テンプレを横断して「支援技術から操作できない要素」を構造解析で検出。**baseline + ratchet** で既存レガシーにも導入でき、baseline を増やす更新は拒否）+ 実行時テストの雛形（`examples/a11y/` — Flutter は組込 4 ガイドライン + **組込では検出できない role 欠落/記号ラベルの自作ガイドライン** + iOS AX5/Android 200% での overflow 検査、Web は jsx-a11y/axe/reflow）。exit code は 0/1/2/**3=走査 0 件は UNKNOWN**。緑は「機械判定可能な違反ゼロ」であって「アクセシブル」とは言わない |
 | **commands/build.md** | 5 phase 版 `/build` フロー（探索→計画→実装→並列検証→修正/コミット） |
 | **commands/goal-loop.md** + **scripts/goal-loop\*.sh** | 組み込み `/goal` に「決定論 `--check` + 試行上限」の規律を足す停止プリミティブ。達成をモデルの自己申告でなく exit code で判定し N 回で必ず止める。雛形生成器 + `maker-checker-relay`（Generator↔Verifier=実装↔`dev-reviewer` レビューを分離して回す）付き。全て hermetic 自己テスト付き |
 | **skills/maker-checker-relay** | 実装（Maker）と読取専用レビュー（Checker=`dev-reviewer`/`/review`/人）を分離し「test 緑 かつ 指摘 0」まで反復する goal-loop ラッパー |
@@ -115,6 +116,7 @@ python3 scripts/check_sync.py --update
 - [docs/antigravity-adoption-guide.md](docs/antigravity-adoption-guide.md) — Antigravity 導入手順
 - [docs/verification-protocol.md](docs/verification-protocol.md) — 検証指標と記録テンプレ
 - [docs/stack-specific-notes.md](docs/stack-specific-notes.md) — Next.js / Flutter / WordPress 個別注意
+- [docs/a11y-guide.md](docs/a11y-guide.md) — a11y の導入手順（新規 / 既存レガシーの ratchet）・信用してはいけない指標・ストア/テーマ要件
 - [docs/failure-modes.md](docs/failure-modes.md) — Early victory / Telephone game 等の対策
 - [docs/hooks-guide.md](docs/hooks-guide.md) — hook の書き方・自己テスト・fail-open/closed・grep 移植性規約
 - [docs/harness-profile.md](docs/harness-profile.md) — 決定論的ゲートの導入プロファイル（H1-H4 ラダー・CI required check・昇格運用）

@@ -35,6 +35,9 @@ Return a single markdown report with:
 
 ## Conventions observed
 <patterns the project actually uses, citing file paths>
+<for UI areas: how existing interactive elements get their accessible name/role — is there a shared button
+widget, or is every screen hand-rolling GestureDetector/div-onClick? This decides whether an a11y fix is one
+file or fifty.>
 
 ## Open questions
 <things you couldn't determine and why>

@@ -24,6 +24,11 @@ pnpm build       # Next.js build
 - Server Component で `useState` を使ってしまう
 - `'use client'` の付け忘れ／過剰付け
 - Image / Font の最適化漏れ
+- `<div onClick>` で押せる要素を作る（キーボード/支援技術から操作不能）・アイコンのみボタンに `aria-label` 無し
+
+### a11y
+`next lint` は jsx-a11y の**一部ルールを warn で**入れるだけなので、それだけでは exit 0。
+明示有効化 + error 昇格 + axe/reflow は [`examples/a11y/web/eslint-a11y.config.md`](../examples/a11y/web/eslint-a11y.config.md)。
 
 ---
 
@@ -43,7 +48,17 @@ flutter build ios     # or appbundle / web
 - DB 認可ポリシー（RLS 等）の管理場所と更新フロー
 - ネイティブ固有: 権限文言・consent modal の場所
 
+### a11y（Flutter は組込ガイドラインに穴がある）
+```bash
+python3 scripts/a11y-static-check.py --root .          # name/role/state・記号ラベル・クランプ値
+flutter test test/a11y_smoke_test.dart                 # 組込 4 + 自作 2 + 最大文字サイズ（debug のみ有効）
+```
+実測（3.44.2）: 組込 `labeledTapTargetGuideline` は **role を見ず**、`Text('<')` も通す。
+雛形は [`examples/a11y/flutter/a11y_smoke_test.dart`](../examples/a11y/flutter/a11y_smoke_test.dart)。
+
 ### よくある dev-reviewer 指摘
+- 生の `GestureDetector` で押せる要素を作り、`Semantics(button:true, label:…)` が無い（全画面に伝播する）
+- 固定高さのカードに文字を詰め、文字拡大でレイアウトが溢れる
 - DB 認可ポリシーが schema 追加に追従していない
 - `BuildContext` を async gap 越しに使う（mounted チェック漏れ）
 - ネイティブ SDK の権限を request せずに read 呼出
@@ -86,6 +101,12 @@ composer test          # PHPUnit (あれば)
 - PHP version 制約（古い案件は 7.4、新規は 8.x）
 - Atomic Design の category と命名規則
 - NDA に関わる情報は kit に書かない（NDA repo の内部のみ）
+
+### a11y（受託の品質差になりやすい）
+`img` の alt・空リンク・ラベル無しフォーム・`user-scalable=no`・正の `tabindex` は静的ゲートが見る。
+skip link / 見出し階層 / 本文リンクの下線 / フォーカス可視（2px）は人手。
+`accessibility-ready` を謳う場合の要件（2026-05-06 改訂で 18 項目必須・`accessibility.txt`・
+2026-09-30 期限）は [`a11y-guide.md`](a11y-guide.md#5-プラットフォーム側の要件事業インパクト) を参照。
 
 ### よくある dev-reviewer 指摘
 - `wp_unslash()` / `sanitize_*()` / `esc_*()` の境界処理漏れ

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-07-18",
+  "updatedAt": "2026-07-25",
   "sourceOfTruth": "Claude Code plugin files are canonical; Codex and Antigravity files are platform adapters checked for drift.",
   "canonicalFiles": [
     {
@@ -27,7 +27,7 @@
     },
     {
       "path": "commands/build.md",
-      "sha256": "5394ba0f2a552c2e97662e7232be09e25820aa8dcd5f6f5fa39fd87130da633a",
+      "sha256": "a7e4577296ae8455d8cf381a1348b0ccbbc8cef8ca7cd8ef5783c30afe26cff2",
       "codexAdapters": [
         "skills/codex-build/SKILL.md",
         "docs/codex-adoption-guide.md"
@@ -38,7 +38,7 @@
     },
     {
       "path": "agents/dev-explorer.md",
-      "sha256": "78c808d1f5e9ac43edd102631872ab73d59f29afbb5e65d950afcd6432a31990",
+      "sha256": "18c0c88b58ae19463cf53462e42ed4c36198844dbbdfed0d7bd8ce2f8e2f225f",
       "codexAdapters": [
         "skills/codex-build/SKILL.md"
       ],
@@ -48,7 +48,7 @@
     },
     {
       "path": "agents/dev-planner.md",
-      "sha256": "e1eaccd84b1efeafcf3be4e8c9aa5d4d3b78e182428f1d3f6e6826c88462027f",
+      "sha256": "ba10804471161607f0ebd73130feb43e011853276ff4c1d279fbac0f475dd001",
       "codexAdapters": [
         "skills/codex-build/SKILL.md"
       ],
@@ -58,7 +58,7 @@
     },
     {
       "path": "agents/dev-tester.md",
-      "sha256": "66507807a0a76fef6937c1a2a7bceb6e008d417b7544fb04f2db7de024de2e72",
+      "sha256": "1b2df8b45c1ebc67db1cb80f36c6d7506513370220a9fda4561fec31baee9fc9",
       "codexAdapters": [
         "skills/codex-build/SKILL.md"
       ],
@@ -68,7 +68,7 @@
     },
     {
       "path": "agents/dev-reviewer.md",
-      "sha256": "b9b5c6f425279fb7594f0dade7112b42083aa75c30033ac471be20b15cc9c57e",
+      "sha256": "6a73c8b63e3f5843b6e1b1d274567637b6161a1687cd2d58f0fd22ca12b0bdc7",
       "codexAdapters": [
         "skills/codex-build/SKILL.md",
         "docs/codex-adoption-guide.md"
@@ -79,7 +79,7 @@
     },
     {
       "path": "skills/dev-standards/SKILL.md",
-      "sha256": "432e191bc7fa21778b0d1a1e5289998c44724917c07448dd7936e1d90aaeffa1",
+      "sha256": "8e247b49bb6466ec75dcd2d5c498e0e772ba9686a12f51aaa31b3cb8c254c876",
       "codexAdapters": [
         "skills/codex-build/SKILL.md",
         "docs/codex-adoption-guide.md"

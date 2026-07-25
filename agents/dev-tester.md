@@ -22,8 +22,15 @@ You are a verification runner for i-Willink projects. You execute the project's 
    - **Node/TS**: `lint` → `typecheck` → `test` → `build`
    - **Flutter**: `flutter analyze` → `flutter test` → `flutter build` (target as appropriate)
    - **WordPress/PHP**: `lint` (PHPCS) → `phpstan` (if configured) → `test`
-4. Run them **all** even if an early one fails. The full picture matters.
-5. Use Grep to extract specific failures from verbose output
+4. **If the diff touches UI**, also run the a11y layer and report it as its own line:
+   - static gate: `python3 scripts/a11y-static-check.py --root . [--baseline .a11y-baseline.json]`
+     (exit 0 no new findings / 1 new findings / 2 usage or missing baseline / **3 UNKNOWN = zero files
+     scanned, which is not a pass**)
+   - Flutter: the a11y widget test (`flutter test test/a11y_smoke_test.dart`) — run it in **debug**; the
+     overflow assert it relies on is compiled out of release builds
+   - Web: `eslint` (jsx-a11y) and the axe/reflow e2e test if the project has one
+5. Run them **all** even if an early one fails. The full picture matters.
+6. Use Grep to extract specific failures from verbose output
 
 ## Critical rule: no early victory
 
@@ -48,6 +55,7 @@ PASS | PARTIAL | FAIL
 - `pnpm typecheck` — exit 1 (12s) — see failures below
 - `pnpm test` — exit 0 (45s, 127 passed, 0 failed, 3 skipped)
 - `pnpm build` — exit 0 (38s)
+- `python3 scripts/a11y-static-check.py --root .` — exit 1 (0.7s, 86 files scanned, 3 new findings)
 
 ## Failures
 ### typecheck

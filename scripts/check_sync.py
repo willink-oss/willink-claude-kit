@@ -277,7 +277,24 @@ def validate_codex_build_skill() -> list[str]:
             errors.append(f"codex-build skill must reference shared project path {shared_path}")
     if "explicit" not in text.lower() or "subagent" not in text.lower():
         errors.append("codex-build skill must state that Codex subagents require explicit user authorization")
+    errors.extend(_validate_a11y_wiring("codex-build", text))
 
+    return errors
+
+
+def _validate_a11y_wiring(skill_name: str, text: str) -> list[str]:
+    """Adapters mirror the canonical /build flow, so they must carry the a11y wiring too.
+
+    Without this, a Codex or Antigravity session would run the same 5 phases while quietly
+    dropping the accessibility contract — the platforms would drift on the one dimension
+    whose failures are invisible in the diff.
+    """
+    errors: list[str] = []
+    lowered = text.lower()
+    if "a11y-standards" not in lowered:
+        errors.append(f"{skill_name} skill must point at skills/a11y-standards for UI work")
+    if "a11y-static-check.py" not in lowered:
+        errors.append(f"{skill_name} skill must run the a11y static gate on UI diffs")
     return errors
 
 
@@ -302,6 +319,7 @@ def validate_antigravity_build_skill() -> list[str]:
         errors.append("antigravity-build skill must reference Planning Mode")
     if "define_subagent" not in text.lower():
         errors.append("antigravity-build skill must reference define_subagent")
+    errors.extend(_validate_a11y_wiring("antigravity-build", text))
 
     return errors
 

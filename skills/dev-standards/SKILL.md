@@ -1,6 +1,6 @@
 ---
 name: dev-standards
-description: i-Willink 共通開発標準。スタック非依存の汎用層（TypeScript strict / Conventional Commits / OWASP / テスト方針 / コミット粒度）。各 agent が起動時に preload する。プロジェクト固有の規約は `project-standards` skill 側に書く。
+description: i-Willink 共通開発標準。スタック非依存の汎用層（TypeScript strict / Conventional Commits / OWASP / アクセシビリティ / テスト方針 / コミット粒度）。各 agent が起動時に preload する。プロジェクト固有の規約は `project-standards` skill 側に書く。
 ---
 
 # i-Willink Dev Standards (stack-agnostic)
@@ -42,7 +42,22 @@ description: i-Willink 共通開発標準。スタック非依存の汎用層（
 
 ---
 
-## 3. セキュリティ
+## 3. アクセシビリティ（UI に触る全変更に適用）
+
+**後付け禁止**。UI を追加/変更するときに設計事項として決める。後から監査で足すと「操作要素が全部無名」のような構造的欠陥になり、修正が全画面に散る。
+
+最低ライン（これを満たすまで実装完了としない）:
+
+- **name / role / state** — 操作要素はすべて accessible name を持ち、役割（button 等）と状態（無効/選択/トグル）を公開する（WCAG 2.2 SC 4.1.2）
+- **記号をラベルにしない** — `<` `×` `…` は記号名で読み上げられる（`<` は「小なり」）
+- **文字拡大 200%（iOS 最大 ≒ 3.12x）でレイアウトが壊れない** — 固定高さに文字を詰めない
+- **コントラスト** 本文 4.5:1 / 大きい文字・UI 部品 3:1、**ターゲットサイズ** 最小 24×24 CSS px（モバイルは 48）
+- **主要導線 1 本は読み上げだけで通せる** — ここが受入条件。静的ゲートが緑でも、これは人手で確認する
+
+→ スタック別の書き方・検証手段（決定論ゲート / 自動テスト / 実機）は `a11y-standards` skill。
+機械検査は `a11y-static-gate`（`scripts/a11y-static-check.py`・exit code で判定）。
+
+## 4. セキュリティ
 
 ### OWASP Top 10 を常に意識
 - **Injection**: prepared statements / parameterized queries 必須
@@ -57,7 +72,7 @@ description: i-Willink 共通開発標準。スタック非依存の汎用層（
 
 ---
 
-## 4. コミット規約
+## 5. コミット規約
 
 **Conventional Commits 必須**:
 
@@ -86,7 +101,7 @@ description: i-Willink 共通開発標準。スタック非依存の汎用層（
 
 ---
 
-## 5. PR 運用
+## 6. PR 運用
 
 - **小さく、レビューしやすく**: 500 行超は分割を真剣に検討
 - **PR description で WHY を語る**: WHAT は diff で読める
@@ -95,7 +110,7 @@ description: i-Willink 共通開発標準。スタック非依存の汎用層（
 
 ---
 
-## 6. AI 開発（Claude Code / Codex 使用時）
+## 7. AI 開発（Claude Code / Codex 使用時）
 
 - **Generator-Verifier 分離**: 実装はメイン agent（Claude Code は main Claude、Codex は main Codex）、レビューは Verifier role（dev-reviewer 相当）
 - **Telephone game 回避**: 順序的同一作業を subagent 連鎖に分割しない
@@ -106,7 +121,7 @@ description: i-Willink 共通開発標準。スタック非依存の汎用層（
 
 ---
 
-## 7. このスキルの境界
+## 8. このスキルの境界
 
 含む: 全プロジェクト共通の最低ライン
 含まない: スタック特化規約・プロジェクト固有のドメイン知識・チーム慣習

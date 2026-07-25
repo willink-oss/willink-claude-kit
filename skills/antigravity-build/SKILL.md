@@ -28,7 +28,8 @@ Claude Code のロール契約（`agents/` 配下）で指定されているツ�
 
 開発開始時および検証時に、以下のファイルを必ず読み込んでください。
 
-- 共通開発標準: [skills/dev-standards/SKILL.md](file:///Users/yutaroshirai/GitHub/willink-claude-kit/skills/dev-standards/SKILL.md)
+- 共通開発標準: [skills/dev-standards/SKILL.md](../dev-standards/SKILL.md)
+- UI を触る場合の a11y 標準: [skills/a11y-standards/SKILL.md](../a11y-standards/SKILL.md)
 - プロジェクト固有標準（存在する場合）: `.claude/skills/project-standards/SKILL.md`
 - レビュー用メモリ（存在する場合）: `.claude/agent-memory/dev-reviewer/MEMORY.md`
 
@@ -45,6 +46,7 @@ Claude Code のロール契約（`agents/` 配下）で指定されているツ�
 
 ### Phase 2: 実装計画
 - **起動条件**: 変更が50行以上または複数ファイルにまたがる場合に実行。軽微な修正はスキップします。
+- **UI を触る場合**: `implementation_plan.md` に、新規/変更する操作要素ごとの accessible name / role / state と、文字拡大 200% 時のレイアウト方針を明記します（a11y は実装後の監査ではなく計画事項）。UI 非変更なら「a11y: N/A」と書きます。
 - **Antigravityでの実行方法**:
   - Antigravity の標準機能である `implementation_plan.md` アーティファクトのライフサイクルに統合します。
   - 設計上の不確実性が高い場合は、 `define_subagent` で `dev-planner` を定義・起動し、計画のドラフトを作成させます。
@@ -61,6 +63,7 @@ Claude Code のロール契約（`agents/` 配下）で指定されているツ�
   - `dev-tester` には `enable_write_tools = true` を設定してテストコマンドの実行を許可し、 `dev-reviewer` には `enable_write_tools = false`（Read-only）を設定します。
   - `invoke_subagent` で両者を並行起動します。
   - **Early Victory の防止**: `dev-tester` には必ずフルテストスイートを実行させ、一部が通っただけで PASS と報告させないようにします。 `dev-reviewer` には差分のあるすべてのファイルを確認させます。
+  - **UI 差分の a11y 検証**: `dev-tester` に a11y 静的ゲート（`python3 scripts/a11y-static-check.py --root .`）と a11y テストを実行させます。**exit 3 は「走査 0 件 = 不明」で合格ではありません**。`dev-reviewer` は accessible name / role の欠落を CRITICAL として扱います。
 
 ### Phase 5: 修正 + コミット
 - **Antigravityでの実行方法**:
