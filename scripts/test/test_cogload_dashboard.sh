@@ -58,4 +58,15 @@ assert_grep "$TMP/out2/dashboard.html" "unknown" "an unmeasurable probe renders 
 assert_not_contains "$TMP/out2/dashboard.html" '<span class="num">0</span>' \
   "an unmeasurable probe never renders as 0"
 
+# A crashing command must not read as "0 items". The example config is the only place the
+# probe schema is documented, so it must not model the silent-zero it warns against.
+assert_not_contains "$KIT_ROOT/examples/cogload/cogload.config.example.json" '"ok_exit_codes": [0, 1]' \
+  "the example config does not widen ok_exit_codes without cause"
+assert_grep "$KIT_ROOT/examples/cogload/cogload.config.example.json" "count_pattern" \
+  "the example config reads the tool's own total instead of counting lines"
+
+# Publishing internal state from an unattended run is the failure this warns about.
+assert_grep "$KIT_ROOT/skills/cogload-dashboard/SKILL.md" "Never publish from an unattended run" \
+  "the skill warns against publishing from scheduled runs"
+
 t_summary

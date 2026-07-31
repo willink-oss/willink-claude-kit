@@ -804,8 +804,13 @@ def main():
               f"  ({q['done_count']} resolved folded away)")
     else:
         print(f"  decision queue: not configured ({q['error']})")
+    # A partially-failed probe reports a LOWER BOUND. Dropping it from this line lets a
+    # caller copy the number out as if it were the measured total.
+    partial = [p["id"] for p in snap["probes"] if p["status"] == "partial"]
     print(f"  probes: {len(snap['probes']) - len(unknown)}/{len(snap['probes'])} measured"
           + (f", unknown: {', '.join(unknown)}" if unknown else ""))
+    if partial:
+        print(f"  ! partial: {', '.join(partial)} — these values are lower bounds, not totals")
     print(f"  {html_path}\n  {snap_path}")
 
     measured_anything = q["configured"] or any(p["status"] != "unknown" for p in snap["probes"])

@@ -71,9 +71,22 @@
       "type": "command",
       "label": "Routines due",
       "lane": 3,
-      "$comment": "Generic escape hatch: counts non-empty output lines. A non-zero exit renders UNKNOWN rather than 0. Use `count_pattern` with one capture group to read a number out of the output instead, and `ok_exit_codes` when the tool signals findings with exit 1.",
+      "$comment": [
+        "Generic escape hatch: counts non-empty output lines. A non-zero exit renders UNKNOWN rather than 0.",
+        "",
+        "PREFER `count_pattern` over line counting whenever the tool prints its own total.",
+        "Counting lines breaks the moment the tool prints anything else — a footer, or a",
+        "'nothing due' notice on the empty day, which then counts as ONE item. If the tool",
+        "emits a summary line, read it with one capture group instead:",
+        "  \"count_pattern\": \"due ([0-9]+)/[0-9]+\"",
+        "",
+        "WARNING about `ok_exit_codes`: only widen it when the tool genuinely signals findings",
+        "with a non-zero exit (grep-style). If the tool always exits 0 when healthy, listing 1",
+        "as acceptable turns a CRASH into a confident '0 items' — the exact silent-zero this",
+        "dashboard exists to prevent. When unsure, leave it at [0]."
+      ],
       "cmd": ["python3", "scripts/routine-sweep.py"],
-      "ok_exit_codes": [0, 1],
+      "count_pattern": "due ([0-9]+)/[0-9]+",
       "detail": "from the routine registry"
     },
     {

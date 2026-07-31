@@ -58,9 +58,24 @@ python3 scripts/cogload-dashboard.py --self-test     # hermetic, 29 checks
 | 2 | usage or configuration error |
 | 3 | **nothing could be measured** — distinct from 0 so a caller never reads "measured nothing" as "all clear" |
 
-The HTML is self-contained (no external fonts, scripts or images) so it can be
-published as an artifact or opened from disk. It is a **snapshot**: the page states
-its own measurement time and claims nothing about the moment you read it.
+The HTML is self-contained (no external fonts, scripts or images) so it can be opened
+from disk or published. It is a **snapshot**: the page states its own measurement time
+and claims nothing about the moment you read it.
+
+### Before you publish it anywhere
+
+The page renders whatever your decision queue contains — which in practice means
+client names, contract values, unresolved vulnerability counts, and internal paths.
+Treat publishing as a decision, not a step:
+
+- **Never publish from an unattended run** (a scheduled job, a cron, a routine). If you
+  wire this into a scheduler, leave publishing out of the job entirely.
+- Publish only from an interactive session, deliberately, with the person who owns the
+  data present.
+- A published page keeps its URL only when the **same conversation** republishes the
+  same path. Publishing the same file from a different session **mints a new URL**, so a
+  daily job would quietly accumulate copies of internal state. Pass the existing URL
+  explicitly when you mean to update one.
 
 ## Configure
 
