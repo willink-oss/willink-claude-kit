@@ -1,0 +1,101 @@
+{
+  "$comment": [
+    "Example configuration for scripts/cogload-dashboard.py.",
+    "Copy to your repository root as cogload.config.json and edit.",
+    "Every field is optional: with no config at all the tool probes the local git tree.",
+    "",
+    "The three lanes are the framework and are fixed; probes are what you plug in.",
+    "  lane 1 Verify    — needs a human decision (fed by decision_queue, not by probes)",
+    "  lane 2 Integrate — live-measured state you must reconcile",
+    "  lane 3 Steward   — policy, discipline and cost, read as a trend",
+    "Assign each probe a lane with the `lane` field. Putting a probe in lane 1 is",
+    "usually wrong: lane 1 is for things only a person can resolve."
+  ],
+
+  "title": "Acme Ops — Cognitive Load Dashboard",
+  "out_dir": ".cogload",
+
+  "decision_queue": {
+    "$comment": [
+      "A markdown file whose headings are the queue. Heading shape:",
+      "  ## <severity marker> [<topic>] <title>",
+      "An item is raised to lane 1 when it is urgent, OR when it names a decision and is",
+      "neither waiting on someone else nor already resolved.",
+      "The two suppressions are NOT applied to critical/high items — mistaking 'our move'",
+      "for 'waiting on them' silently parks real work, so this errs toward over-surfacing."
+    ],
+    "path": "docs/action-list.md",
+    "heading_level": 2,
+    "severity_markers": {
+      "🔴": ["critical", "decide"],
+      "🟠": ["high", "act"],
+      "🟡": ["warn", "watch"],
+      "🆕": ["new", "new"],
+      "🟢": ["info", "info"],
+      "✅": ["done", "done"]
+    },
+    "decision_markers": ["approve", "approval", "decide", "decision", "sign off", "blocked on"],
+    "external_wait_markers": ["waiting on", "under review", "submitted to"],
+    "resolved_markers": ["✅", "approved", "shipped", "released", "done"]
+  },
+
+  "probes": [
+    {
+      "id": "worktree",
+      "type": "git",
+      "label": "Uncommitted files",
+      "lane": 2
+    },
+    {
+      "id": "open_prs",
+      "type": "github_prs",
+      "label": "Open PRs",
+      "lane": 2,
+      "$comment": "Omit `owners` to use the current repository's owner. `limit` guards against gh's default 30-item truncation — the page announces when a query was cut off.",
+      "owners": ["acme-inc", "acme-labs"],
+      "limit": 200
+    },
+    {
+      "id": "endpoints",
+      "type": "http",
+      "label": "Endpoints up",
+      "lane": 2,
+      "$comment": "Status codes only. A 200 is not evidence the response body is correct.",
+      "targets": [
+        { "name": "marketing site", "url": "https://example.com" },
+        { "name": "app", "url": "https://app.example.com/healthz" }
+      ]
+    },
+    {
+      "id": "scheduled_work",
+      "type": "command",
+      "label": "Routines due",
+      "lane": 3,
+      "$comment": "Generic escape hatch: counts non-empty output lines. A non-zero exit renders UNKNOWN rather than 0. Use `count_pattern` with one capture group to read a number out of the output instead, and `ok_exit_codes` when the tool signals findings with exit 1.",
+      "cmd": ["python3", "scripts/routine-sweep.py"],
+      "ok_exit_codes": [0, 1],
+      "detail": "from the routine registry"
+    },
+    {
+      "id": "loop_cost",
+      "type": "json_file",
+      "label": "Loop spend",
+      "lane": 3,
+      "$comment": "When unknown_key reaches denominator_key, the value renders UNKNOWN instead of its literal (usually 0) value — an unmeasured cost must not read as a free one.",
+      "path": "state/cost-ledger.json",
+      "value_key": "cost_cents",
+      "denominator_key": "cycles",
+      "unknown_key": "unknown_cycles",
+      "detail": "cents this month"
+    },
+    {
+      "id": "decisions_recorded",
+      "type": "file_count",
+      "label": "ADRs",
+      "lane": 3,
+      "$comment": "An empty match renders UNKNOWN, not 0: naming conventions drift silently and a confident zero is the worst possible output.",
+      "path": "docs/adr",
+      "pattern": "^\\d+-.*\\.md$"
+    }
+  ]
+}
