@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-07-25",
+  "updatedAt": "2026-08-06",
   "sourceOfTruth": "Claude Code plugin files are canonical; Codex and Antigravity files are platform adapters checked for drift.",
   "canonicalFiles": [
     {
       "path": ".claude-plugin/plugin.json",
-      "sha256": "184d16373d76c9c6451448da020223a280012391cd35f76603842ea598a02072",
+      "sha256": "d8afb3f74fbf97f3d919d18bfde0892f1214d2810b89a83be5c31dca31e11788",
       "codexAdapters": [
         ".codex-plugin/plugin.json",
         "skills/codex-build/SKILL.md"
@@ -16,7 +16,7 @@
     },
     {
       "path": ".claude-plugin/marketplace.json",
-      "sha256": "c1db705a17a35cc719a907e9f3fd671d5cc11c5849ae8977c374c9554e1f84de",
+      "sha256": "3c63c3884d6a89d90f370d530ad34ecbf970ccfde4e4135b3c1cb07842591a1b",
       "codexAdapters": [
         ".codex-plugin/plugin.json",
         "skills/codex-build/SKILL.md"
