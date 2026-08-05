@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Glob, Grep
 
 # codex-imagegen — Codex CLI 経由の画像生成 + 決定論検品
 
-> 実装: `scripts/codex-imagegen.sh`
+> 実装: `${CLAUDE_PLUGIN_ROOT:-.}/scripts/codex-imagegen.sh`
 > **生成（非決定的・LLM）と 検品（決定論・スクリプト）を分離する**という ADR-019「自己申告禁止」の画像版。
 > エージェントの「画像を作りました」を成果の根拠にしない。**保存された実ファイル**だけが根拠。
 
@@ -30,11 +30,15 @@ allowed-tools: Bash, Read, Glob, Grep
 ## 使い方
 
 ```bash
-scripts/codex-imagegen.sh \
+bash "${CLAUDE_PLUGIN_ROOT:-.}/scripts/codex-imagegen.sh" \
   --prompt "濃紺の背景に、白い細線で描かれた幾何学パターン。文字は入れない。" \
   --aspect "16:9" \
   --out assets/img/banner.png
 ```
+
+> **`--out` は呼び出し元リポジトリからの相対パス**（スクリプトは CWD を変えない）。
+> plugin として導入した repo では `CLAUDE_PLUGIN_ROOT` が自動で入るので、上の行をそのまま使う。
+> kit を clone して直接試すときだけ `CLAUDE_PLUGIN_ROOT=/path/to/willink-claude-kit` を渡す。
 
 | オプション | 既定 | 説明 |
 |---|---|---|

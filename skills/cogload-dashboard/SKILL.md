@@ -45,10 +45,10 @@ load.** It shows outcome proxies and hides what does not need you.
 ## Run
 
 ```bash
-python3 scripts/cogload-dashboard.py                 # measure → .cogload/dashboard.html
-python3 scripts/cogload-dashboard.py --json          # snapshot to stdout
-python3 scripts/cogload-dashboard.py --offline       # skip network probes
-python3 scripts/cogload-dashboard.py --self-test     # hermetic, 29 checks
+python3 "${CLAUDE_PLUGIN_ROOT:-.}/scripts/cogload-dashboard.py"              # measure → .cogload/dashboard.html
+python3 "${CLAUDE_PLUGIN_ROOT:-.}/scripts/cogload-dashboard.py" --json       # snapshot to stdout
+python3 "${CLAUDE_PLUGIN_ROOT:-.}/scripts/cogload-dashboard.py" --offline    # skip network probes
+python3 "${CLAUDE_PLUGIN_ROOT:-.}/scripts/cogload-dashboard.py" --self-test  # hermetic, 29 checks
 ```
 
 | exit | meaning |
@@ -127,7 +127,7 @@ Lanes are `<section aria-labelledby>` with real headings. Severity is carried by
 are `<dl>`/`<dt>`/`<dd>` so each value is programmatically paired with its label.
 Collapsing uses native `<details>`, so expanded/collapsed state is exposed for free.
 Layout is rem-based with `minmax()` grids, so 200% zoom reflows without a horizontal
-scrollbar. Verify changes with `python3 scripts/a11y-static-check.py --root <out-dir>`.
+scrollbar. Verify changes with `python3 "${CLAUDE_PLUGIN_ROOT:-.}/scripts/a11y-static-check.py" --root <out-dir>`.
 
 ## Related
 

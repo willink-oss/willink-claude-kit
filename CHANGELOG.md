@@ -4,7 +4,15 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-08-06
+
+**Status**: 2.4.0 以降 main に入っていた 2 skill（`codex-imagegen` / `cogload-dashboard`）を**実際に配布する**リリース。両者は main に merge 済みだったが `plugin.json` の version を上げていなかったため、marketplace の `source.ref` が v2.4.0 タグに固定されたまま = **導入先リポジトリのどこからもロードされていなかった**。「merged ≠ shipped」が plugin 配布にも当てはまることの実例で、本版はその解消が主目的。あわせて両 skill の実行例が repo-relative パス（`scripts/...`）を書いており、kit 以外の CWD では解決できなかったのを `${CLAUDE_PLUGIN_ROOT:-.}` に統一した（他 skill は既にこの規約）。破壊的変更なし。
+
 ### Added
+- **`codex-imagegen` — Codex CLI の `image_gen` で画像を生成し、実ファイルを決定論的に検品する skill**（`skills/codex-imagegen/` + `scripts/codex-imagegen.sh`）。生成（非決定的・LLM）と検品（決定論・スクリプト）を分離する ADR-019「自己申告禁止」の画像版で、エージェントの「画像を作りました」ではなく**保存された実ファイル**だけを根拠にする。検品は `--out` のパスに対して マジックバイト（PNG は `IHDR` の存在まで）・実寸・最小バイト数を検査し、失敗すれば `--attempts` の範囲で再生成する。exit code は `0` = 生成 + 検品 pass / `1` = 検品 fail（試行使い切り）/ `2` = 引数誤り・`codex` 不在。
+  - **認証は ChatGPT サブスクリプションで足りる** — 画像 API キー不要 = 追加課金なし。内部ツール名 `image_gen__imagegen` は Codex 組み込みで、MCP や plugin の追加登録も要らない。
+  - **exit 0 は「妥当な画像ファイルである」までしか言わない** — 絵の内容が意図どおりかは保証しない。対外公開の前に人間（または別エージェントの Verifier）が実ファイルを目視する前提を skill 本文に明記した（API 検証における「200 ≠ 正しい」と同じ罠）。
+  - `--effort` の既定は `low`。画像生成の品質は reasoning effort では上がらず、上げるとコストと時間だけ増える。
 - **`cogload-dashboard` — 多エージェント運用の認知負荷を下げる single-pane 観測器**（`skills/cogload-dashboard/` + `scripts/cogload-dashboard.py` + `examples/cogload/cogload.config.example.json`）。1 人が多数の自走エージェントを監督すると、律速はスループットではなく**注意の配分**になる。一次研究が示す 4 つの制約に沿って設計した: ①**精査は信頼が高いほど低下する**（CHI 2025・n=319 で「AI がやれる」という確信と批判的思考は β=-0.69 の負相関）ため精査を自発性に任せない ②**持続的な受動監視は構造的に破綻する**（vigilance decrement）ため監視を文脈付きの離散的な意思決定に変換する ③**自己申告は較正が狂う**（METR RCT: 19% 遅くなった開発者が 20% 速いと信じていた）ため実測値のみを出す ④**認知作業は「検証・統合・スチュワードシップ」にシフトした**ため、進捗率やプロジェクト単位ではなくこの 3 レーンで画面を編成する。
   - **認知負荷そのものは表示しない** — 直接計装する 3 手法（行動テレメトリ / 質問紙 / 監視率）はいずれも敵対検証を通らなかった。代わりにアウトカム代理指標（滞留・実測済み率・コスト）を出し、人間を必要としないものは畳む。
   - **表示不変条件**（「改善」で壊さないこと）— probe 失敗は 0 でなく `unknown`（「何も見つからなかった」と「何も見ていない」を同じ見た目にしない）／カウントは必ず分母つき（`9` は事実でなく `9 / 走査 42` が事実）／打ち切りクエリは明示（`gh search` の既定 30 件は無言で completeness に見える）／決着済みは `<details>` へ畳む（context hygiene）／ページに出るのは表示時刻に実測したものだけ。
@@ -13,6 +21,10 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
   - **レーン 1 の振り分けは fail-safe** — 緊急 or「判断を求めている and 外部待ちでない and 決着済みでない」で上げる。ただし**外部待ち・決着済みの抑制を critical/high に適用しない**: 「自社の番」を「先方待ち」と誤読すると実作業が数週間静かに止まるため、見落としより過剰表示に倒す。規則を変更するときは**上げる側と下げる側の両方**にテストを足す（片側だけだと沈黙方向へドリフトし、その失敗は目に見えない）。
   - a11y: レーンは `aria-labelledby` 付き `<section>`、重要度は**色でなくテキスト**で符号化（WCAG 1.4.1・色は冗長符号）、指標は `<dl>/<dt>/<dd>` で値とラベルをプログラム的に対応付け、折り畳みはネイティブ `<details>`（expanded/collapsed が無償で公開される）、rem + `minmax()` で 200% 拡大でも横スクロールが出ない。生成 HTML は**自己完結**（外部フォント・スクリプト・画像ゼロ）でそのまま artifact として公開できる。
   - `scripts/test/test_cogload_dashboard.sh` — honesty invariant を回帰ロック（unknown が 0 に化けない・空スキャンが確信の 0 を出さない・何も測れないと exit 3）。ゲート自身の hermetic self-test は **29 checks**。
+
+### Fixed
+- **`codex-imagegen` / `cogload-dashboard` の実行例が導入先リポジトリで解決できなかった** — 両 skill は backing script を `scripts/codex-imagegen.sh` ・ `python3 scripts/cogload-dashboard.py` と **repo-relative** で書いていた。この形は kit の checkout で叩く分には通るが、plugin として導入した repo では CWD がその repo なので**存在しないパスを指す**。kit の他 skill が既に使っている `${CLAUDE_PLUGIN_ROOT:-.}/scripts/...` に統一した（plugin 導入時は `CLAUDE_PLUGIN_ROOT` が自動で入り、source から試すときだけ明示的に渡す）。**この不整合はテストではなく配布して初めて表面化する**（kit 自身の CI は常に kit の root で回るため、repo-relative でも緑になる）。
+  - あわせて `codex-imagegen` の `--out` が**呼び出し元リポジトリからの相対パス**であること（スクリプトは CWD を変えない）を skill 本文に明記した。
 
 ## [2.4.0] - 2026-07-25
 
