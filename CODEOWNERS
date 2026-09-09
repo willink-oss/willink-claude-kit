@@ -1,0 +1,7 @@
+# 既定のレビュア。fork したら自分の handle に置き換えてください。
+# ゲート資産（検査そのもの）は、緩める変更が無音で入らないよう必ずレビューを通します。
+*                   @OWNER
+/core/              @OWNER
+/engines/           @OWNER
+/fixtures/          @OWNER
+/verify.sh          @OWNER

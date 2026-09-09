@@ -1,0 +1,6 @@
+# review-gate.sh が提示するゲートの一覧。1 行 1 ゲートの TSV。
+#   <名前>	<コマンド>	<赤いときの案内>
+# `.claude/review-gates.tsv` に置くか、REVIEW_GATES_FILE で指す。
+# ⚠️ **自分のリポに在るゲートだけを書く。** 存在しないコマンドを書くと、
+#    毎回失敗して「赤が常態化」する（赤が当たり前になると他の赤も見落とす）。
+knowledge-index-guard	python3 "$ROOT/engines/regenerate-knowledge-index.py" --check	ナレッジ索引が実体と drift → 再生成してコミットする
