@@ -118,6 +118,36 @@ if [ -n "$INSTALL_PATH" ]; then
   fi
 fi
 
+# インストール済み版数 vs marketplace が配っている版数。
+#
+# なぜ要るか（2026-09-10 に 2 度目を踏んだ）: main に merge しても
+# `marketplace.json` の `source.ref` を上げなければ、導入先には旧版が居座る。
+# 旧版は**それ自体としては健全**なので、この doctor は HEALTHY を返してしまう。
+# 実際に v2.5.0 のまま「skills 17 件・HEALTHY」と出しながら、公開済みの
+# hook 14 本・engine 13 本・skill 26 本が 1 つも入っていない状態を見た。
+# **「壊れている」と「古い」は別の診断**なので、別の行で出す。
+#
+# 比較するのは **手元の 2 つ**（installed_plugins.json と marketplace のローカル複製）。
+# ネットワークは見ないので、複製自体が古い場合は検出できない。読めなければ
+# `??` にする（**不明を OK と書かない**）。
+MP_JSON="$CLAUDE_HOME/plugins/marketplaces/iwillink/.claude-plugin/marketplace.json"
+if [ -f "$MP_JSON" ]; then
+  MP_VER="$(json_get "$MP_JSON" "next((p.get('version','') for p in d.get('plugins',[]) if p.get('name')=='willink-claude-kit'), '')")"
+  if [ -z "$MP_VER" ]; then
+    c_warn "marketplace.json から version を読めない（0 件ではなく不明）: $MP_JSON"
+  elif [ -z "${VER:-}" ]; then
+    c_warn "installed version が不明のため版数を比較できない"
+  elif [ "$MP_VER" = "$VER" ]; then
+    c_ok "版数一致: installed=$VER / marketplace=$MP_VER"
+  else
+    c_bad "installed=$VER だが marketplace は $MP_VER — **旧版がロードされている**"
+    printf '       壊れてはいないが古い。新しい版の commands / skills / hooks は 1 つも入っていない。\n'
+    printf '       fix: /plugin から marketplace を update → willink-claude-kit を再 install → Claude Code 再起動\n'
+  fi
+else
+  c_warn "marketplace のローカル複製が無い（版数を比較できない）: $MP_JSON"
+fi
+
 # ---------------------------------------------------------------------------
 # 3. ロード対象の中身（コマンド / エージェント / スキル）
 # ---------------------------------------------------------------------------
@@ -143,6 +173,24 @@ if [ -n "$INSTALL_PATH" ] && [ -d "$INSTALL_PATH" ]; then
       c_bad "$d/ が無い"
     fi
   done
+
+  # hooks は 2.6.0 で初搭載。**数えていなければ「配られていない」に気づけない**。
+  # 実行可能でない hook は数から除く（置いてあるだけでは効かない）。
+  if [ -d "$INSTALL_PATH/hooks" ]; then
+    nh="$(find "$INSTALL_PATH/hooks" -maxdepth 1 -name '*.sh' -type f | wc -l | tr -d ' ')"
+    nx="$(find "$INSTALL_PATH/hooks" -maxdepth 1 -name '*.sh' -type f -perm -u+x | wc -l | tr -d ' ')"
+    if [ "$nh" -eq 0 ]; then
+      c_bad "hooks/ が空（.sh が 0 本）"
+    elif [ "$nx" -ne "$nh" ]; then
+      c_bad "hooks/ … $nh 本のうち実行可能 $nx 本（$((nh - nx)) 本に +x が無い）"
+      printf '       fix: chmod +x "%s"/hooks/*.sh\n' "$INSTALL_PATH"
+    else
+      c_ok "hooks/ … $nh 本（すべて実行可能）"
+    fi
+    printf '       ⚠️ hooks は settings.json へ自動登録されない。有効化は導入先の設定で行う。\n'
+  else
+    c_bad "hooks/ が無い — 2.6.0 以降で同梱。上の版数比較を確認する"
+  fi
 else
   c_warn "installPath 未確定のため中身検査をスキップ"
 fi

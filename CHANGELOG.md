@@ -4,6 +4,20 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.6.1] - 2026-09-10
+
+**Status**: `scripts/check-kit-enabled.sh`（doctor）が **hooks を数えず、旧版を HEALTHY と報告していた**のを直す。2.6.0 で hooks を初搭載したが、doctor は 162 行のうち hook への言及が 0 行だった。機能追加なし・破壊的変更なし。
+
+### Fixed
+
+- **doctor が「壊れている」と「古い」を別の診断として出すようになった。** 導入済み版数（`installed_plugins.json`）と marketplace のローカル複製が配っている版数を比べ、食い違えば `NG` にする。旧版は**それ自体としては健全**なので、比較しない限り doctor は HEALTHY を返す。実際に v2.5.0 のまま「skills 17 件・HEALTHY」と出しながら、公開済みの hook 14 本 / engine 13 本 / skill 26 本が 1 つも入っていない状態を観測した（`ref` を上げるまで配布は起きないため）。
+  - 比較するのは**手元の 2 つ**だけで、ネットワークは見ない。marketplace の複製自体が古い場合は検出できないので、そう書いてある。読めなければ `??`（不明）で、**単独では落とさない** — 不明を OK とも NG とも書かない。
+- **doctor が hooks を数えるようになった。** 本数に加えて**実行可能ビット**も見る（置いてあるだけの hook は効かない）。欠けていれば `chmod +x` を案内する。hooks が `settings.json` へ自動登録されないことも毎回 1 行出す。
+
+### Added
+
+- `scripts/test/test_doctor_version_and_hooks.sh`（13 assertion）— 版数一致で exit 0 / 旧版で exit 1 かつ HEALTHY と言わない / hooks の本数を出す / hooks 不在を検出 / `+x` 欠けで exit 1 かつ**案内どおり `chmod +x` すれば通る** / marketplace 不明は落とさない。変異試験で hooks の計数を消すと 1 件落ちることを確認済み。
+
 ## [2.6.0] - 2026-09-10
 
 **Status**: 開発標準とハーネスの正本リポから **Core を export した最初のリリース**。skill **26 本** / hook **14 本** / 決定論エンジン **13 本** / ハーネス文書 **6 本** を追加する。hooks はこれが初搭載。破壊的変更なし（既存 17 skill と名前衝突 0・上書きは `scripts/goal-loop.sh` の 1 本だけで、正本側を正とする）。
