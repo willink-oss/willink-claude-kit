@@ -139,7 +139,10 @@ real adoption need surfaces.
 
 ## Related references
 
-- 14-day verification log: i-willink-crew `assets/knowledge/2026-04-26-claude-kit-validation-log.md`
-- Day 7 mid-term report: `assets/knowledge/2026-05-04-claude-kit-interim-report.md`
-- v1.0 Go/No-Go report: `assets/knowledge/2026-05-10-claude-kit-validation-report.md`
 - Verification protocol: `docs/verification-protocol.md`
+- Release history: `CHANGELOG.md`
+
+The 14-day verification log, the day-7 interim report and the v1.0 Go/No-Go report are
+internal records and are not published. What this document and the verification protocol
+state is the full extent of what is public — the pointers above are the only ones a reader
+outside the organization can follow.
