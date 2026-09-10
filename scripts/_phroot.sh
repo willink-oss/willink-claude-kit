@@ -1,5 +1,5 @@
 #!/bin/bash
-# 検査対象リポジトリのルート解決（proof-harness 共通・shell 版）。
+# 検査対象リポジトリのルート解決（ハーネス共通・shell 版）。
 # 詳細な理由は _phroot.py の docstring を参照。
 # 解決順: PH_TARGET_ROOT -> git rev-parse --show-toplevel -> cwd
 
