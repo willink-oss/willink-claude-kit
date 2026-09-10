@@ -73,7 +73,19 @@ if ! git -C "$DIR" ls-files --error-unmatch "$FILE_PATH" >/dev/null 2>&1; then
   exit 0
 fi
 
-HOOK_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# 検査対象のリポジトリ（= 利用者のプロジェクト）を解決する。
+#
+# ⚠️ plugin として配ると `$0` は **plugin のキャッシュ配下**になる（2026-09-10 実測）。
+#    `dirname "$0"/../..` を「リポジトリのルート」として使うと、設定もログも
+#    plugin の中を指す。設定は永久に見つからず、ログは全プロジェクトで共有される。
+#    兄弟ファイル（`_advisory-log.sh` 等）を引くのに `$0` を使うのは正しい。
+#    **プロジェクトを指したいときだけ**これを使う。
+_project_dir() {
+  if [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then printf '%s' "$CLAUDE_PROJECT_DIR"; return; fi
+  git rev-parse --show-toplevel 2>/dev/null || pwd
+}
+
+HOOK_REPO="$(_project_dir)"
 # テストが実ログを退避して壊さずに縮退パスを検査できるよう、差し替え口だけ開ける。
 # 既定は従来どおりリポジトリ内のログ。
 LOG_DIR="${CLAUDE_TOOL_LOG_DIR:-${HOOK_REPO}/.claude/logs}"

@@ -24,7 +24,19 @@ set -uo pipefail
 [ "${REVIEW_GATE_DISABLED:-0}" = "1" ] && exit 0
 
 # --- リポジトリルート解決（.claude/hooks/ の 2 つ上） ---
-ROOT="$(cd "$(dirname "$0")/../.." 2>/dev/null && pwd)" || exit 0
+# 検査対象のリポジトリ（= 利用者のプロジェクト）を解決する。
+#
+# ⚠️ plugin として配ると `$0` は **plugin のキャッシュ配下**になる（2026-09-10 実測）。
+#    `dirname "$0"/../..` を「リポジトリのルート」として使うと、設定もログも
+#    plugin の中を指す。設定は永久に見つからず、ログは全プロジェクトで共有される。
+#    兄弟ファイル（`_advisory-log.sh` 等）を引くのに `$0` を使うのは正しい。
+#    **プロジェクトを指したいときだけ**これを使う。
+_project_dir() {
+  if [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then printf '%s' "$CLAUDE_PROJECT_DIR"; return; fi
+  git rev-parse --show-toplevel 2>/dev/null || pwd
+}
+
+ROOT="$(_project_dir)" || exit 0
 [ -n "$ROOT" ] || exit 0
 
 # --- sentinel: Wave1 が入った crew でのみ動く（他リポ/未整備は fail-open） ---
