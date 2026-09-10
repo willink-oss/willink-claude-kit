@@ -4,6 +4,24 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.7.0] - 2026-09-10
+
+**Status**: 2.6.0 で同梱した hook **14 本が 1 本も登録されていなかった**のを直す。Claude Code の plugin は `hooks/hooks.json` を読んで登録する規約で、`hooks/*.sh` を置くだけでは効かない。本版で **10 本が実際に登録される**。
+
+### Added
+
+- **`hooks/hooks.json`** — 10 本を 5 イベントへ登録する。`PreToolUse`（`pre-bash-safety` / `pre-file-protect` / `pre-write-collision`）・`PostToolUse`（`post-commit-verify` / `post-file-eval` / `post-tool-log`）・`UserPromptSubmit`（`pre-status-verify-guard` / `review-gate`）・`PreCompact`（`pre-compact-snapshot`）・`InstructionsLoaded`（`instructions-loaded-log`）。
+  - **同梱するが登録しない 4 本**: `pre-commit-quality.sh` / `pre-commit-shell-lint.sh` / `pre-commit-silent-zero.sh` は **git の pre-commit hook** で Claude Code のイベントには載らない（`.git/hooks/pre-commit` から呼ぶ）。`_advisory-log.sh` は共有ライブラリ。
+  - **止めるのは PreToolUse の 3 本だけ**。残る 7 本は fail-open で、`review-gate` は設定ファイルが無ければ通す。直 push を許すリポは `HARNESS_DIRECT_PUSH_REPOS`（カンマ区切り・**既定は空 = 常に PR を要求**）。
+
+### Fixed
+
+- **plugin 配下で `$0` が plugin のキャッシュを指す問題**。`dirname "$0"/../..` を「リポジトリのルート」として使っていた 4 本を、`CLAUDE_PROJECT_DIR`（無ければ `git rev-parse --show-toplevel`、それも無ければ `pwd`）に統一した。従来は `review-gate` が**利用者の設定を永久に見つけず**、`pre-write-collision` のログと `pre-compact-snapshot` のスナップショットが**全プロジェクトで共有**され、`pre-bash-safety` が毎 commit で警告を出し続ける状態だった。兄弟ファイルを `$0` から引くのは正しい用途なのでそのまま。
+
+### 検査
+
+`docs/harness/wiring.md` に plugin 配布の節（登録表・止める 3 本の既定・パスの前提）を追加。正本リポ側に `scripts/test-plugin-hooks.sh`（11 件）が入り、登録漏れ・`$0` からのプロジェクト推測・スナップショットの置き場所を CI で止める。
+
 ## [2.6.1] - 2026-09-10
 
 **Status**: `scripts/check-kit-enabled.sh`（doctor）が **hooks を数えず、旧版を HEALTHY と報告していた**のを直す。2.6.0 で hooks を初搭載したが、doctor は 162 行のうち hook への言及が 0 行だった。機能追加なし・破壊的変更なし。
