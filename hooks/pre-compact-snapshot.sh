@@ -13,7 +13,21 @@
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-SNAPSHOT_FILE="$SCRIPT_DIR/.compact-snapshot"
+# 検査対象のリポジトリ（= 利用者のプロジェクト）を解決する。
+#
+# ⚠️ plugin として配ると `$0` は **plugin のキャッシュ配下**になる（2026-09-10 実測）。
+#    `dirname "$0"/../..` を「リポジトリのルート」として使うと、設定もログも
+#    plugin の中を指す。設定は永久に見つからず、ログは全プロジェクトで共有される。
+#    兄弟ファイル（`_advisory-log.sh` 等）を引くのに `$0` を使うのは正しい。
+#    **プロジェクトを指したいときだけ**これを使う。
+_project_dir() {
+  if [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then printf '%s' "$CLAUDE_PROJECT_DIR"; return; fi
+  git rev-parse --show-toplevel 2>/dev/null || pwd
+}
+
+_SNAP_DIR="$(_project_dir)/.claude"
+mkdir -p "$_SNAP_DIR" 2>/dev/null || _SNAP_DIR="$SCRIPT_DIR"   # 書けなければ従来の場所
+SNAPSHOT_FILE="$_SNAP_DIR/.compact-snapshot"
 NOW=$(date '+%Y-%m-%d %H:%M')
 
 # git コンテキスト取得 (リポジトリ外でも安全に失敗)

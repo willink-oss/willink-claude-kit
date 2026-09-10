@@ -134,3 +134,45 @@ CLI オプション（`--root` `--rules-dir` `--skills-dir` `--memory-dir` `--kn
 止まったら、止まった理由を解決するか、人間の判断に上げてください。
 どちらもできないなら、そのゲートは最初から要りません
 （[`principles.md` P3](principles.md)）。
+
+---
+
+## plugin として入れた場合の hook（2026-09-10 実測）
+
+Claude Code の plugin は **`hooks/hooks.json`** を読んで hook を登録します。
+`plugin.json` に `hooks` キーを足すのではありません。**`hooks/*.sh` を同梱しただけでは
+1 本も登録されません**（v2.6.0 はこの状態で 14 本を配り、実効 0 本でした）。
+
+本 kit は `hooks/hooks.json` で **10 本**を登録します。
+
+| イベント | matcher | hook | 既定 |
+|---|---|---|---|
+| PreToolUse | `Bash` | `pre-bash-safety.sh` | **止める** |
+| PreToolUse | `Write\|Edit` | `pre-file-protect.sh` | **止める** |
+| PreToolUse | `Write` | `pre-write-collision.sh` | **止める** |
+| PostToolUse | `Bash` | `post-commit-verify.sh` | fail-open |
+| PostToolUse | `Write\|Edit` | `post-file-eval.sh` | fail-open |
+| PostToolUse | — | `post-tool-log.sh` | fail-open |
+| UserPromptSubmit | — | `pre-status-verify-guard.sh` | fail-open |
+| UserPromptSubmit | — | `review-gate.sh` | 設定が無ければ通す |
+| PreCompact | — | `pre-compact-snapshot.sh` | fail-open |
+| InstructionsLoaded | — | `instructions-loaded-log.sh` | fail-open |
+
+**同梱しているが登録しない 4 本**: `pre-commit-quality.sh` / `pre-commit-shell-lint.sh` /
+`pre-commit-silent-zero.sh` は **git の pre-commit hook** で、Claude Code のイベントには
+載りません（`.git/hooks/pre-commit` から呼びます）。`_advisory-log.sh` は共有ライブラリです。
+
+### 止める 3 本の既定
+
+- `pre-bash-safety.sh` — 直 push を許すリポは `HARNESS_DIRECT_PUSH_REPOS`（カンマ区切り）。
+  **既定は空 = 常に PR を要求**します。単独リポで直 push したい場合は設定してください。
+- `pre-file-protect.sh` / `pre-write-collision.sh` — 保護対象への上書きと、
+  同一ファイルへの衝突書き込みを止めます。
+
+### パスの前提
+
+hook は **`CLAUDE_PROJECT_DIR`**（無ければ `git rev-parse --show-toplevel`、それも無ければ `pwd`）を
+プロジェクトのルートとして使います。plugin 配下では `$0` は **plugin のキャッシュ**を指すため、
+`dirname "$0"` から遡ってリポジトリを推測すると、設定は永久に見つからず、
+ログとスナップショットが全プロジェクトで共有されます。`scripts/test-plugin-hooks.sh` が
+この書き方の再発を止めます。
