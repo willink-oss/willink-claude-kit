@@ -54,7 +54,7 @@ from datetime import date, datetime, timedelta, timezone
 import os as _os_ph
 import sys as _sys_ph
 _sys_ph.path.insert(0, _os_ph.path.dirname(_os_ph.path.abspath(__file__)))
-import _phroot  # proof-harness: 検査対象ルート解決
+import _phroot  # harness: 検査対象ルート解決
 
 REPO_ROOT = _phroot.target_root()
 DEFAULT_PROJECTS = os.path.expanduser("~/.claude/projects")

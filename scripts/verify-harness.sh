@@ -31,7 +31,7 @@ ok()    { pass=$((pass + 1)); [ "$JSON" -eq 0 ] && printf '  ✅ %s\n' "$*"; ret
 bad()   { fail=$((fail + 1)); FINDINGS+=("$1"); [ "$JSON" -eq 0 ] && printf '  ❌ %s\n' "$1"; return 0; }
 fatal() { [ "$JSON" -eq 0 ] && printf '❗ %s\n' "$*" || printf '{"status":"inconclusive","reason":"%s"}\n' "$*"; exit 2; }
 
-note "# proof-harness verify — $(date '+%Y-%m-%d %H:%M:%S %Z')"
+note "# willink-kit verify — $(date '+%Y-%m-%d %H:%M:%S %Z')"
 note ""
 
 # ---------------------------------------------------------------------------

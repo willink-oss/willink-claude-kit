@@ -11,7 +11,6 @@
 #   - UserPromptSubmit + additionalContext は fail-open の advisory で、
 #     over-fire しても「数行の reminder が context に入るだけ」= 副作用ほぼゼロ。
 #     失敗が起きる瞬間 (= 状態を聞かれた時) に正確に発火する。
-#   - 詳細: assets/knowledge/2026-06-01-doc-state-estimation-hook-design.md
 #
 # Exit: 常に 0 (fail-open, advisory only — 絶対にブロックしない)
 # Portable: macOS BSD grep ERE 互換 (-P / Perl エスケープ不使用)
