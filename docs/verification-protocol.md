@@ -110,4 +110,4 @@ stack promotion（🟡 → ✅）の判断基準は本書では定義しない�
 - 当時の Go/No-Go 基準（tool call -20% / CONDITIONAL/FAIL 率 -30% / context 1.3x /
   MEMORY 5 件 / 致命的失敗 0）のうち、未検証だった MEMORY と context の 2 指標が
   上記「v1.1 継続評価指標」へ繰り越された。**この旧基準を現在の運用基準として使わないこと**
-- 詳細: CHANGELOG `[1.0.0]`・i-willink-crew `assets/knowledge/2026-05-10-claude-kit-validation-report.md`
+- 詳細: CHANGELOG `[1.0.0]`（Go/No-Go の一次記録は社内記録のため非公開）
