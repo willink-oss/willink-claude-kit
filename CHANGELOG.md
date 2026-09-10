@@ -4,6 +4,34 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-09-10
+
+**Status**: 開発標準とハーネスの正本リポから **Core を export した最初のリリース**。skill **26 本** / hook **14 本** / 決定論エンジン **13 本** / ハーネス文書 **6 本** を追加する。hooks はこれが初搭載。破壊的変更なし（既存 17 skill と名前衝突 0・上書きは `scripts/goal-loop.sh` の 1 本だけで、正本側を正とする）。
+
+本版は「**merged ≠ shipped**」の 2 度目の実例でもある。2.5.0 は同じ理由（main に merge 済みだが version を上げず marketplace の `source.ref` が旧タグに固定）で作った版で、今回も 68 ファイルを main に入れた時点では**どの導入先にも届いていなかった**。公開リポで見えることと配布されていることは別で、`ref` を上げるまで配布は起きない。
+
+### Added
+
+- **決定論エンジン 13 本**（`scripts/`）— 「エージェントの自己申告を採点に使わない」を実装する層。合否は exit code だけで決める。`eval-harness.py`（回帰の分母）/ `govern.py`（ミスの蒸留）/ `agentlog.py` / `harness-lint.py` / `secret-scan-audit.py`（既知 25 形式の鍵に対する検出網羅率）/ `rule-promotion.py` / `required-check-audit.sh` / `destructive-audit.sh` / `gate-forge.sh`（ミス 1 件から hook を起こす）/ `advisory-tally.py` / `regenerate-knowledge-index.py` / `codex-spark.sh` / `goal-loop.sh`。すべて Python3 標準ライブラリと POSIX shell のみで動き、**ネットワークを使わない**。
+- **hook 14 本**（`hooks/`）— `pre-bash-safety.sh` / `pre-file-protect.sh` / `pre-write-collision.sh` / `pre-commit-quality.sh` / `pre-commit-shell-lint.sh` / `pre-commit-silent-zero.sh` / `pre-status-verify-guard.sh` / `post-commit-verify.sh` / `post-file-eval.sh` / `post-tool-log.sh` / `pre-compact-snapshot.sh` / `review-gate.sh` / `instructions-loaded-log.sh` / `_advisory-log.sh`。**settings.json への登録は行わない**（導入先の hook 設定を勝手に書き換えない）。13/14 が自己完結で、外部台帳に依存する 1 本は台帳が無ければ理由を 1 行出して skip する。
+  - **環境依存を設定駆動にした** — 直 push を許すリポは `HARNESS_DIRECT_PUSH_REPOS`（既定は空 = 常に PR を要求）、レビューゲートの一覧は `.claude/review-gates.tsv` / `REVIEW_GATES_FILE`。`hooks/review-gates.example.tsv` を同梱。
+- **skill 26 本**（`skills/`）— ハーネスの運用側。`gate-forge` / `mistake-rule-distill` / `eval-regression-guard` / `eval-dataset-build` / `secret-scan-hardening` / `destructive-env-guard` / `review-finding-repro` / `harness-kpi-ledger` / `hallucination-rate-meter` / `context-bloat-tracker` / `session-length-compact-audit` / `subagent-usage-analyzer` / `task-success-rate-track` / `retry-failure-classifier` / `prompt-ab-eval` / `commit-msg-quality-score` / `rule-promote-audit` / `rule-promotion-extract` / `rule-dedup-scan` / `trigger-vocab-dedup` / `knowledge-index-guard` / `knowledge-dedup-scan` / `knowledge-citation-coverage` / `memory-distill` / `ci-required-check-installer` / `codex-spark-delegate`。
+- **ハーネス文書 6 本**（`docs/harness/`）— `principles.md` / `practices.md` / `wiring.md` / `incidents.md` / `oss-vs-pro.md` / `product-readme.md`。由来が分かるよう名前空間を切ってある。
+- **`docs/harness/manifest.txt`** — 正本から export した資産の一覧（`<kind>\tpath`・53 行）。同梱の `scripts/verify-harness.sh` は**この manifest を分母にする**ので、導入先の既存ファイルを巻き込まずに「出した分」だけを検査する。glob で検査していた版は導入先の全 script を走査してタイムアウトし、自分自身を engine として再帰起動していた。
+- **`CONTRIBUTING.md` / `CODEOWNERS` / `.github/pull_request_template.md` / `NOTICE.md`** — 外部からの貢献を受ける口。実装の変更は**正本リポへ**戻る一方向で、公開リポは配布物であることを明記した。
+
+### Changed
+
+- `scripts/goal-loop.sh` を正本側の版に置き換えた（唯一の上書き）。exit code 契約は同じで、`--reset` / `--state` の扱いと自己テストが増えている。
+
+### Fixed
+
+- **公開ドキュメントから社内記録へのポインタを除去**（`docs/known-stack-coverage.md` / `docs/verification-protocol.md`）。非公開リポの名前と、外部からは到達できない社内ファイルパスが計 4 行残っていた。一次記録が非公開であることは明記し、到達できるポインタだけ残した。
+
+### 含まれないもの（3 段階配布の境界）
+
+`fixtures/` `profiles/` `adapters/` は**入っていない**。OSS（無料 MIT）は Core の hook / skill / engine までで、fixture は実案件のバグ由来のため有料チャネルの差別化要素にあたる。境界は正本リポの CI が機械で検査しており、混ざると export が失敗する。
+
 ## [2.5.0] - 2026-08-06
 
 **Status**: 2.4.0 以降 main に入っていた 2 skill（`codex-imagegen` / `cogload-dashboard`）を**実際に配布する**リリース。両者は main に merge 済みだったが `plugin.json` の version を上げていなかったため、marketplace の `source.ref` が v2.4.0 タグに固定されたまま = **導入先リポジトリのどこからもロードされていなかった**。「merged ≠ shipped」が plugin 配布にも当てはまることの実例で、本版はその解消が主目的。あわせて両 skill の実行例が repo-relative パス（`scripts/...`）を書いており、kit 以外の CWD では解決できなかったのを `${CLAUDE_PLUGIN_ROOT:-.}` に統一した（他 skill は既にこの規約）。破壊的変更なし。
