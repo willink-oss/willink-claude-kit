@@ -1,6 +1,6 @@
 ---
 name: codex-spark-delegate
-description: Claude Code または Codex から、完了条件が明確な小規模・局所・低リスクのコード編集、テスト追加、UI微調整、定型変換を GPT-5.3-Codex-Spark の独立 usage lane に委譲し、通常の Codex / Work 使用枠を温存する。トリガー語彙: Spark 委譲, Codex Spark, GPT-5.3-Codex-Spark, 軽量実装, 小規模修正, UI微調整, 別枠モデル, rate limit, レート制限, 通常枠を温存
+description: "Claude Code または Codex から、完了条件が明確な小規模・局所・低リスクのコード編集、テスト追加、UI微調整、定型変換を GPT-5.3-Codex-Spark の独立 usage lane に委譲し、通常の Codex / Work 使用枠を温存する。トリガー語彙: Spark 委譲, Codex Spark, GPT-5.3-Codex-Spark, 軽量実装, 小規模修正, UI微調整, 別枠モデル, rate limit, レート制限, 通常枠を温存"
 allowed-tools: Bash, Read, Glob, Grep
 ---
 

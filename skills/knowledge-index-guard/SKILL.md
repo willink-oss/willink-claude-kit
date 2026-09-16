@@ -1,6 +1,6 @@
 ---
 name: knowledge-index-guard
-description: <TARGET>/assets/knowledge の索引（<TARGET>/assets/knowledge-base.md）が実体と一致し broken link=0 であることを保証する。トリガー語彙: ナレッジ索引, knowledge index, 索引ガード, index guard, broken link チェック, knowledge-base 整合性, 索引 drift
+description: "<TARGET>/assets/knowledge の索引（<TARGET>/assets/knowledge-base.md）が実体と一致し broken link=0 であることを保証する。トリガー語彙: ナレッジ索引, knowledge index, 索引ガード, index guard, broken link チェック, knowledge-base 整合性, 索引 drift"
 ---
 
 # ナレッジ索引ガード（knowledge-index-guard）

@@ -1,6 +1,6 @@
 ---
 name: destructive-env-guard
-description: 破壊/env 変更コマンド（rm -rf・force push・reset --hard・aws delete・DNS・runtime env・secret rotation）が pre-bash-safety.sh でブロックされるかを読取専用で監査し、未カバーの gap に追加候補パターンを提示する（フックは改変しない・適用は人手/L3）。トリガー語彙: destructive audit, 破壊コマンド監査, env guard, self-lockout 監査, pre-bash-safety カバレッジ, フックの穴, gap 検出
+description: "破壊/env 変更コマンド（rm -rf・force push・reset --hard・aws delete・DNS・runtime env・secret rotation）が pre-bash-safety.sh でブロックされるかを読取専用で監査し、未カバーの gap に追加候補パターンを提示する（フックは改変しない・適用は人手/L3）。トリガー語彙: destructive audit, 破壊コマンド監査, env guard, self-lockout 監査, pre-bash-safety カバレッジ, フックの穴, gap 検出"
 ---
 
 # Destructive / Env Guard（カバレッジ監査 + 提案のみ・適用は L3）

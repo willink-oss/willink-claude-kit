@@ -1,6 +1,6 @@
 ---
 name: fanout-verify-synth
-description: Read the collected result of a fanned-out, adversarially verified claim set (verify.json) and decide DETERMINISTICALLY whether every claim is really verified, so synthesis is gated on data instead of eyeballing. A stop primitive in the goal-loop family whose verdict is an exit code, not the model's self-report. Triggers: fan-out verification, verify.json gate, synthesis gate, claim verification stop, adversarial verify, multi-agent verification.
+description: "Read the collected result of a fanned-out, adversarially verified claim set (verify.json) and decide DETERMINISTICALLY whether every claim is really verified, so synthesis is gated on data instead of eyeballing. A stop primitive in the goal-loop family whose verdict is an exit code, not the model's self-report. Triggers: fan-out verification, verify.json gate, synthesis gate, claim verification stop, adversarial verify, multi-agent verification."
 allowed-tools: Bash, Read, Write, Glob, Grep
 ---
 

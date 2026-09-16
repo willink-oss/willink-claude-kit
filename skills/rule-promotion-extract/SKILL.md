@@ -1,6 +1,6 @@
 ---
 name: rule-promotion-extract
-description: advisory フックの同種 warn 再発回数を集計し、閾値以上を H3(blocking)昇格候補として抽出する。トリガー語彙: 昇格候補, rule promotion, advisory 昇格, blocking 昇格, 再発集計, H3 昇格, common-mistakes 昇格
+description: "advisory フックの同種 warn 再発回数を集計し、閾値以上を H3(blocking)昇格候補として抽出する。トリガー語彙: 昇格候補, rule promotion, advisory 昇格, blocking 昇格, 再発集計, H3 昇格, common-mistakes 昇格"
 ---
 
 # rule-promotion-extract（advisory→blocking 昇格候補抽出）

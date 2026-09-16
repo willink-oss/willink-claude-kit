@@ -1,6 +1,6 @@
 ---
 name: eval-dataset-build
-description: golden eval データセットを JSON schema 検証で構築・検査する。records/errors を機械判定し pass/fail/observe を返す。トリガー語彙: eval データセット, golden dataset, データセット検証, dataset build, schema 検証, golden 構築, ゴールデンデータ, 評価データセット
+description: "golden eval データセットを JSON schema 検証で構築・検査する。records/errors を機械判定し pass/fail/observe を返す。トリガー語彙: eval データセット, golden dataset, データセット検証, dataset build, schema 検証, golden 構築, ゴールデンデータ, 評価データセット"
 ---
 
 # eval-dataset-build（golden eval データセットの schema 検証構築）

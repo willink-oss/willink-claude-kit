@@ -1,6 +1,6 @@
 ---
 name: a11y-static-gate
-description: Read-only deterministic gate that fails a build when an interactive element has no accessible name / role / state — across Flutter (.dart), React (.tsx/.jsx) and PHP/HTML templates. Structure-aware (ancestor chain, not line windows), with a baseline + ratchet so a legacy repo can adopt it without a rewrite, and an anti-gaming refusal to grow the baseline. Triggers: a11y gate, accessibility gate, アクセシビリティ ゲート, semantics 欠落, accessible name, button role, alt 欠落, 記号ラベル, a11y baseline, ratchet.
+description: "Read-only deterministic gate that fails a build when an interactive element has no accessible name / role / state — across Flutter (.dart), React (.tsx/.jsx) and PHP/HTML templates. Structure-aware (ancestor chain, not line windows), with a baseline + ratchet so a legacy repo can adopt it without a rewrite, and an anti-gaming refusal to grow the baseline. Triggers: a11y gate, accessibility gate, アクセシビリティ ゲート, semantics 欠落, accessible name, button role, alt 欠落, 記号ラベル, a11y baseline, ratchet."
 ---
 
 # a11y-static-gate

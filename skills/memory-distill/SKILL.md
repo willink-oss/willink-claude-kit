@@ -1,6 +1,6 @@
 ---
 name: memory-distill
-description: 自動メモリの索引（memory/MEMORY.md）と実体（memory/*.md）を突合し、孤児(未索引)・リンク切れ・重複エントリを決定論的に蒸留する。トリガー語彙: メモリ蒸留, memory distill, MEMORY 索引, メモリ孤児, memory orphan, 索引リンク切れ, メモリ重複エントリ
+description: "自動メモリの索引（memory/MEMORY.md）と実体（memory/*.md）を突合し、孤児(未索引)・リンク切れ・重複エントリを決定論的に蒸留する。トリガー語彙: メモリ蒸留, memory distill, MEMORY 索引, メモリ孤児, memory orphan, 索引リンク切れ, メモリ重複エントリ"
 ---
 
 # memory-distill（自動メモリ索引と実体の蒸留）

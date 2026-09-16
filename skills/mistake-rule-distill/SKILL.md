@@ -1,6 +1,6 @@
 ---
 name: mistake-rule-distill
-description: mistake-log-archive.md のミス経緯のうち common-mistakes.md にルール化（蒸留）されていないものを決定論的に抽出し、現役ルールへの昇格候補を提示する。トリガー語彙: ミス蒸留, mistake distill, ルール化候補, 未蒸留ミス, ミスログ蒸留, common-mistakes 追記候補, rule distill
+description: "mistake-log-archive.md のミス経緯のうち common-mistakes.md にルール化（蒸留）されていないものを決定論的に抽出し、現役ルールへの昇格候補を提示する。トリガー語彙: ミス蒸留, mistake distill, ルール化候補, 未蒸留ミス, ミスログ蒸留, common-mistakes 追記候補, rule distill"
 ---
 
 # mistake-rule-distill（未蒸留ミスのルール化候補抽出）

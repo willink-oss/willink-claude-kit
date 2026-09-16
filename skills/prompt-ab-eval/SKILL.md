@@ -1,6 +1,6 @@
 ---
 name: prompt-ab-eval
-description: プロンプト A/B の 2 スコアセットを同一 eval で採点し、勝者とマージンを決定論的に判定する（自己申告禁止・原則 P1）。トリガー語彙: プロンプト AB, A/B 評価, ab-eval, 勝率マージン, プロンプト比較, 勝者判定, prompt ab eval
+description: "プロンプト A/B の 2 スコアセットを同一 eval で採点し、勝者とマージンを決定論的に判定する（自己申告禁止・原則 P1）。トリガー語彙: プロンプト AB, A/B 評価, ab-eval, 勝率マージン, プロンプト比較, 勝者判定, prompt ab eval"
 ---
 
 # prompt-ab-eval — プロンプト A/B の決定論勝者判定

@@ -1,6 +1,6 @@
 ---
 name: coverage-floor-lock
-description: Read-only guard that checks test coverage against a floor (lower-bound threshold) AND detects floor-lowering diffs — the anti-gaming case where the floor is quietly reduced so a dropping coverage number still passes. Exits 1 on below-floor or a lowered floor. Triggers: coverage floor, coverage lower bound, below floor, floor lowered, coverage gate, coverage guard.
+description: "Read-only guard that checks test coverage against a floor (lower-bound threshold) AND detects floor-lowering diffs — the anti-gaming case where the floor is quietly reduced so a dropping coverage number still passes. Exits 1 on below-floor or a lowered floor. Triggers: coverage floor, coverage lower bound, below floor, floor lowered, coverage gate, coverage guard."
 ---
 
 # coverage-floor-lock

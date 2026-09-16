@@ -534,11 +534,54 @@ def _parse_frontmatter(text):
     return fm
 
 
+def _strict_yaml_issue(text):
+    """frontmatter が**厳密な YAML パーサ**でも読めるかを検査する。
+
+    なぜ要るか（2026-09-16 実測）: Claude Code と Codex は frontmatter を寛容に読むが、
+    skills.sh の `skills` CLI・PyYAML・OpenCode 系は厳密 YAML で読む。description に
+    「トリガー語彙: foo」のように **引用符なしの `: `** が入ると厳密側は
+    `mapping values are not allowed here` で落とし、その skill は**存在しない扱い**になる。
+    crew 96 本中 93 本・OSS kit 43 本中 40 本がこれで skills CLI から見えていなかった。
+    本 lint は独自の寛容パーサ（_parse_frontmatter）で読んでいたため、消費側と同じ盲点を
+    持ち一度も鳴らなかった。厳密パーサで**別の目**を入れる。PyYAML が無い環境では
+    「引用符なしの値に `: ` / ` #` を含む」を同じ意味の代理検査として使う（fail-open にしない）。
+    """
+    if not text.startswith("---"):
+        return None
+    end = text.find("\n---", 3)
+    if end == -1:
+        return None
+    block = text[3:end].lstrip("\n")
+    try:
+        import yaml  # type: ignore
+    except Exception:
+        yaml = None
+    if yaml is not None:
+        try:
+            d = yaml.safe_load(block)
+        except Exception as e:
+            return "厳密 YAML 不可（{}）— 値を \"…\" で囲む".format(str(e).splitlines()[0][:60])
+        if not isinstance(d, dict):
+            return "厳密 YAML 不可（mapping でない）"
+        return None
+    for ln in block.splitlines():
+        m = re.match(r"^([A-Za-z_-]+):\s*(.*)$", ln)
+        if not m:
+            continue
+        v = m.group(2)
+        if v and v[0] not in "\"'|>[{" and (": " in v or " #" in v):
+            return "厳密 YAML 不可の疑い（引用符なしの値に ': ' / ' #'）— 値を \"…\" で囲む"
+    return None
+
+
 def _skill_desc_issues(text):
     issues = []
     fm = _parse_frontmatter(text)
     if fm is None:
         return ["frontmatter 無"]
+    strict = _strict_yaml_issue(text)
+    if strict:
+        issues.append(strict)
     if not fm.get("name"):
         issues.append("name 無")
     desc = fm.get("description", "")
@@ -591,16 +634,22 @@ def selftest_skill_desc():
         skills = os.path.join(d, "skills")
         # good skill
         _write(os.path.join(skills, "good", "SKILL.md"),
-               "---\nname: good\ndescription: 十分な長さの説明。トリガー語彙: foo, bar, baz\n---\n# g\n")
+               "---\nname: good\ndescription: \"十分な長さの説明。トリガー語彙: foo, bar, baz\"\n---\n# g\n")
         # bad skill: description 無 & frontmatter に name のみ
         _write(os.path.join(skills, "bad", "SKILL.md"),
                "---\nname: bad\n---\n# b\n本文\n")
+        # bad2: 寛容パーサでは読めるが厳密 YAML では落ちる（引用符なしの ': '）
+        _write(os.path.join(skills, "bad2", "SKILL.md"),
+               "---\nname: bad2\ndescription: 十分な長さの説明。トリガー語彙: foo, bar, baz\n---\n# b2\n")
         opts = _mkopts(root=d, skills_dir=skills)
         r = run_skill_desc(opts)
-        if r["violations"] != 1:
-            fails.append("(a) 指摘 期待1 実際{}".format(r["violations"]))
-        if r["violations"] and r["items"][0]["skill"] != "bad":
+        if r["violations"] != 2:
+            fails.append("(a) 指摘 期待2 実際{}".format(r["violations"]))
+        flagged = {it["skill"] for it in r["items"]}
+        if "good" in flagged:
             fails.append("(a) 誤検出（good を指摘）")
+        if "bad2" not in flagged or not any("厳密 YAML" in x for it in r["items"] if it["skill"] == "bad2" for x in it["issues"]):
+            fails.append("(a2) 厳密 YAML 不可の skill を見逃した（消費側と同じ盲点）")
         opts2 = _mkopts(root=d, skills_dir=os.path.join(d, "nope"))
         r2 = run_skill_desc(opts2)
         if r2["target_present"] or r2["violations"] != 0:

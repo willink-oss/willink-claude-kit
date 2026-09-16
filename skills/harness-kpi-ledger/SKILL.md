@@ -1,6 +1,6 @@
 ---
 name: harness-kpi-ledger
-description: ハーネス KPI（自然言語ルール残数・advisory/blocking フック数・CI required check 数）を決定論的に計測し、ledger 行として追記して月次の退行を検知する。トリガー語彙: ハーネス KPI, KPI 計測, kpi ledger, ルール残数計測, フック数計測, KPI 退行検知, harness kpi
+description: "ハーネス KPI（自然言語ルール残数・advisory/blocking フック数・CI required check 数）を決定論的に計測し、ledger 行として追記して月次の退行を検知する。トリガー語彙: ハーネス KPI, KPI 計測, kpi ledger, ルール残数計測, フック数計測, KPI 退行検知, harness kpi"
 ---
 
 # harness-kpi-ledger（ハーネス KPI 計測 + ledger 追記 + 退行検知）

@@ -1,6 +1,6 @@
 ---
 name: hallucination-rate-meter
-description: 文書の主張を出典照合し、裏付けの無い（unsupported）主張の割合を決定論採点して閾値超を不合格にするゲート。トリガー語彙: ハルシネーション率, hallucination rate, unsupported 率, 幻覚率計測, 裏取り率, 未裏付け主張, 主張の出典照合, 公開前ハルシネーションチェック
+description: "文書の主張を出典照合し、裏付けの無い（unsupported）主張の割合を決定論採点して閾値超を不合格にするゲート。トリガー語彙: ハルシネーション率, hallucination rate, unsupported 率, 幻覚率計測, 裏取り率, 未裏付け主張, 主張の出典照合, 公開前ハルシネーションチェック"
 ---
 
 # hallucination-rate-meter

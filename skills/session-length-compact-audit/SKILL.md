@@ -1,6 +1,6 @@
 ---
 name: session-length-compact-audit
-description: transcript を session 別に集計し、session 長（メッセージ数）と compact 発生回数を実測して衛生違反（長すぎる session・compact 多発）を抽出する。トリガー語彙: session 長監査, compact 頻度, session 衛生, session hygiene, compact 回数, session 分割, /compact 過多, 長時間 session
+description: "transcript を session 別に集計し、session 長（メッセージ数）と compact 発生回数を実測して衛生違反（長すぎる session・compact 多発）を抽出する。トリガー語彙: session 長監査, compact 頻度, session 衛生, session hygiene, compact 回数, session 分割, /compact 過多, 長時間 session"
 ---
 
 # session-length-compact-audit（session 長 × compact 頻度監査）
