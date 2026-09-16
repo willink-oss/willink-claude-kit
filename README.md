@@ -77,6 +77,14 @@ Antigravity では `skills/antigravity-build/SKILL.md` を adapter skill とし�
 
 詳細は [docs/antigravity-adoption-guide.md](docs/antigravity-adoption-guide.md) を参照。
 
+### skills CLI（Cursor / OpenCode / Cline など 75+ agent 共通）
+
+skill 単位で入れるなら [skills.sh](https://www.skills.sh/) の CLI が使える（`--list` で一覧・`--skill <name>` で個別）:
+
+```bash
+npx skills add willink-oss/willink-claude-kit
+```
+
 ## ドメイン知識の拡張
 
 各プロジェクトで `.claude/skills/project-standards/SKILL.md` を作成すると、kit の 4 agent と Codex / Antigravity の adapter はこれを参照する。雛形は [examples/project-standards-template/](examples/project-standards-template/) からコピー。
