@@ -1,6 +1,6 @@
 ---
 name: architecture-parity-gate
-description: Detect where a code tree violates its declared architecture — config-declared allowed dependency directions plus per-layer naming rules. A language-agnostic, python-stdlib-only, detection-only gate (fixing is a human's job; wiring it into CI is a deliberate human step). Triggers: architecture violation, dependency direction check, layer boundary, naming-rule gate, architecture parity, dependency-direction gate.
+description: "Detect where a code tree violates its declared architecture — config-declared allowed dependency directions plus per-layer naming rules. A language-agnostic, python-stdlib-only, detection-only gate (fixing is a human's job; wiring it into CI is a deliberate human step). Triggers: architecture violation, dependency direction check, layer boundary, naming-rule gate, architecture parity, dependency-direction gate."
 allowed-tools: Bash, Read
 ---
 

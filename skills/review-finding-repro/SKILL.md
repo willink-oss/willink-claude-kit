@@ -1,6 +1,6 @@
 ---
 name: review-finding-repro
-description: 同一 diff を複数回レビューした時の finding セット群の Jaccard 一致率を決定論的に測り、レビューの再現性（安定性）を機械採点する enforcement primitive。トリガー語彙: レビュー再現性, finding 一致率, review repro, Jaccard 再現性, レビュー安定性, 指摘再現率, review reproducibility
+description: "同一 diff を複数回レビューした時の finding セット群の Jaccard 一致率を決定論的に測り、レビューの再現性（安定性）を機械採点する enforcement primitive。トリガー語彙: レビュー再現性, finding 一致率, review repro, Jaccard 再現性, レビュー安定性, 指摘再現率, review reproducibility"
 ---
 
 # review-finding-repro（レビュー指摘の Jaccard 再現性ゲート）

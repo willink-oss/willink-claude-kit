@@ -1,6 +1,6 @@
 ---
 name: context-bloat-tracker
-description: transcript の session 別メッセージ数・近似入力量を集計し、context が肥大した session を決定論的に検出する。トリガー語彙: context 肥大, context bloat, session 肥大検出, 入力量推移, transcript 集計, context diet, 肥大 session, コンテキスト汚染
+description: "transcript の session 別メッセージ数・近似入力量を集計し、context が肥大した session を決定論的に検出する。トリガー語彙: context 肥大, context bloat, session 肥大検出, 入力量推移, transcript 集計, context diet, 肥大 session, コンテキスト汚染"
 ---
 
 # context-bloat-tracker（session context 肥大トラッカー）

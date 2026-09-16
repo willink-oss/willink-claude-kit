@@ -1,6 +1,6 @@
 ---
 name: knowledge-dedup-scan
-description: <KNOWLEDGE_DIR>/*.md の title を正規化して近似重複クラスタを検出し、統合候補を決定論的に提示する。トリガー語彙: ナレッジ重複, knowledge dedup, 重複ナレッジ, ナレッジ統合候補, 近似重複クラスタ, knowledge dedup scan, ナレッジ棚卸し
+description: "<KNOWLEDGE_DIR>/*.md の title を正規化して近似重複クラスタを検出し、統合候補を決定論的に提示する。トリガー語彙: ナレッジ重複, knowledge dedup, 重複ナレッジ, ナレッジ統合候補, 近似重複クラスタ, knowledge dedup scan, ナレッジ棚卸し"
 ---
 
 # knowledge-dedup-scan（ナレッジ近似重複クラスタの検出と統合候補提示）

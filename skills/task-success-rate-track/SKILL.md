@@ -1,6 +1,6 @@
 ---
 name: task-success-rate-track
-description: goal-loop の帰結ログ群（GOAL MET / CAP REACHED）を集計し、タスク成功率（--check 到達率）を決定論的に採点する。トリガー語彙: タスク成功率, 成功率集計, success rate, goal-loop 到達率, ループ帰結集計, CAP 率, task success rate
+description: "goal-loop の帰結ログ群（GOAL MET / CAP REACHED）を集計し、タスク成功率（--check 到達率）を決定論的に採点する。トリガー語彙: タスク成功率, 成功率集計, success rate, goal-loop 到達率, ループ帰結集計, CAP 率, task success rate"
 ---
 
 # タスク成功率トラッキング（B10）

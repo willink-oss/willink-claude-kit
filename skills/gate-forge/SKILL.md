@@ -1,6 +1,6 @@
 ---
 name: gate-forge
-description: 再発したミスの記述から fail-closed PreToolUse hook の scaffold（+ test-hooks の block/pass ケース雛形）を staging ディレクトリに生成する（既存 hooks/settings は変更しない・配線は人手）。トリガー語彙: gate forge, ガード生成, fail-closed hook 雛形, フック scaffold, ミスをガード化, hook ジェネレータ, gate-forge, 再発防止フック
+description: "再発したミスの記述から fail-closed PreToolUse hook の scaffold（+ test-hooks の block/pass ケース雛形）を staging ディレクトリに生成する（既存 hooks/settings は変更しない・配線は人手）。トリガー語彙: gate forge, ガード生成, fail-closed hook 雛形, フック scaffold, ミスをガード化, hook ジェネレータ, gate-forge, 再発防止フック"
 allowed-tools: Bash, Read
 ---
 

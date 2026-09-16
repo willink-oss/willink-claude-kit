@@ -1,6 +1,6 @@
 ---
 name: token-codegen-gate
-description: Config-driven codegen drift gate. Runs a generate command and verifies the regenerated artifacts equal the committed (tracked) files with zero diff, non-destructively. Works for design tokens, TS types, OpenAPI clients, protobuf, and any codegen. Exits 1 on drift. Triggers: codegen drift, codegen gate, generated artifact diff, generate drift, git diff exit-code, regenerate check, DS token codegen, codegen parity.
+description: "Config-driven codegen drift gate. Runs a generate command and verifies the regenerated artifacts equal the committed (tracked) files with zero diff, non-destructively. Works for design tokens, TS types, OpenAPI clients, protobuf, and any codegen. Exits 1 on drift. Triggers: codegen drift, codegen gate, generated artifact diff, generate drift, git diff exit-code, regenerate check, DS token codegen, codegen parity."
 allowed-tools: Bash, Read
 ---
 

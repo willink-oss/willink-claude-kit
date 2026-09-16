@@ -1,6 +1,6 @@
 ---
 name: a11y-standards
-description: UI を作る/変える全変更に適用するアクセシビリティ標準。accessible name / role / state の三点セット + 文字拡大 + コントラスト + ターゲットサイズ + キーボードを、Flutter / React(Next.js) / WordPress(PHP) のイディオムと検証手段（決定論ゲート・自動テスト・人手）に落とす。Triggers: accessibility, a11y, アクセシビリティ, screen reader, VoiceOver, TalkBack, semantics, ARIA, alt text, dynamic type, 文字サイズ, contrast, keyboard navigation, tap target, WCAG.
+description: "UI を作る/変える全変更に適用するアクセシビリティ標準。accessible name / role / state の三点セット + 文字拡大 + コントラスト + ターゲットサイズ + キーボードを、Flutter / React(Next.js) / WordPress(PHP) のイディオムと検証手段（決定論ゲート・自動テスト・人手）に落とす。Triggers: accessibility, a11y, アクセシビリティ, screen reader, VoiceOver, TalkBack, semantics, ARIA, alt text, dynamic type, 文字サイズ, contrast, keyboard navigation, tap target, WCAG."
 ---
 
 # a11y standards — 後付けしない前提の設計標準

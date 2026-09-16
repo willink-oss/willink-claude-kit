@@ -1,6 +1,6 @@
 ---
 name: rule-dedup-scan
-description: CLAUDE.md と docs/*.md の間で重複・矛盾するルール行を決定論的に検出し、常駐コンテキストの二重管理を解消する。トリガー語彙: ルール重複検出, rule dedup, CLAUDE ルール重複, 常駐ルール重複, ルール矛盾検出, ルール集約, rule dedup scan
+description: "CLAUDE.md と docs/*.md の間で重複・矛盾するルール行を決定論的に検出し、常駐コンテキストの二重管理を解消する。トリガー語彙: ルール重複検出, rule dedup, CLAUDE ルール重複, 常駐ルール重複, ルール矛盾検出, ルール集約, rule dedup scan"
 ---
 
 # rule-dedup-scan（CLAUDE.md × rules 間のルール重複検出）

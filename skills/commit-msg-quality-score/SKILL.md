@@ -1,6 +1,6 @@
 ---
 name: commit-msg-quality-score
-description: git 範囲の commit メッセージを決定論的に採点し、空虚コミット（「更新」「wip」等・prefix 正しくても中身なし）を機械的に検出する。トリガー語彙: commit 品質, コミットメッセージ採点, 空虚コミット検出, commit-score, なぜ欠落採点, commit message quality
+description: "git 範囲の commit メッセージを決定論的に採点し、空虚コミット（「更新」「wip」等・prefix 正しくても中身なし）を機械的に検出する。トリガー語彙: commit 品質, コミットメッセージ採点, 空虚コミット検出, commit-score, なぜ欠落採点, commit message quality"
 ---
 
 # コミットメッセージ品質スコア（B05）

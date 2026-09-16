@@ -1,6 +1,6 @@
 ---
 name: rule-promote-audit
-description: docs/ の自然言語ルールを棚卸しし、common-mistakes.md の advisory 記述から H3(blocking 検証)への昇格候補を機械的に抽出する。トリガー語彙: 自然言語ルール棚卸し, rule-promote audit, ルール行数集計, ルール昇格監査, H3 検証昇格候補, rule promote
+description: "docs/ の自然言語ルールを棚卸しし、common-mistakes.md の advisory 記述から H3(blocking 検証)への昇格候補を機械的に抽出する。トリガー語彙: 自然言語ルール棚卸し, rule-promote audit, ルール行数集計, ルール昇格監査, H3 検証昇格候補, rule promote"
 ---
 
 # rule-promote-audit（自然言語ルール棚卸し + H3 昇格候補抽出）

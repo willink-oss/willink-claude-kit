@@ -1,6 +1,6 @@
 ---
 name: ci-required-check-installer
-description: 対象リポ/ブランチの CI required status check を読取専用で監査し、未導入なら 責任者 承認後の適用コマンド例を提示する（適用はしない）。トリガー語彙: required check, branch protection 監査, CI ゲート未導入, required status check, 必須チェック監査, ブランチ保護
+description: "対象リポ/ブランチの CI required status check を読取専用で監査し、未導入なら 責任者 承認後の適用コマンド例を提示する（適用はしない）。トリガー語彙: required check, branch protection 監査, CI ゲート未導入, required status check, 必須チェック監査, ブランチ保護"
 ---
 
 # CI Required Check Installer（監査 + 提案のみ・適用は L3）

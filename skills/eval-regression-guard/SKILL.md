@@ -1,6 +1,6 @@
 ---
 name: eval-regression-guard
-description: 現行の評価スコアを baseline と比較し、許容誤差を超える回帰を検知してブロックする。metrics ごとに delta を機械判定し pass/fail/observe を返す。トリガー語彙: 回帰検知, regression guard, スコア回帰, baseline 比較, 回帰ガード, スコア低下検知, 性能後退, リグレッション
+description: "現行の評価スコアを baseline と比較し、許容誤差を超える回帰を検知してブロックする。metrics ごとに delta を機械判定し pass/fail/observe を返す。トリガー語彙: 回帰検知, regression guard, スコア回帰, baseline 比較, 回帰ガード, スコア低下検知, 性能後退, リグレッション"
 ---
 
 # eval-regression-guard（現行 vs baseline スコアの回帰検知ゲート）

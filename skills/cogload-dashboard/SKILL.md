@@ -1,6 +1,6 @@
 ---
 name: cogload-dashboard
-description: Generate a single-pane operations dashboard that answers "what needs me right now?" by live-probing scattered state (a decision queue, open PRs, endpoints, scheduled work, cost) and folding away everything that does not need a human. Config-driven, self-contained HTML, no network at render time. A failed probe renders UNKNOWN, never 0. Triggers: cognitive load, dashboard, single pane, mission control, what needs me, agent ops, status overview, decision queue, operator overload.
+description: "Generate a single-pane operations dashboard that answers \"what needs me right now?\" by live-probing scattered state (a decision queue, open PRs, endpoints, scheduled work, cost) and folding away everything that does not need a human. Config-driven, self-contained HTML, no network at render time. A failed probe renders UNKNOWN, never 0. Triggers: cognitive load, dashboard, single pane, mission control, what needs me, agent ops, status overview, decision queue, operator overload."
 allowed-tools: Bash, Read, Glob, Grep
 ---
 

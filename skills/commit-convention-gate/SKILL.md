@@ -1,6 +1,6 @@
 ---
 name: commit-convention-gate
-description: Deterministically check ONE commit message (arg / file / stdin) and reject it (exit 1) on a bad prefix, an empty phrase (a correct prefix followed by "update X"), or a missing WHY. No LLM — same input, same output. Wiring it as a commit-msg hook is a separate manual step. Triggers: commit convention, commit-msg check, reject empty commits, prefix check, missing why, conventional commits gate.
+description: "Deterministically check ONE commit message (arg / file / stdin) and reject it (exit 1) on a bad prefix, an empty phrase (a correct prefix followed by \"update X\"), or a missing WHY. No LLM — same input, same output. Wiring it as a commit-msg hook is a separate manual step. Triggers: commit convention, commit-msg check, reject empty commits, prefix check, missing why, conventional commits gate."
 allowed-tools: Bash, Read
 ---
 

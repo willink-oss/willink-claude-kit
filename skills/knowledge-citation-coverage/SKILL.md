@@ -1,6 +1,6 @@
 ---
 name: knowledge-citation-coverage
-description: 記事・ナレッジの主張に対する出典 URL 充足率を決定論採点し、閾値未満を不合格にするゲート。トリガー語彙: 出典充足率, citation coverage, 引用カバレッジ, 出典チェック, ソース裏取り, 記事の裏取り, 主張の出典, 公開前チェック
+description: "記事・ナレッジの主張に対する出典 URL 充足率を決定論採点し、閾値未満を不合格にするゲート。トリガー語彙: 出典充足率, citation coverage, 引用カバレッジ, 出典チェック, ソース裏取り, 記事の裏取り, 主張の出典, 公開前チェック"
 ---
 
 # knowledge-citation-coverage

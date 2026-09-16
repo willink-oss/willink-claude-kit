@@ -1,6 +1,6 @@
 ---
 name: retry-failure-classifier
-description: 対象リポジトリ のローカル tool ログ（.claude/logs/*-tools.jsonl）から tool の失敗/リトライ（exit_code 非空非0）を抽出し、多発している tool を分類する。トリガー語彙: リトライ分類, 失敗分類, retry classifier, tool 失敗集計, どの tool がよく失敗, exit_code 集計, 失敗多発 tool
+description: "対象リポジトリ のローカル tool ログ（.claude/logs/*-tools.jsonl）から tool の失敗/リトライ（exit_code 非空非0）を抽出し、多発している tool を分類する。トリガー語彙: リトライ分類, 失敗分類, retry classifier, tool 失敗集計, どの tool がよく失敗, exit_code 集計, 失敗多発 tool"
 ---
 
 # Retry / Failure Classifier（A04）

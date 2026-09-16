@@ -1,6 +1,6 @@
 ---
 name: maker-checker-relay
-description: Relay a Generator (implementer = Maker) and a read-only Verifier (Checker — the kit's dev-reviewer agent, a /review session, or a human) until tests are green AND the Checker has zero blocking findings. A goal-loop wrapper whose stop condition is a deterministic gate, not the model's self-report. Triggers: maker-checker, generator-verifier relay, implement-then-review loop, no self-review, /review loop, relay.
+description: "Relay a Generator (implementer = Maker) and a read-only Verifier (Checker — the kit's dev-reviewer agent, a /review session, or a human) until tests are green AND the Checker has zero blocking findings. A goal-loop wrapper whose stop condition is a deterministic gate, not the model's self-report. Triggers: maker-checker, generator-verifier relay, implement-then-review loop, no self-review, /review loop, relay."
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Agent
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: live-state-verify-guard
-description: Scan a report body and flag every state-claim (merged/deployed/published/released/done) that has no live probe (gh/curl/aws/git) preceding it in the same section. A read-only, deterministic audit — one unverified claim exits 1; a document is plan, live is state. Triggers: live-state audit, unverified claim, status-claim verification, report verify guard, no self-report, doc-vs-live.
+description: "Scan a report body and flag every state-claim (merged/deployed/published/released/done) that has no live probe (gh/curl/aws/git) preceding it in the same section. A read-only, deterministic audit — one unverified claim exits 1; a document is plan, live is state. Triggers: live-state audit, unverified claim, status-claim verification, report verify guard, no self-report, doc-vs-live."
 allowed-tools: Bash, Read, Glob, Grep
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: judge-rubric-vote
-description: Aggregate N independent judge votes (verdict + optional score) into a majority verdict gated by a deterministic agreement threshold. A split panel is "hung" and FAILS instead of being spun as a pass; no votes = observe (exit 2), never a fail-open pass. No LLM call — pure deterministic tally. Triggers: judge vote, judge-vote, rubric vote, majority verdict, LLM judge panel, agreement threshold, hung jury.
+description: "Aggregate N independent judge votes (verdict + optional score) into a majority verdict gated by a deterministic agreement threshold. A split panel is \"hung\" and FAILS instead of being spun as a pass; no votes = observe (exit 2), never a fail-open pass. No LLM call — pure deterministic tally. Triggers: judge vote, judge-vote, rubric vote, majority verdict, LLM judge panel, agreement threshold, hung jury."
 allowed-tools: Bash, Read, Write, Glob, Grep
 ---
 

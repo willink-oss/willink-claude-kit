@@ -1,6 +1,6 @@
 ---
 name: codex-imagegen
-description: Generate images by delegating to the Codex CLI's built-in image_gen tool, then verify the saved file deterministically (magic bytes + real dimensions) before it is used. Runs on a ChatGPT subscription — no image API key required. Triggers: 画像生成, 画像を作る, image generation, generate image, アイコン生成, バナー生成, OGP 画像, サムネイル, illustration, codex image, imagegen, ビジュアル作成
+description: "Generate images by delegating to the Codex CLI's built-in image_gen tool, then verify the saved file deterministically (magic bytes + real dimensions) before it is used. Runs on a ChatGPT subscription — no image API key required. Triggers: 画像生成, 画像を作る, image generation, generate image, アイコン生成, バナー生成, OGP 画像, サムネイル, illustration, codex image, imagegen, ビジュアル作成"
 allowed-tools: Bash, Read, Glob, Grep
 ---
 

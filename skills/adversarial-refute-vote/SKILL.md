@@ -1,6 +1,6 @@
 ---
 name: adversarial-refute-vote
-description: Put one claim to N independent refute votes and stop adoption when a strict majority vote "refuted". A deterministic aggregation gate — the threshold decision comes from a tally, never from the model's self-report; no LLM is called. Triggers: adversarial refute, refute vote, refute-vote, majority refute, claim verification vote, refute gate.
+description: "Put one claim to N independent refute votes and stop adoption when a strict majority vote \"refuted\". A deterministic aggregation gate — the threshold decision comes from a tally, never from the model's self-report; no LLM is called. Triggers: adversarial refute, refute vote, refute-vote, majority refute, claim verification vote, refute gate."
 allowed-tools: Bash, Read, Write, Glob, Grep
 ---
 

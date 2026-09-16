@@ -1,6 +1,6 @@
 ---
 name: self-heal-ci
-description: Detect a red CI and relay "fix → re-verify" until CI is green, BOUNDED by an attempt cap. A goal-loop wrapper whose stop condition is a deterministic gate (gh conclusion=success), not the model's self-report. Triggers: self-heal-ci, self heal ci, CI self-heal, red CI heal, fix failing CI, keep fixing CI until green.
+description: "Detect a red CI and relay \"fix → re-verify\" until CI is green, BOUNDED by an attempt cap. A goal-loop wrapper whose stop condition is a deterministic gate (gh conclusion=success), not the model's self-report. Triggers: self-heal-ci, self heal ci, CI self-heal, red CI heal, fix failing CI, keep fixing CI until green."
 allowed-tools: Bash, Read, Edit, Glob, Grep
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: secret-scan-hardening
-description: secret 検出正規表現セット（policy）の「既知 API キー形式」に対する網羅率を読取専用で監査し、未カバー形式と追加パターン案を提示する（フックは改変しない・適用は人手）。トリガー語彙: secret scan, シークレット検出強化, secret scan hardening, API キー漏洩防止, secret パターン網羅率, secret-scan-audit, 検出網羅監査
+description: "secret 検出正規表現セット（policy）の「既知 API キー形式」に対する網羅率を読取専用で監査し、未カバー形式と追加パターン案を提示する（フックは改変しない・適用は人手）。トリガー語彙: secret scan, シークレット検出強化, secret scan hardening, API キー漏洩防止, secret パターン網羅率, secret-scan-audit, 検出網羅監査"
 ---
 
 # Secret Scan Hardening（監査 + 提案のみ・フック改変なし）

@@ -1,6 +1,6 @@
 ---
 name: subagent-usage-analyzer
-description: transcript から Agent（subagent）起動を抽出し、type 別件数と子 tool_use<=2 の過剰起動（過少委譲）を決定論的に集計する。トリガー語彙: subagent 分析, Agent 起動集計, 過剰起動, 過少委譲, subagent usage, サブエージェント乱用, subagent-guidelines 検証
+description: "transcript から Agent（subagent）起動を抽出し、type 別件数と子 tool_use<=2 の過剰起動（過少委譲）を決定論的に集計する。トリガー語彙: subagent 分析, Agent 起動集計, 過剰起動, 過少委譲, subagent usage, サブエージェント乱用, subagent-guidelines 検証"
 ---
 
 # subagent-usage-analyzer（Agent 起動の過剰/過少判定）

@@ -1,6 +1,6 @@
 ---
 name: trigger-vocab-dedup
-description: 各 SKILL.md の description から「トリガー語彙」を抽出し、複数 skill が同じトリガー語を主張する衝突を決定論的に検出して割当最適化を促す。トリガー語彙: トリガー語彙衝突, trigger dedup, 語彙衝突, skill トリガー重複, トリガー割当, skill routing 衝突, 発火語重複
+description: "各 SKILL.md の description から「トリガー語彙」を抽出し、複数 skill が同じトリガー語を主張する衝突を決定論的に検出して割当最適化を促す。トリガー語彙: トリガー語彙衝突, trigger dedup, 語彙衝突, skill トリガー重複, トリガー割当, skill routing 衝突, 発火語重複"
 ---
 
 # trigger-vocab-dedup（skill 間トリガー語彙の衝突検出）
