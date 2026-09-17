@@ -183,6 +183,52 @@ for f in "${SKILL_FILES[@]}"; do
   fi
 done
 [ "$fm_ok" -eq "$N_SKILLS" ] && ok "frontmatter ${fm_ok}/${N_SKILLS} 本"
+
+# 4b. frontmatter が**厳密な YAML パーサ**でも読めること（2026-09-16 実測・公開先 #59）。
+#     Claude Code / Codex は寛容に読むが、skills CLI・PyYAML・OpenCode 系は厳密に読む。
+#     description に引用符なしの `: `（「トリガー語彙: foo」）があると厳密側は
+#     `mapping values are not allowed here` で落とし、その skill は**存在しない扱い**になる
+#     （公開先 43 本中 40 本が skills CLI から見えていなかった）。内側からは壊れて見えないので、
+#     ここで別の目を入れる。PyYAML が無ければ `: ` / ` #` の代理検査に落とす（不明を緑にしない）。
+strict=$(python3 - "${SKILL_FILES[@]}" <<'PY2'
+import re, sys
+try:
+    import yaml
+except ImportError:
+    yaml = None
+bad = []
+for rel in sys.argv[1:]:
+    txt = open(rel, encoding="utf-8").read()
+    if not txt.startswith("---"):
+        continue
+    fm = txt.split("---", 2)[1]
+    if yaml is not None:
+        try:
+            d = yaml.safe_load(fm)
+            if not isinstance(d, dict) or not isinstance(d.get("description"), str):
+                bad.append(rel + ": description が文字列として読めない")
+        except Exception as e:
+            bad.append(rel + ": " + str(e).splitlines()[0][:60])
+        continue
+    m = re.search(r"^description:[ \t]*(.*)$", fm, re.M)
+    v = m.group(1) if m else ""
+    if not (v.startswith('"') or v.startswith("'")) and (": " in v or " #" in v):
+        bad.append(rel + ": 引用符なしの ': ' / ' #'（厳密 YAML で落ちる）")
+print("pyyaml" if yaml else "proxy")
+for b in bad:
+    print("BAD " + b)
+PY2
+)
+strict_mode=$(printf '%s\n' "$strict" | head -1)
+n_strict_bad=$(printf '%s\n' "$strict" | grep -c '^BAD ' || true)
+if [ "$n_strict_bad" -eq 0 ]; then
+  ok "厳密 YAML で読める ${N_SKILLS}/${N_SKILLS} 本（検査器: ${strict_mode}）"
+else
+  printf '%s\n' "$strict" | grep '^BAD ' | while IFS= read -r l; do
+    [ "$JSON" -eq 0 ] && printf '     %s\n' "$l"
+  done
+  bad "厳密 YAML で読めない description ${n_strict_bad}/${N_SKILLS} 本（値を \"…\" で囲む・検査器: ${strict_mode}）"
+fi
 note ""
 
 # ---------------------------------------------------------------------------

@@ -4,10 +4,14 @@ Claude Code / Codex / Antigravity 向け標準開発エージェント基盤。C
 
 > Status: **stable surface** — 中核 surface（4 agents + 5 phase `/build`）は安定で、Claude Code / Codex / Antigravity の 3 環境に対応。そのまま採用可。target stack の検証は **2 / 4 verified**（残り 2 stack は install-only・Q3 dogfood 待ち）。現行バージョンは [CHANGELOG.md](CHANGELOG.md)、stack 別の検証状況は [docs/known-stack-coverage.md](docs/known-stack-coverage.md) を参照。
 
+**初めて使う人は `/start`** — 導入 → 測る → 決める → 作る → 出す の順序と、各段の「終わり」を既存コマンドの exit code で確かめる手順（[skills/start/SKILL.md](skills/start/SKILL.md)）。`/build` / `/goal-loop` / `maker-checker-relay` の使い分けもここ。
+
 ## 提供するもの
 
 | 区分 | 内容 |
 |---|---|
+| **skills/start** | 初めての人向けの順序（導入 → 測る → 決める → 作る → 出す）。各段の終わりを `check-kit-enabled.sh` → `pulse-precheck.sh` → `/build` → `gh pr view` の exit code で確かめ、自己申告で段を進めない |
+| **skills/consumer-finding-ledger** + **scripts/finding.py** | 実案件で出たハーネスの課題（誤検知・見逃し・標準の抜け）を作業中に 1 行ずつ台帳へ記録し、正本へ持ち帰る。記録は決定論 check で整合を検査し、URL・org/repo パス・認証情報は入る手前で拒否 |
 | **agents/** (4本) | `dev-explorer` / `dev-planner` / `dev-tester` / `dev-reviewer` — 公式 ガイドラインに沿って役割を厳選 |
 | **skills/dev-standards** | スタック非依存の汎用標準（TS strict / Conventional Commits / OWASP / a11y 最低ライン） |
 | **a11y を既定で設計する 3 層** (skills/ + scripts/ + examples/) | `a11y-standards`（設計時の契約 — 4 agent が preload し `/build` Phase 2 で name/role/state を決めさせる）+ `a11y-static-gate`（`scripts/a11y-static-check.py` — Flutter/React/PHP テンプレを横断して「支援技術から操作できない要素」を構造解析で検出。**baseline + ratchet** で既存レガシーにも導入でき、baseline を増やす更新は拒否）+ 実行時テストの雛形（`examples/a11y/` — Flutter は組込 4 ガイドライン + **組込では検出できない role 欠落/記号ラベルの自作ガイドライン** + iOS AX5/Android 200% での overflow 検査、Web は jsx-a11y/axe/reflow）。exit code は 0/1/2/**3=走査 0 件は UNKNOWN**。緑は「機械判定可能な違反ゼロ」であって「アクセシブル」とは言わない |

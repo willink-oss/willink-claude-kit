@@ -57,6 +57,13 @@ for FILE in $STAGED_FILES; do
     if printf '%s' "$match_line" | grep -qF 'pragma: allowlist secret'; then
       continue  # allowlisted
     fi
+    # 右辺が環境変数への参照だけの行は秘匿の直書きではない（supabase config.toml の
+    # 右辺が env(SUPABASE_AUTH_EXTERNAL_APPLE_SECRET) だけの行を 3 行 block した・2026-09-14）。
+    # ⚠️ この注釈自体に「キー = "値"」の形を書かない — consumer が kit を再インストールして
+    #    commit するとき、この hook 自身がこの hook に止められる（2026-09-14 に実際に起きた）
+    if printf '%s' "$match_line" | grep -qE '[:=][[:space:]]*["'"'"']?(env\([A-Za-z_][A-Za-z0-9_]*\)|\$\{[A-Za-z_][A-Za-z0-9_]*\}|\$[A-Za-z_][A-Za-z0-9_]*)["'"'"']?[[:space:]]*(#.*)?$'; then
+      continue  # env reference, not a literal
+    fi
     if [ -z "$REAL_MATCHES" ]; then
       REAL_MATCHES="$match_line"
     else

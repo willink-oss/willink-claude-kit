@@ -35,15 +35,24 @@ die_usage() {
 }
 
 run_self_test() {
-  local out rc
+  local out rc wt
 
-  out=$(CODEX_SPARK_DRY_RUN=1 "$SCRIPT_PATH" --cd "$PWD" -- "bounded read-only task")
+  # ⚠️ self-test 用の worktree を**自前で作る**（2026-09-11）。以前は `--cd "$PWD"` で、
+  #    呼び出し場所が git の外だと engine ではなく場所の都合で落ちていた。verify.sh は
+  #    リポのルートで回すので正本では気づかず、**tarball から install.sh を当てると
+  #    verify が赤になり install が始まらない**形で顕在化した。
+  wt=$(mktemp -d) || { echo "self-test: mktemp failed" >&2; return 1; }
+  trap 'rm -rf "$wt"' RETURN
+  git init -q "$wt" 2>/dev/null \
+    || { echo "self-test: git init failed（engine は git worktree を前提にする）" >&2; return 1; }
+
+  out=$(CODEX_SPARK_DRY_RUN=1 "$SCRIPT_PATH" --cd "$wt" -- "bounded read-only task")
   [[ "$out" == *"model=${SPARK_MODEL}"* ]] || { echo "self-test: model mismatch" >&2; return 1; }
   [[ "$out" == *"effort=${SPARK_EFFORT}"* ]] || { echo "self-test: effort mismatch" >&2; return 1; }
   [[ "$out" == *"sandbox=read-only"* ]] || { echo "self-test: read-only mismatch" >&2; return 1; }
   [[ "$out" == *"prompt=present"* ]] || { echo "self-test: prompt missing" >&2; return 1; }
 
-  out=$(CODEX_SPARK_DRY_RUN=1 "$SCRIPT_PATH" --write --cd "$PWD" -- "bounded write task")
+  out=$(CODEX_SPARK_DRY_RUN=1 "$SCRIPT_PATH" --write --cd "$wt" -- "bounded write task")
   [[ "$out" == *"sandbox=workspace-write"* ]] || { echo "self-test: write mismatch" >&2; return 1; }
 
   rc=0

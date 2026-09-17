@@ -42,7 +42,10 @@ if [ -n "${SILENT_ZERO_FILES:-}" ]; then
   # shellcheck disable=SC2206
   FILES=($SILENT_ZERO_FILES)
 else
-  mapfile -t FILES < <(git diff --cached --name-only --diff-filter=ACM 2>/dev/null \
+  # mapfile は bash 4+。macOS 標準の /bin/bash は 3.2 で `mapfile: command not found` になり、
+  # このゲート自身が「エラーを出して exit 0」= silent zero だった（2026-09-14・consumer の初 commit で実測）。
+  FILES=()
+  while IFS= read -r _f; do [ -n "$_f" ] && FILES+=("$_f"); done < <(git diff --cached --name-only --diff-filter=ACM 2>/dev/null \
     | grep -E '\.(sh|py)$' || true)
 fi
 
