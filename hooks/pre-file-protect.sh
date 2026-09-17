@@ -116,9 +116,15 @@ case "$FILE_PATH" in
 esac
 
 # --- Pattern 3: Harness self-modification prevention ---
+# review-gates.tsv は review-gate.sh が各行を eval する（= 実行される設定）。settings.json と同じく
+# Claude の Write/Edit では触らせない（2026-09-17 fit-ai の自動レビュー指摘: 注入された 1 行が以後の全 prompt で走る）。
+# 同梱の review-gates.example.tsv（hooks/ 配下の雛形）は eval されないので対象外。
 case "$FILE_PATH" in
   *.claude/settings.json|*.claude/settings.local.json)
     block "Direct modification of .claude/settings.json is prohibited." "Use the /update-config skill or ask the 責任者 to edit manually."
+    ;;
+  *.claude/review-gates.tsv)
+    block "Direct modification of .claude/review-gates.tsv is prohibited (review-gate.sh evals every line)." "Ask the 責任者 to edit it manually, or edit outside Claude Code."
     ;;
 esac
 

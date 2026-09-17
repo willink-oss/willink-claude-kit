@@ -5,7 +5,7 @@
 # 目的: 破壊系・env/self-lockout 系コマンド（rm -rf / force push / reset --hard /
 #       git clean -f / mkfs / dd of=/dev/ / aws delete / DNS 変更 / runtime env 変更 /
 #       secret rotation）の代表 canary を、既存の fail-closed フック
-#       `.claude/hooks/pre-bash-safety.sh` に **read-only で通して** ブロックされるかを観測し、
+#       `.claude/willink-kit/hooks/pre-bash-safety.sh`（旧配置 `.claude/hooks/`）に **read-only で通して** ブロックされるかを観測し、
 #       ブロックされない＝gap（フックの穴）を検出して、追加候補パターンを **印字だけ** する。
 #
 # ⚠️ 重要な境界（原則 P3 / 安全制約）:
@@ -37,7 +37,16 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 . "$SCRIPT_DIR/_phroot.sh"
 REPO_ROOT="$(ph_target_root)"
 HARNESS_HOME="$(cd "$SCRIPT_DIR/../.." && pwd)"
-DEFAULT_HOOK="$REPO_ROOT/.claude/hooks/pre-bash-safety.sh"
+# 既定フックは install.sh の配置（.claude/willink-kit/hooks/）を先に、旧配置（.claude/hooks/）を次に探す。
+# 2026-09-17 fit-ai: 旧配置しか見ておらず、--hook 無しの監査が毎回「見つからない → 不明」で終わっていた（consumer の自動レビュー指摘）
+default_hook() {
+  _root="$1"; _c=""
+  for _c in "$_root/.claude/willink-kit/hooks/pre-bash-safety.sh" "$_root/.claude/hooks/pre-bash-safety.sh"; do
+    [ -f "$_c" ] && { printf '%s' "$_c"; return 0; }
+  done
+  printf '%s' "$_root/.claude/willink-kit/hooks/pre-bash-safety.sh"  # 無ければ配置先の名前で「見つからない」と言う
+}
+DEFAULT_HOOK="$(default_hook "$REPO_ROOT")"
 
 # ---- 純粋関数: command 文字列を Claude Code hook JSON に組み立てる --------
 # canary は ASCII（/, 空白, ~, . のみ）想定。\ と " のみエスケープすれば十分。
@@ -244,8 +253,28 @@ FIX
     echo "  ✅ static_has_pattern 不在を正しく miss"
   fi
 
+  # --- (E) default_hook が install.sh の配置を先に、旧配置を次に解決する（無ければ配置先の名前）---
+  r="$tmpdir/root"; mkdir -p "$r/.claude/willink-kit/hooks" "$r/.claude/hooks"
+  if [ "$(default_hook "$r")" = "$r/.claude/willink-kit/hooks/pre-bash-safety.sh" ]; then
+    echo "  ✅ default_hook: どちらも無ければ willink-kit の配置名を返す"
+  else
+    echo "  ❌ default_hook: 無い時の既定が willink-kit でない: $(default_hook "$r")"; fail=1
+  fi
+  : > "$r/.claude/hooks/pre-bash-safety.sh"
+  if [ "$(default_hook "$r")" = "$r/.claude/hooks/pre-bash-safety.sh" ]; then
+    echo "  ✅ default_hook: 旧配置だけならそれを使う"
+  else
+    echo "  ❌ default_hook: 旧配置を拾わない"; fail=1
+  fi
+  : > "$r/.claude/willink-kit/hooks/pre-bash-safety.sh"
+  if [ "$(default_hook "$r")" = "$r/.claude/willink-kit/hooks/pre-bash-safety.sh" ]; then
+    echo "  ✅ default_hook: 両方あれば willink-kit を優先"
+  else
+    echo "  ❌ default_hook: willink-kit を優先しない"; fail=1
+  fi
+
   if [ "$fail" -eq 0 ]; then
-    echo "✅ SELF-TEST PASS（probe+classify+static+json 健全）"
+    echo "✅ SELF-TEST PASS（probe+classify+static+json+default_hook 健全）"
     return 0
   fi
   echo "❌ SELF-TEST FAIL"

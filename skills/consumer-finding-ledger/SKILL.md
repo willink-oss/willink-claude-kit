@@ -43,15 +43,31 @@ description: "consumer（実案件）で出たハーネスの課題 — ゲー�
    python3 .claude/willink-kit/engines/finding.py check --check --allow-missing
    ```
 
-3. 区切り（PR を出す前・セッションの終わり）で正本へ持ち帰る
+3. 区切り（PR を出す前・セッションの終わり）で正本へ持ち帰る — **Claude が自分で打つ**（人に頼まない）
 
    ```bash
-   python3 .claude/willink-kit/engines/finding.py sync --harness ~/GitHub/willink-harness          # preview
-   python3 .claude/willink-kit/engines/finding.py sync --harness ~/GitHub/willink-harness --push   # worktree → commit → push → PR
+   python3 .claude/willink-kit/engines/finding.py sync            # preview（正本の clone 不要）
+   python3 .claude/willink-kit/engines/finding.py sync --push     # 一時 clone → commit → push → PR まで機械
    ```
 
-   `--push` は origin/main から一時 worktree を切るので、正本の clone の作業状態を汚さない。
-   `gh` が無い / 権限が無い場合は `--apply` で正本の clone に追記し、commit と PR を手で行う。
+   `--harness` を省くと `.claude/settings.json` の `extraKnownMarketplaces`（source=git の url・plugin を取るために
+   consumer は必ず持っている）から正本を **一時 clone** して持ち帰る。clone がある端末では `--harness <clone>` でもよい。
+   `synced_at` は **push が origin に届いてから**入る（push が落ちた行は入らず、次の sync で再送される）。
+   `synced_at` の入った行は正本の main にまだ無くても再度持ち帰らない（PR が open の間に二重の PR を立てない・
+   「持ち帰り済みで main 未反映 N」と出る）。**PR が merge されずに消えた**ときだけ、その行の `synced_at` を消せば再送される。
+   `gh` が無い / 権限が無い場合は push まで行い「手で PR を開く」と言う（branch 名を印字）。
+   branch 名は `learn/findings-<consumer>-<YYYYMMDD>` なので、**同じ日に 2 回目**の新規があると push が拒否される（exit 1・
+   synced_at は入らない）。その日は 1 本目の PR に merge されるのを待つか、翌日に打つ。
+
+4. 正本側の判定（fixed / wontfix / triaged と resolution）を **consumer の台帳へ写す**（sync は片方向）
+
+   ```bash
+   python3 .claude/willink-kit/engines/finding.py pull            # preview（更新 N / 同じ M / 正本に無い K）
+   python3 .claude/willink-kit/engines/finding.py pull --apply    # 同 id の status / resolution を書き、pulled_at を入れる
+   ```
+
+   `harness-check` が「未同期 N 件」と言ったら 3.、正本の PR が merge されたら 4.。どちらも Claude が打ってよい
+   （書くのは台帳 1 ファイルと正本の `learn/findings-*` ブランチだけ。main へは触らない）。
 
 ## 実行手順（正本側・triage）
 
@@ -80,7 +96,7 @@ python3 scripts/finding.py check --file findings/consumer-findings.jsonl --check
 python3 scripts/finding.py --self-test
 ```
 
-- **exit 0** = hermetic な tmp で add / check（block・pass）/ sync（preview・apply・再 apply）/ triage が期待どおり（27 ケース）
+- **exit 0** = hermetic な tmp で add / check（block・pass）/ sync（preview・apply・再 apply・synced_at の二重防止）/ triage / pull（preview・apply・再 pull・正本に無い行）/ settings.json の url からの一時 clone → push（origin は file:// の bare repo・gh は偽物）／push 拒否で synced_at を入れない／findings/ の無い url に台帳を作らない、が期待どおり（48 ケース）
 
 ## 参照
 

@@ -16,6 +16,7 @@ skill	skills/knowledge-index-guard/SKILL.md
 skill	skills/memory-distill/SKILL.md
 skill	skills/mistake-rule-distill/SKILL.md
 skill	skills/prompt-ab-eval/SKILL.md
+skill	skills/report-shape/SKILL.md
 skill	skills/retry-failure-classifier/SKILL.md
 skill	skills/review-finding-repro/SKILL.md
 skill	skills/rule-dedup-scan/SKILL.md
@@ -30,6 +31,7 @@ skill	skills/trigger-vocab-dedup/SKILL.md
 engine	scripts/advisory-tally.py
 engine	scripts/agentlog.py
 engine	scripts/codex-spark.sh
+engine	scripts/consumer-check.sh
 engine	scripts/destructive-audit.sh
 engine	scripts/eval-harness.py
 engine	scripts/finding.py
@@ -37,10 +39,13 @@ engine	scripts/gate-forge.sh
 engine	scripts/goal-loop.sh
 engine	scripts/govern.py
 engine	scripts/harness-lint.py
+engine	scripts/hook-wiring-check.py
 engine	scripts/regenerate-knowledge-index.py
+engine	scripts/report-shape-check.py
 engine	scripts/required-check-audit.sh
 engine	scripts/rule-promotion.py
 engine	scripts/secret-scan-audit.py
+engine	scripts/state-doc-shape-check.py
 hook	hooks/_advisory-log.sh
 hook	hooks/instructions-loaded-log.sh
 hook	hooks/post-commit-verify.sh
