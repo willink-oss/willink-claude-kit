@@ -22,11 +22,11 @@
 両者は同一の原型（弊社の社内実装）から派生しています。
 **機能は等価です。** 無料版で足りる場合、この 1 本のために購入する必要はありません。
 
-また、本ハーネスの 26 skill と kit の 17 skill に**重複はありません**が、
+また、本ハーネスの skill と kit 独自の skill に**重複はありません**が、
 `judge-rubric-vote` `live-state-verify-guard` `maker-checker-relay`
 `adversarial-refute-vote` `commit-convention-gate` `coverage-floor-lock`
 `token-codegen-gate` `architecture-parity-gate` `self-heal-ci`
-`fanout-verify-synth` `cogload-dashboard` `codex-imagegen` は
+`fanout-verify-synth` `codex-imagegen` は
 **同じ設計思想の同系譜で、MIT で無料公開されています**。
 
 これらが必要な場合は、無料版を先に取得してください。
