@@ -4,6 +4,19 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.9.0] - 2026-09-17
+
+**Status**: `cogload-dashboard` を**退役**する。読む人がいない観測器は観測の意味が無い（運営側は 9/16 に日次生成を止め、9/17 に kit からも外すと決めた）。役割は「報告の型」と引き継ぎ文書の 4 バケットに置き換わる。
+
+### Removed
+
+- **`skills/cogload-dashboard`** + `scripts/cogload-dashboard.py` + `examples/cogload/` + `scripts/test/test_cogload_dashboard.sh`（#63）。1 人が多数のエージェントを監督するときの「いま私に要るものは何か」を 1 画面に出す観測器だったが、実運用で読まれず、判断待ちの件数と状態は `/start` の 4 バケット（あなたの入力待ち / レビュー待ち / 進行中 / 完了）と `pulse` で足りた。設計の中で残す価値があったもの — probe 失敗は 0 でなく unknown・件数は分母つき・解決済みは畳む・認知負荷そのものは測らない — は kit の他の gate と `docs/harness/principles.md` が既に持っている。git 履歴（v2.8.0）から復元できる。
+- README の「提供するもの」表と NOTICE の同系譜一覧から該当行を消した。
+
+### 検査
+
+check_sync PASS / regression-suite 21 ファイル 0 失敗（22 → 21・退役した回帰テスト分）/ verify-harness PASS（skill 28 本）。
+
 ## [2.8.0] - 2026-09-17
 
 **Status**: 初めての人の入口 **`/start`** を足し、**skills CLI から 43 本中 40 本が見えていなかった**のを直す（#59）。正本からの export で hook 2 本・engine 2 本の実環境バグも直る。
