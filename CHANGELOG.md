@@ -4,6 +4,28 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.8.0] - 2026-09-17
+
+**Status**: 初めての人の入口 **`/start`** を足し、**skills CLI から 43 本中 40 本が見えていなかった**のを直す（#59）。正本からの export で hook 2 本・engine 2 本の実環境バグも直る。
+
+### Added
+
+- **`skills/start`** — 初めて kit を使う人向けの順序: 導入 → 測る → 決める → 作る → 出す。各段の「終わり」を文章でなく既存コマンドの exit code で確かめる（`check-kit-enabled.sh` → `pulse-precheck.sh` → `/build` の tester / reviewer PASS → `gh pr view`）。上から叩いて最初に印が出ない段が「いま居る段」。`/build` / `/goal-loop` / `maker-checker-relay` の使い分け表と、ゲートは観測 → CI → hook の順に昇格する手順を含む（#61）。
+- **`skills/consumer-finding-ledger`** + **`scripts/finding.py`** — 実案件で出たハーネスの課題（ゲートの誤検知・見逃し・標準の抜け）を作業中に 1 行ずつ台帳へ記録し、正本へ持ち帰る。記録は決定論 check で整合を検査し、URL・org/repo パス・認証情報は入る手前で拒否する（#61）。
+- README 冒頭に「初めての人は `/start`」の入口と、`npx skills add willink-oss/willink-claude-kit` の導入行（#60 / #61）。
+
+### Fixed
+
+- **SKILL.md の description が厳密な YAML パーサで読めなかった**（#59）。「Triggers: foo」の引用符なしの `: ` を厳密 YAML が nested mapping と読み、skills CLI（`npx skills add … --list`）と PyYAML で **43 本中 40 本が「存在しない扱い」**だった。Claude Code / Codex は寛容に読むので内側からは壊れて見えない。全 description を `"…"` で囲み、`harness-lint.py skill-desc` と `verify-harness.sh` §4b が厳密パーサで毎回検査する（PyYAML が無ければ `: ` の代理検査・不明を緑にしない）。正本側にも同じ検査を入れたので、次の export で巻き戻らない。
+- **`hooks/pre-commit-silent-zero.sh`** — `mapfile` は bash 4+ で、macOS 標準の bash 3.2 では**このゲート自身が「エラーを出して exit 0」= silent zero** だった。`while read` に置き換えた（#61）。
+- **`hooks/pre-commit-quality.sh`** — 右辺が環境変数への参照だけの行（`env(...)` / `${...}`）を秘匿の直書きとして止めていた（#61）。
+- **`scripts/codex-spark.sh`** — self-test が呼び出し場所の git を前提にしていて、tarball から install すると git の外で落ちていた。自前の worktree を作る（#61）。
+- **`scripts/eval-harness.py`** — self-test の間欠失敗（git 2.53 で `--since=@0` が「今」に解決され、commit と log が同じ秒に収まらないと 0 件）。固定の過去日付で決定論に（#61）。
+
+### 検査
+
+check_sync PASS / regression-suite ubuntu + macOS 0 失敗 / verify-harness 20 件 PASS（skill 28 本・厳密 YAML 28/28）。
+
 ## [2.7.0] - 2026-09-10
 
 **Status**: 2.6.0 で同梱した hook **14 本が 1 本も登録されていなかった**のを直す。Claude Code の plugin は `hooks/hooks.json` を読んで登録する規約で、`hooks/*.sh` を置くだけでは効かない。本版で **10 本が実際に登録される**。
