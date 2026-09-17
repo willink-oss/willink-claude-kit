@@ -4,6 +4,23 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.10.0] - 2026-09-17
+
+**Status**: consumer の配線を **plugin 経路**に寄せる回。hook / skill / engine は本 kit（plugin の cache）から届き、正本を更新しても consumer のリポは触らない。consumer に置くのは薄い wrapper と設定の数行だけ。
+
+### Added
+
+- **`scripts/consumer-check.sh`** — consumer で「ハーネスが効いている」を実測する汎用の検査器（exit 0 / 1 / 2）。①コピー方式が残っていない ②kit の `hooks/hooks.json` の登録本数と、止める hook の block / pass を cache のスクリプトで probe ③配線経路が 1 本か ④fixture（正本の checkout `HARNESS_ROOT` から）の self-test と `.claude/harness-targets.json` の対象への実適用 ⑤git hook の 3 本 ⑥課題台帳。CI に cache が無いときは正本の `core/hooks` で probe する。self-test は正本 / kit のどちらの layout でも回る
+- **`scripts/hook-wiring-check.py`** — plugin の `hooks/hooks.json` と settings.json の inline 登録が **同じ hook を 2 回**走らせていないかを実測する（Claude Code は両方をそのまま登録する・実測）。settings は user → project → local の 3 層を読む。exit 0 = 経路 1 本 / 1 = 二重 / 2 = 測れていない
+- **`scripts/report-shape-check.py`** / **`scripts/state-doc-shape-check.py`** / **`skills/report-shape`** — 報告と状態文書の「形」を機械で守る（4 段・分母・完了節は archive）
+
+### Changed
+
+- **`scripts/finding.py`** — `sync --push` は `--harness`（正本の clone）が無くても settings.json の marketplace url から一時 clone して PR まで機械で回す。**`pull`** を新設（正本側の triage を consumer の台帳へ写す・sync は片方向だった）。`synced_at` は push が届いてから入れる（push 失敗の行が永久に持ち帰られない回帰）。`synced_at` のある行は正本の main に無くても再送しない（open な PR の間に二重の PR を立てない）
+- **`hooks/pre-file-protect.sh`** — `review-gate.sh` が各行を eval する `.claude/review-gates.tsv` を自己改変防止（Pattern 3）に追加
+- **`scripts/destructive-audit.sh`** — 既定の監査対象フックを plugin / install.sh の配置（`.claude/willink-kit/hooks/`）→ 旧配置の順に探す（旧配置だけ見て毎回「不明」で終わっていた）
+- `docs/harness/wiring.md` — 「consumer の配線は plugin 経路（推奨）」と「経路は 1 本（plugin か inline か）」の節。`InstructionsLoaded` は発火する（2.1.273 で実測）
+
 ## [2.9.0] - 2026-09-17
 
 **Status**: `cogload-dashboard` を**退役**する。読む人がいない観測器は観測の意味が無い（運営側は 9/16 に日次生成を止め、9/17 に kit からも外すと決めた）。役割は「報告の型」と引き継ぎ文書の 4 バケットに置き換わる。
