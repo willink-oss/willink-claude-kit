@@ -2,6 +2,7 @@
 skill	skills/ci-required-check-installer/SKILL.md
 skill	skills/codex-spark-delegate/SKILL.md
 skill	skills/commit-msg-quality-score/SKILL.md
+skill	skills/consumer-finding-ledger/SKILL.md
 skill	skills/context-bloat-tracker/SKILL.md
 skill	skills/destructive-env-guard/SKILL.md
 skill	skills/eval-dataset-build/SKILL.md
@@ -22,6 +23,7 @@ skill	skills/rule-promote-audit/SKILL.md
 skill	skills/rule-promotion-extract/SKILL.md
 skill	skills/secret-scan-hardening/SKILL.md
 skill	skills/session-length-compact-audit/SKILL.md
+skill	skills/start/SKILL.md
 skill	skills/subagent-usage-analyzer/SKILL.md
 skill	skills/task-success-rate-track/SKILL.md
 skill	skills/trigger-vocab-dedup/SKILL.md
@@ -30,6 +32,7 @@ engine	scripts/agentlog.py
 engine	scripts/codex-spark.sh
 engine	scripts/destructive-audit.sh
 engine	scripts/eval-harness.py
+engine	scripts/finding.py
 engine	scripts/gate-forge.sh
 engine	scripts/goal-loop.sh
 engine	scripts/govern.py

@@ -32,6 +32,7 @@ import statistics
 import subprocess
 import sys
 import tempfile
+import time
 from collections import Counter
 from pathlib import Path
 
@@ -772,13 +773,22 @@ def st_commit_score():
             subprocess.run(["git", "-C", d, "config", "user.name", "t"], check=False)
             _w(os.path.join(d, "f"), "x")
             subprocess.run(["git", "-C", d, "add", "f"], check=False)
+            # commit を **5 秒過去に打つ**。`--since` が「今」に解決される書き方に戻ると、
+            # 同じ秒に収まった時だけ通る 1〜2% の間欠ではなく、毎回 0 件で落ちる（block 側を決定論にする）。
+            past = "{} +0000".format(int(time.time()) - 5)
+            env = dict(os.environ, GIT_AUTHOR_DATE=past, GIT_COMMITTER_DATE=past)
             subprocess.run(["git", "-C", d, "commit", "-q", "-m",
-                            "feat(x): 理由を明記して空虚語を避けた説明的コミット"], check=False)
+                            "feat(x): 理由を明記して空虚語を避けた説明的コミット"], check=False, env=env)
             # ⚠️ `--since 1970-01-01` は git 2.53 で **黙って 0 件**を返す
             #    （エポックそのものを無効として扱う。1980-01-01 以降は正常）。
             #    配布物の self-test がこれを使っていたため、受け取った人が最初に
-            #    verify を叩くと落ちる。`@0` は明示的な epoch 指定で解釈が揺れない。
-            msgs = _git_messages("@0", d)
+            #    verify を叩くと落ちる。
+            # ⚠️ 置き換えた `@0` も駄目だった（2026-09-11）。git 2.53 の `--since=@0` は epoch でなく
+            #    **「今」に解決される**（`git rev-parse --since=@0` → `--max-age=<現在時刻>`）ため、
+            #    commit と log が同じ秒に収まらないと 0 件になり、CI で 1〜2% の間欠失敗になっていた
+            #    （install.sh の self-test が verify.sh を 11 回回すので、PR 単位では 20% 落ちた）。
+            #    固定の過去日付なら「今」に依存しない。
+            msgs = _git_messages("1980-01-01", d)
             g = msgs is not None and len(msgs) == 1
         finally:
             shutil.rmtree(d, ignore_errors=True)
