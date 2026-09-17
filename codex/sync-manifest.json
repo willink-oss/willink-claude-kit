@@ -5,7 +5,7 @@
   "canonicalFiles": [
     {
       "path": ".claude-plugin/plugin.json",
-      "sha256": "7f081267ea4d73d499160888b162abb1b5b44d8f47e0510731ff770fbe1722c9",
+      "sha256": "d964b8a02069e4e88ef501076214499d14d983b330b29629afad09e1a27d314d",
       "codexAdapters": [
         ".codex-plugin/plugin.json",
         "skills/codex-build/SKILL.md"
@@ -16,7 +16,7 @@
     },
     {
       "path": ".claude-plugin/marketplace.json",
-      "sha256": "c1a03d70ce7ddb0397ee3aa0ef9f0b12d8df5f07dcf4d14caa3fb3838f6f348b",
+      "sha256": "fd67352208dcd53f1f7803bb7a61f1e68783e1331f65fe13bfd9214b27de34e3",
       "codexAdapters": [
         ".codex-plugin/plugin.json",
         "skills/codex-build/SKILL.md"
