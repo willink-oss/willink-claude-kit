@@ -141,6 +141,24 @@ CLI オプション（`--root` `--rules-dir` `--skills-dir` `--memory-dir` `--kn
 
 ---
 
+## consumer の配線は plugin 経路（推奨・2026-09-17）
+
+**正本を更新しても consumer を触らない**形。hook / skill / engine は kit（plugin の cache）から、fixture は
+CI が正本を checkout して当てる。consumer に置くのは次の 3 ファイルと settings の数行・CI の 1 段だけ
+（雛形は `core/packaging/consumer/`・`scripts/wire-consumer.sh --target <repo> [--migrate]` が置く）。
+
+| consumer に置く | 何 |
+|---|---|
+| `.claude/settings.json` | `extraKnownMarketplaces.iwillink` + `enabledPlugins["willink-claude-kit@iwillink"]=true`。**inline の hook 登録は書かない**（kit の `hooks/hooks.json` と二重になる） |
+| `scripts/harness-check.sh` | 薄い wrapper。中身は kit の cache か `HARNESS_ROOT` の `consumer-check.sh` |
+| `.githooks/pre-commit` | kit の pre-commit 3 本を cache から呼ぶ resolver（cache が無い端末は ⚠️ で通し、止める場所は CI） |
+| `.claude/harness-targets.json` | fixture をどこに当てるか（`{"fixtures": {"not-wired-values": ["lib"], ...}}`） |
+| CI の 1 job | 正本を `HARNESS_READ_PAT`（org secret・read のみ）で `.harness` に checkout → `HARNESS_ROOT=.harness bash scripts/harness-check.sh` |
+
+`consumer-check.sh` は 6 項目（コピー方式が残っていない／kit の hooks.json と block・pass の probe／配線経路 1 本／
+fixture の self-test と実適用／git hook／課題台帳）を分母つきで見て、exit 0 / 1 / 2（測れていない）を返す。
+`install.sh`（コピー方式）は fixture を in-repo で持ちたい consumer のために残すが、新規は plugin 経路にする。
+
 ## plugin として入れた場合の hook（2026-09-10 実測）
 
 Claude Code の plugin は **`hooks/hooks.json`** を読んで hook を登録します。
@@ -160,11 +178,34 @@ Claude Code の plugin は **`hooks/hooks.json`** を読んで hook を登録し
 | UserPromptSubmit | — | `pre-status-verify-guard.sh` | fail-open |
 | UserPromptSubmit | — | `review-gate.sh` | 設定が無ければ通す |
 | PreCompact | — | `pre-compact-snapshot.sh` | fail-open |
-| InstructionsLoaded | — | `instructions-loaded-log.sh` | fail-open |
+| InstructionsLoaded | — | `instructions-loaded-log.sh` | fail-open（このイベントは公式一覧に載っていないと指摘されることがあるが、**発火する**: 2026-09-17 に Claude Code 2.1.273 で `claude -p` 1 回 → SessionStart → InstructionsLoaded → UserPromptSubmit の順に 1 回ずつ記録された） |
 
 **同梱しているが登録しない 4 本**: `pre-commit-quality.sh` / `pre-commit-shell-lint.sh` /
 `pre-commit-silent-zero.sh` は **git の pre-commit hook** で、Claude Code のイベントには
 載りません（`.git/hooks/pre-commit` から呼びます）。`_advisory-log.sh` は共有ライブラリです。
+
+### 経路は 1 本（plugin か install.sh か・2026-09-17 実測）
+
+Core の hook は **plugin 経路**（kit の `hooks/hooks.json`・2.7.0 以降・cache はリポの外）と
+**install.sh 経路**（`.claude/willink-kit/hooks/*.sh` を置いて settings.json に人手で inline 登録）の
+2 つで届きます。Claude Code は**両方をそのまま両方**登録します（合成 plugin で 1 prompt を送ると
+UserPromptSubmit が plugin 側と inline 側で 1 回ずつ = 2 回走った。dedup は無い）。
+kit 2.7.0 の hooks.json 10 本と install.sh 経路の inline 10 本は同名で **10/10 重なる**ので、
+kit を有効にしたまま inline 登録すると、**cache の kit が hooks.json を持つ版に更新された瞬間に
+10 本が 2 回ずつ走ります**（止める 3 本は 2 回止め、ログは 2 重、review-gate は毎 prompt 2 回）。
+配線した日には見えず、`/plugin marketplace update` 1 回で起きます。
+
+- 実測: `python3 .claude/willink-kit/engines/hook-wiring-check.py`（exit 0 = 経路 1 本 / 1 = 二重あり /
+  2 = 測れていない: settings.json が無い・settings / registry / hooks.json のどれかが読めない）。settings は
+  Claude Code と同じ **user（`~/.claude/settings.json`）→ project → local** の 3 層を重ねて読みます
+  （`claude plugin install` の既定 scope は user なので、project の settings.json だけ見ると「未宣言」に見える）。
+  `install.sh` は完了時（`--dry-run` でも）の案内でこれを advisory として出します
+- **検出点は開発機**: plugin の cache（`~/.claude/plugins/cache/`）は開発機にしかなく、CI には無いので
+  CI で回しても ⚠️（潜在）止まりで ❌ にはなりません。開発機で毎 prompt 走る `review-gates.tsv`
+  （harness-check）や pre-commit に載せてください
+- どちらか 1 本に: **(A)** inline を外して plugin に任せる（in-repo の hook 修正は kit の次の版まで
+  届かない）／ **(B)** `enabledPlugins` の kit を false にして install.sh 経路だけにする（kit の skill も消える）
+- git の pre-commit hook 3 本はどちらの経路でも in-repo（`.git/hooks` / husky）なので二重にはならない
 
 ### 止める 3 本の既定
 
