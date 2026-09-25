@@ -27,7 +27,7 @@
     },
     {
       "path": "commands/build.md",
-      "sha256": "45268aaf44829010f51b652d97e8e53e1cbaff9dbe330345cd26c7e84d5b990e",
+      "sha256": "dc32af04898e520ef3c2304cdb8d039ca38368bb50ddb67cdcfcb39b3c882200",
       "codexAdapters": [
         "skills/codex-build/SKILL.md",
         "docs/codex-adoption-guide.md"
@@ -68,7 +68,7 @@
     },
     {
       "path": "agents/dev-reviewer.md",
-      "sha256": "6a73c8b63e3f5843b6e1b1d274567637b6161a1687cd2d58f0fd22ca12b0bdc7",
+      "sha256": "941ca01711ce96872112c63f1680713fe57bfd7e14bf5cec4724c41e1a2da468",
       "codexAdapters": [
         "skills/codex-build/SKILL.md",
         "docs/codex-adoption-guide.md"

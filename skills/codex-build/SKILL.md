@@ -26,6 +26,10 @@ This skill adapts the canonical Claude Code `/build` flow in `commands/build.md`
 - Use Codex subagents only when the user explicitly asks for sub-agents, delegation, or parallel agent work. If the user did not authorize that, execute the same role behavior locally.
 - When subagents are authorized, keep delegated tasks concrete, bounded, and read-only unless the user explicitly asked for parallel implementation with disjoint ownership.
 - Prefer `rg` / `rg --files` for search, preserve unrelated user changes, and verify with the repo's actual commands.
+- A person is in the loop: state a one-line plan before the first action, and end with a short recap — what
+  changed, what verified it (command and exit code), and what is needed from the user. Put status notes in the
+  same message as the next action; stop to ask only when you cannot continue without the user, or before
+  anything irreversible (deleting data, force-pushing, changing anything outside the repository).
 
 ## Phase 1: Impact Exploration
 
@@ -81,7 +85,10 @@ Reviewer behavior:
 - Read the full diff and changed files in context.
 - Check spec adherence, code quality, error handling, security, accessibility, tests, standards, and scope
   discipline. On UI diffs, a missing accessible name or role is CRITICAL, not a nitpick.
-- Report PASS, CONDITIONAL, or FAIL. PASS only when the reviewer would merge it.
+- List as findings only the problems that block the merge, each with `file:line`, why it is wrong, and how to
+  show it fails (a reproduction or the test that would go red); prefix each with `BLOCKER`. Anything that cannot
+  be shown failing, and every improvement idea, goes under "Not blocking".
+- Report PASS, CONDITIONAL, or FAIL. PASS only when the reviewer would merge it (zero blocking findings).
 
 ## Phase 5: Fixes And Commit
 

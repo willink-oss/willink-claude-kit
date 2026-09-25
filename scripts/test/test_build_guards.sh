@@ -34,6 +34,14 @@ assert_contains "$BUILD" 'scripts/a11y-static-check.py' \
 assert_contains "$BUILD" 'a11y の後付け' \
   "/build keeps a11y-retrofit in the failure-mode list"
 
+# Human-in-the-loop steering. /build has a person in the loop: a one-line plan before the first
+# action and a short recap at the end, and no "shall I continue?" stops on steps that need no input.
+assert_contains "$BUILD" '着手前に 1 行の計画' \
+  "/build keeps the one-line plan before the first action"
+assert_contains "$BUILD" '終わりに短いまとめ' \
+  "/build keeps the short recap at the end"
+assert_contains "$BUILD" 'Findings は merge を止める指摘だけ' \
+  "/build Phase 4 keeps the blocking-findings-only reviewer contract"
 # The landing point when a person interrupts an unattended /oneshot run. If these drop out, an
 # interrupt either throws the worktree away or resumes the dialogue under the unattended
 # "keep going" instruction — the two failure modes this section exists to prevent.
