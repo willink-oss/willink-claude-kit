@@ -4,6 +4,12 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+### Changed
+
+- **`agents/dev-reviewer.md` — Findings は merge を止める指摘だけにする。** 各指摘に `file:line`・なぜ誤りか・**落ちることの示し方**（再現手順か赤くなるテスト）を必須にし、行頭に `BLOCKER` を付ける（`maker-checker-relay` が数える契約と揃う）。落ちることを示せないもの・改善提案は「Not blocking」へ回す。判定語彙 PASS / CONDITIONAL / FAIL は変えない。出典: Claude Opus 5.5 の使いこなしガイドの code review 例（「止める問題だけを、file:line・なぜ誤りか・落ちることの示し方つきで」）。
+- **`commands/build.md` — 人がループの中にいる `/build` の進め方を明記。** 着手前に 1 行の計画、終わりに短いまとめ（変更・確認コマンドと exit code・人に必要なこと）、入力が要らない段では止まって確認を求めない。止まるのは人の判断なしに進めない時と取り返しのつかない操作の前だけ。「よく考えて」系の指示は足さない（Opus 5.5 では effort で制御する）。
+- adapter（`skills/codex-build` / `skills/antigravity-build`）を同じ内容に同期し、回帰テスト（`test_agent_guards.sh` / `test_build_guards.sh`）に新しい規則の文言を固定した。
+
 ## [2.9.0] - 2026-09-17
 
 **Status**: `cogload-dashboard` を**退役**する。読む人がいない観測器は観測の意味が無い（運営側は 9/16 に日次生成を止め、9/17 に kit からも外すと決めた）。役割は「報告の型」と引き継ぎ文書の 4 バケットに置き換わる。

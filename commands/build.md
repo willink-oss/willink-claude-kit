@@ -7,6 +7,15 @@ allowed-tools: Read, Glob, Grep, Edit, Write, Bash, Agent, WebFetch
 
 タスクを 5 phase で進める。各 phase の subagent 起動は **「subagent コスト > 利益」のとき skip** する（小修正・typo は Phase 3 直行）。
 
+## 人とのやり取り（/build は人がループの中にいる）
+
+- **着手前に 1 行の計画**: 何をどの順でやり、どこで人の判断が要るかを 1 行で書いてから最初の操作に入る
+- **終わりに短いまとめ**: 何を変えたか・何で確かめたか（コマンドと exit code）・人に必要なこと、の 3 点
+- 途中の状況メモは次の操作と同じメッセージに書く。入力が要らない段で止まって「続けますか」と聞かない。
+  止まるのは、人の判断なしに進めない時と、取り返しのつかない操作（削除・force push・リポ外の変更）の前だけ
+
+人がいない無人実行（完了条件を `--check` で機械判定する `/goal-loop` 等）はこの節の対象外。
+
 ## Phase 1: 影響範囲探索（dev-explorer × N）
 
 **起動条件**: タスクの影響範囲が **3 軸以上独立**（例: backend API + DB schema + frontend）。1-2 軸なら直接 Read/Grep。
@@ -50,6 +59,7 @@ dev-planner に Phase 1 の結果と要件を渡し、実装計画を受け取�
 dev-tester:    test / lint / typecheck / build を full run → PASS/PARTIAL/FAIL
                UI 差分があれば a11y ゲート（scripts/a11y-static-check.py）+ a11y テストも回す
 dev-reviewer:  diff を読取専用レビュー → PASS/CONDITIONAL/FAIL
+               Findings は merge を止める指摘だけ（各指摘に file:line・なぜ誤りか・落ちることの示し方）
                UI 差分では name/role/state の欠落を CRITICAL として扱う
 ```
 
