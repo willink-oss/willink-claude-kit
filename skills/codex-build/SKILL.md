@@ -92,6 +92,17 @@ The main Codex agent fixes issues surfaced in Phase 4.
 - Use Conventional Commits if the user asks Codex to commit.
 - Split large changes into logical commits when committing.
 
+## Resuming From An Interrupted /oneshot
+
+When started as `/build --from oneshot/state.json` (a person interrupted an unattended `/oneshot` run with
+`oneshot/STOP`, Ctrl-C, or an escalation), keep the same worktree, branch, and intermediate commits — do not discard them.
+
+- If `status` is still `running`, first confirm with the user that `oneshot/STOP` was placed; do not edit the worktree while the unattended run is still going.
+- Summarize on one screen first, with denominators: `goal`, open dod items (`result` other than `green`, M of N), `violations`, `note`, `blocker`, `interrupted` (round, phase, time), `pr`.
+- Resume by `phase`: preflight / explore / plan → Phase 2; implement / loop → Phase 3; verify / mutate → Phase 4; deliver / escalate → Phase 5.
+- From here a person is in the loop; the unattended standing instruction of `/oneshot` does not apply.
+- The contract's DoD still works as verification: `python3 <kit>/scripts/oneshot-preflight.py round` exit 0 means the DoD is green (never self-report it).
+
 ## Skip Table
 
 | Task type | Phase 1 | Phase 2 | Phase 4 |

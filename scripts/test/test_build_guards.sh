@@ -34,4 +34,24 @@ assert_contains "$BUILD" 'scripts/a11y-static-check.py' \
 assert_contains "$BUILD" 'a11y の後付け' \
   "/build keeps a11y-retrofit in the failure-mode list"
 
+# The landing point when a person interrupts an unattended /oneshot run. If these drop out, an
+# interrupt either throws the worktree away or resumes the dialogue under the unattended
+# "keep going" instruction — the two failure modes this section exists to prevent.
+assert_contains "$BUILD" '/build --from oneshot/state.json' \
+  "/build documents the --from oneshot/state.json entry point"
+assert_contains "$BUILD" 'worktree も途中の commit も捨てず' \
+  "/build resumes an interrupted oneshot without discarding the worktree or commits"
+assert_contains "$BUILD" 'oneshot/STOP を置いたか確かめる' \
+  "/build confirms the unattended run was stopped before touching the worktree"
+assert_contains "$BUILD" '| implement / loop | Phase 3 |' \
+  "/build maps the oneshot phase to the /build phase to resume from"
+assert_contains "$BUILD" '無人用の常設指示は適用しない' \
+  "/build does not carry the unattended standing instruction into the dialogue"
+CODEX_BUILD="$KIT_ROOT/skills/codex-build/SKILL.md"
+AG_BUILD="$KIT_ROOT/skills/antigravity-build/SKILL.md"
+assert_contains "$CODEX_BUILD" '/build --from oneshot/state.json' \
+  "codex-build adapter carries the --from oneshot/state.json resume section"
+assert_contains "$AG_BUILD" '/build --from oneshot/state.json' \
+  "antigravity-build adapter carries the --from oneshot/state.json resume section"
+
 t_summary

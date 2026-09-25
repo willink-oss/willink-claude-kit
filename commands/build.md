@@ -77,6 +77,25 @@ git commit -m "<type>(<scope>): <subject>
 <WHY を本文で>"
 ```
 
+## 割り込みから再開する（`/build --from oneshot/state.json`）
+
+`/oneshot`（契約した完了条件で無人に回すモード）の途中で人が割り込んだとき（`oneshot/STOP`・Ctrl-C・escalate）の着地点。
+**worktree も途中の commit も捨てず、同じ worktree・同じブランチで対話に切り替える。**
+
+1. **無人区間が止まっているか確かめる**: `status` が `running` のままなら、まず人に oneshot/STOP を置いたか確かめる（無人区間が走っている最中に、対話で同じ worktree を触らない）
+2. **最初に 1 画面で要約する**（分母つき）: `goal`・未完了の dod（`result` が `green` でないもの・N 本中 M 本）・`violations`・`note`・`blocker`・`interrupted`（周・phase・時刻）・`pr`
+3. **state.json の `phase` から再開する Phase を決める**:
+
+| `phase` | 再開する Phase |
+|---|---|
+| preflight / explore / plan | Phase 2（計画を人と確かめる） |
+| implement / loop | Phase 3 |
+| verify / mutate | Phase 4 |
+| deliver / escalate | Phase 5 |
+
+4. 以後は人とのやり取り（in the loop）。`/oneshot` の無人用の常設指示は適用しない
+5. 検証には契約（`oneshot.yaml`）の DoD をそのまま使える: `python3 <kit>/scripts/oneshot-preflight.py round` が exit 0 なら DoD は緑（自己申告で緑と言わない）
+
 ---
 
 ## subagent skip 判断早見表

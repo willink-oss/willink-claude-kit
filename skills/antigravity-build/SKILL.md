@@ -71,6 +71,14 @@ Claude Code のロール契約（`agents/` 配下）で指定されているツ�
   - 修正後、最大2ループまで Phase 4 を再試行します。
   - 全て PASS と判定されたら、 `walkthrough.md` アーティファクトを作成して変更内容とテスト結果を記録し、Conventional Commits 規約に従ってコミットします。
 
+### 割り込みからの再開（`/build --from oneshot/state.json`）
+- `/oneshot` の無人実行に人が割り込んだとき（`oneshot/STOP`・Ctrl-C・escalate）の着地点です。**worktree も途中の commit も捨てず**、同じ worktree・同じブランチで続けます。
+  - `status` が `running` のままなら、まず人に oneshot/STOP を置いたか確かめます（無人区間が走っている最中に同じ worktree を触らない）。
+  - 最初に 1 画面で要約します（分母つき）: `goal`・未完了の dod（`result` が `green` でないもの）・`violations`・`note`・`blocker`・`interrupted`・`pr`。
+  - `phase` から再開: preflight / explore / plan → Phase 2、implement / loop → Phase 3、verify / mutate → Phase 4、deliver / escalate → Phase 5。
+  - 以後は人とのやり取りです。`/oneshot` の無人用の常設指示は適用しません。
+  - 検証には契約の DoD をそのまま使えます（`python3 <kit>/scripts/oneshot-preflight.py round` が exit 0 なら緑）。
+
 ---
 
 ## 4. サブエージェントの動的定義用パラメータ例

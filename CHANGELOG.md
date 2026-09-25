@@ -4,6 +4,11 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+### Added
+
+- **`commands/build.md` — `/oneshot` の割り込みの受け口 `/build --from oneshot/state.json`。** 無人実行に人が割り込んだとき（`oneshot/STOP`・Ctrl-C・escalate）、worktree も途中の commit も捨てずに同じブランチで対話へ切り替える。state.json を 1 画面で要約し（未完了の dod・違反・blocker・割り込みの周と phase）、`phase` から再開する Phase を決める。無人用の常設指示は対話へ持ち込まない。
+- adapter（`skills/codex-build` / `skills/antigravity-build`）を同じ内容に同期し、`test_build_guards.sh` に文言を固定した。
+
 ## [2.9.0] - 2026-09-17
 
 **Status**: `cogload-dashboard` を**退役**する。読む人がいない観測器は観測の意味が無い（運営側は 9/16 に日次生成を止め、9/17 に kit からも外すと決めた）。役割は「報告の型」と引き継ぎ文書の 4 バケットに置き換わる。
