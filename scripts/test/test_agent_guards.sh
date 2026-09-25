@@ -34,4 +34,14 @@ for a in dev-planner dev-reviewer; do
   assert_grep "$AG/$a.md" '^  - a11y-standards$' "$a preloads a11y-standards"
 done
 
+# Blocking-findings-only contract. A finding must be shown failing (repro or red test) or it is not
+# a blocker; the BLOCKER prefix is what maker-checker-relay counts. Dropping either turns the
+# verdict back into the reviewer's confidence.
+assert_contains "$AG/dev-reviewer.md" 'List under Findings only the problems you would block the merge for' \
+  "dev-reviewer keeps the blocking-findings-only rule"
+assert_contains "$AG/dev-reviewer.md" 'How to show it fails' \
+  "dev-reviewer requires a way to show each finding fails"
+assert_grep "$AG/dev-reviewer.md" '^- BLOCKER ' \
+  "dev-reviewer output format prefixes blocking findings with BLOCKER"
+
 t_summary
