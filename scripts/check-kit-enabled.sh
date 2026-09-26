@@ -279,7 +279,7 @@ if [ -n "$PROTECT" ] && [ -x "$PROTECT" ]; then
   if [ "$rb" -eq 2 ] && [ "$rp" -eq 0 ]; then
     c_ok "pre-file-protect.sh … .env への Write を止め（exit 2）、普通のファイルは通す（exit 0）"
   else
-    c_bad "pre-file-protect.sh が期待どおりに動かない（.env → exit $rb / notes.md → exit $rp。期待 2 / 0）"
+    c_bad "pre-file-protect.sh が期待どおりに動かない（.env → exit ${rb} / notes.md → exit ${rp}。期待 2 / 0）"
   fi
 else
   c_warn "pre-file-protect.sh が見つからない / 実行できない — 実挙動は測れていない（0 件ではなく不明）"

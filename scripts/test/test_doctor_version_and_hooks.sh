@@ -16,6 +16,17 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 DOCTOR="$KIT_ROOT/scripts/check-kit-enabled.sh"
 assert_file_exists "$DOCTOR" "doctor が在る"
 
+# macOS の bash 3.2 は `$var。` の全角文字を変数名の続きと読み、set -u で「unbound variable」になる
+# （2026-09-26: `exit $rp。` が macOS の CI でだけ落ちた。Linux の bash 5 では起きない）。`${var}` で書く。
+nbad="$(python3 - "$DOCTOR" <<'PY'
+import re, sys
+bad = [i for i, l in enumerate(open(sys.argv[1], encoding="utf-8"), 1)
+       if not l.lstrip().startswith("#") and re.search(r"\$[A-Za-z_][A-Za-z0-9_]*[^\x00-\x7f]", l)]
+print(len(bad))
+PY
+)"
+assert_eq "0" "$nbad" "doctor に \$var の直後の全角文字が無い（bash 3.2 の unbound variable を防ぐ）"
+
 # 偽の CLAUDE_CONFIG_DIR を組み立てる。<installed> と <marketplace> の版数を指定できる。
 # $1=作業先 $2=installed ver $3=marketplace ver $4=hooks 本数 $5=hooks に +x を付けるか(yes/no)
 _mkhome() {
