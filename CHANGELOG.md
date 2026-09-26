@@ -4,6 +4,17 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.10.0] - 2026-09-26
+
+**Status**: 細かく詰めた仕様 1 本から PR まで、人が外から見守る中で実装しきる **`/oneshot`** が入る。あわせて Claude Opus 5.5 の手引きに合わせた（途中報告で止まった手番を完了と扱わない・reviewer は merge を止める指摘だけ・`/build` の進め方）。
+
+### Added
+
+- **`skills/oneshot` — 契約して、見守る中で PR まで実装しきる。** 最初に利用者と対話して決定論の完了条件（新規・回帰・境界の 3 種・壊せば赤になる 1 手・予算）を `oneshot.yaml` に落とし、利用者が spec.md を見て「走らせてよい」と言ったら `/build` の phase を `goal-loop` で外側から回す。**完了は exit code だけ・PR を開いて止まる・merge しない。** 道具: `scripts/oneshot-spec.py`（候補出し・spec.md）/ `scripts/oneshot-preflight.py`（契約の検査・red-first・毎周の判定・予算と割り込み・mutation・state の更新）/ `scripts/oneshot-report.py`（分母つきの報告書）/ 共通部品 `scripts/_oneshot.py`。独立レビュー 3 回で「止めるべきものを通す」誤り 9 件を直してから入れた（rename で違反が見えない・commit 後に作業ツリーだけ戻す・自分で再開する経路 など）。柵が守る範囲と残る穴は `docs/harness/` の設計の §4.1 相当に明記（誤りへの柵で、意図して外すエージェントへの柵ではない）。
+- **hooks 3 本（`oneshot/state.json` が無いリポでは何もしない）**: `pre-oneshot-scope.sh`（無人区間で scope 外・契約・gate 設定への書き込みと、merge / deploy / publish / 書き込み系 HTTP を止める・ツール経由の resume を止める）/ `stop-oneshot-continue.sh`（未完了の完了条件を名指しして、報告だけで手番を終えさせない・同じ未完了で 3 回まで）/ `post-oneshot-elapsed.sh`（経過 / 予算を渡す）。登録は 10 → **13 本**。
+- **`skills/report-shape` + `scripts/report-shape-check.py` / `scripts/state-doc-shape-check.py`** — 報告と引き継ぎ文書の「形」（4 段・判断は 5 点で 3 件まで・件数は分母つき・状態文書の行数 floor）を機械で守る。
+- **`scripts/consumer-check.sh` / `scripts/hook-wiring-check.py`** — consumer でハーネスが効いているかの検査（plugin 経路・fixture・git hook）と、hook の配線経路が 1 本か（plugin と inline の二重登録）の検査。`HARNESS_ROOT` が相対パスでも pre-commit の probe が hook を見つける（CI で exit 127 だった件）。
+
 ### Fixed
 
 - **`scripts/check-kit-enabled.sh`（doctor）を今の kit の実物に合わせた。**
@@ -15,8 +26,6 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
   - 各メンバーが clone 後に 1 回 `marketplace add` → `install` を打つ手順を足した。settings.json に書いても各自のマシンには入らない。
   - doctor を `willink-claude-kit/*/scripts/...` のグロブで実行させない形にした。cache に複数の版があると 2 つに展開されて壊れるため。
   - 回帰テスト（`test_doctor_version_and_hooks.sh` +17・`test_install_docs.sh` +4）で固定した。
-
-### Added
 
 - **`commands/build.md` — `/oneshot` の割り込みの受け口 `/build --from oneshot/state.json`。** 無人実行に人が割り込んだとき（`oneshot/STOP`・Ctrl-C・escalate）、worktree も途中の commit も捨てずに同じブランチで対話へ切り替える。state.json を 1 画面で要約し（未完了の dod・違反・blocker・割り込みの周と phase）、`phase` から再開する Phase を決める。無人用の常設指示は対話へ持ち込まない。
 - adapter（`skills/codex-build` / `skills/antigravity-build`）を同じ内容に同期し、`test_build_guards.sh` に文言を固定した。

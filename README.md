@@ -11,6 +11,8 @@ Claude Code / Codex / Antigravity 向け標準開発エージェント基盤。C
 | 区分 | 内容 |
 |---|---|
 | **skills/start** | 初めての人向けの順序（導入 → 測る → 決める → 作る → 出す）。各段の終わりを `check-kit-enabled.sh` → `pulse-precheck.sh` → `/build` → `gh pr view` の exit code で確かめ、自己申告で段を進めない |
+| **skills/oneshot** + **scripts/oneshot-\*.py** | 細かく詰めた仕様 1 本から PR まで、人が外から見守る中で実装しきる。対話で決定論の完了条件（3 種・壊す 1 手・予算）を契約にし、`/build` の phase を `goal-loop` で回す。完了は exit code だけ・PR を開いて止まる・merge しない。無人区間だけで働く hook 3 本と組 |
+| **skills/report-shape** + **scripts/report-shape-check.py** | 報告と引き継ぎ文書の形（4 段・判断 5 点で 3 件まで・分母つき・状態文書の行数 floor）を機械で数える |
 | **skills/consumer-finding-ledger** + **scripts/finding.py** | 実案件で出たハーネスの課題（誤検知・見逃し・標準の抜け）を作業中に 1 行ずつ台帳へ記録し、正本へ持ち帰る。記録は決定論 check で整合を検査し、URL・org/repo パス・認証情報は入る手前で拒否 |
 | **agents/** (4本) | `dev-explorer` / `dev-planner` / `dev-tester` / `dev-reviewer` — 公式 ガイドラインに沿って役割を厳選 |
 | **skills/dev-standards** | スタック非依存の汎用標準（TS strict / Conventional Commits / OWASP / a11y 最低ライン） |
