@@ -135,6 +135,8 @@ printf '#!/usr/bin/env bash\ncat >/dev/null\nexit 0\n' > "$hp/pre-file-protect.s
 _run "$TMP/probe"; rc=$?
 assert_eq "1" "$rc" "止めない pre-file-protect.sh なら exit 1"
 assert_contains "$OUT" "期待どおりに動かない" "止めないことを NG として出す"
+# 落ちたときは doctor の出力を残す（環境による差を推測で直さないため・2026-09-26 macOS の CI で必要になった）
+grep -qF "期待どおりに動かない" "$OUT" || { echo "--- doctor output ---"; cat "$OUT"; ls -l "$hp"; }
 # hook が無い（古い版）→ 実挙動は測れていない（??）で、それ単独では落とさない
 rm -f "$hp/pre-file-protect.sh"
 _run "$TMP/probe"; rc=$?
