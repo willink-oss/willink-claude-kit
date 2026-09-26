@@ -67,4 +67,19 @@ for f in "$README" "$GUIDE"; do
     "$(basename "$f"): doctor スクリプトへの導線がある"
 done
 
+# --- 7. まっさらな機では install の前に marketplace add が要る（2026-09-26 実測・Claude Code 2.1.283） ---
+# add 無しの install は「Plugin not found in marketplace」exit 1。settings.json に書いても各自のマシンには入らない。
+for f in "$README" "$GUIDE"; do
+  assert_contains "$f" 'claude plugin marketplace add willink-oss/willink-claude-kit' \
+    "$(basename "$f"): 各メンバーの手順に marketplace add がある"
+  assert_contains "$f" 'claude plugin install willink-claude-kit@iwillink --scope project' \
+    "$(basename "$f"): 各メンバーの手順に install がある"
+done
+
+# --- 8. doctor をグロブで実行させない（cache に複数の版があると 2 つに展開されて壊れる） ---
+for f in "$README" "$GUIDE"; do
+  assert_not_contains "$f" 'willink-claude-kit/*/scripts/check-kit-enabled.sh' \
+    "$(basename "$f"): doctor をグロブで実行する例が無い"
+done
+
 t_summary

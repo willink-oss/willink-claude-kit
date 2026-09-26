@@ -12,12 +12,24 @@
 # This script separates two things the UI conflates:
 #   INSTALLED = files are on disk        LOADED = Claude Code will actually register them
 #
+# 検査（2026-09-26 に実物へ合わせて更新）:
+#   [1] enabledPlugins の値型（boolean true か）— user / project（git のルート）/ local
+#   [2] インストール実体 — installed_plugins.json を **このリポの project scope → user scope** の順に引く
+#       （先頭の記録は別リポの古い project scope のことがある）。版数を marketplace の複製と比べる
+#   [3] ロード対象 — commands / agents / skills の件数・hooks/*.sh の実行可否・**hooks/hooks.json の登録本数と参照先**
+#       （2.7.0 以降 hook は hooks.json で登録される。置いてあるだけでは 1 本も登録されない）
+#   [4] 止める hook の実挙動 — pre-file-protect.sh に `.env` への Write を渡して exit 2、普通のファイルで exit 0
+#       （hook に入力を渡すだけで、ファイルは作らない）
+#
 # Exit: 0 = healthy, 1 = problem found (actionable diagnosis printed).
 # Portability: bash + python3 only (macOS dev + ubuntu CI).
 set -uo pipefail
 
 PLUGIN_ID="willink-claude-kit@iwillink"
+MARKETPLACE_REPO="willink-oss/willink-claude-kit"
 CLAUDE_HOME="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+# project の設定は git のルートで読む（サブディレクトリから実行しても同じ結果にする）
+PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 PROBLEMS=0
 
 c_ok()   { printf '  \033[32mOK\033[0m   %s\n' "$1"; }
@@ -52,8 +64,8 @@ printf '\n[1] enabledPlugins の値型\n'
 FOUND_SCOPE=""
 for scope_file in \
   "$CLAUDE_HOME/settings.json" \
-  "$PWD/.claude/settings.json" \
-  "$PWD/.claude/settings.local.json"
+  "$PROJECT_ROOT/.claude/settings.json" \
+  "$PROJECT_ROOT/.claude/settings.local.json"
 do
   [ -f "$scope_file" ] || continue
 
@@ -96,14 +108,32 @@ printf '\n[2] インストール実体\n'
 
 INSTALLED_JSON="$CLAUDE_HOME/plugins/installed_plugins.json"
 INSTALL_PATH=""
+# 記録はこのリポの project scope → user scope の順に引く（先頭の記録は別のリポの project scope のことがある。
+# 2026-09-26: 別リポの 2.5.0 を先頭で拾い、このリポでは 2.9.0 が効いているのに「旧版」と誤診した形を塞ぐ）
+pick_entry() {  # $1 = 取り出す key
+  python3 - "$INSTALLED_JSON" "$PLUGIN_ID" "$PROJECT_ROOT" "$1" <<'PY' 2>/dev/null
+import json, os, sys
+path, pid, root, key = sys.argv[1:5]
+try:
+    es = json.load(open(path)).get("plugins", {}).get(pid) or []
+except Exception:
+    sys.exit(0)
+root = os.path.realpath(root)
+e = next((e for e in es if e.get("scope") == "project" and os.path.realpath(e.get("projectPath") or "") == root), None) \
+    or next((e for e in es if e.get("scope") in ("user", None)), None)
+print((e or {}).get(key, "") or "")
+PY
+}
 if [ -f "$INSTALLED_JSON" ]; then
-  INSTALL_PATH="$(json_get "$INSTALLED_JSON" "(d.get('plugins',{}).get('$PLUGIN_ID') or [{}])[0].get('installPath','')")"
-  VER="$(json_get "$INSTALLED_JSON" "(d.get('plugins',{}).get('$PLUGIN_ID') or [{}])[0].get('version','')")"
+  INSTALL_PATH="$(pick_entry installPath)"
+  VER="$(pick_entry version)"
+  SCOPE="$(pick_entry scope)"
   if [ -n "$INSTALL_PATH" ]; then
-    c_ok "installed_plugins.json に登録あり (version=${VER:-unknown})"
+    c_ok "installed_plugins.json に登録あり (scope=${SCOPE:-user} / version=${VER:-unknown})"
   else
-    c_bad "installed_plugins.json に $PLUGIN_ID が無い（未インストール）"
-    printf '       fix: /plugin から marketplace 経由でインストール\n'
+    c_bad "installed_plugins.json に、このリポ（project）でもユーザー全体（user）でも $PLUGIN_ID の記録が無い（未インストール）"
+    printf '       fix: claude plugin marketplace add %s\n' "$MARKETPLACE_REPO"
+    printf '            claude plugin install %s --scope project   # まっさらな機では add を先に打たないと install は失敗する\n' "$PLUGIN_ID"
   fi
 else
   c_warn "installed_plugins.json が無い: $INSTALLED_JSON"
@@ -187,7 +217,44 @@ if [ -n "$INSTALL_PATH" ] && [ -d "$INSTALL_PATH" ]; then
     else
       c_ok "hooks/ … $nh 本（すべて実行可能）"
     fi
-    printf '       ⚠️ hooks は settings.json へ自動登録されない。有効化は導入先の設定で行う。\n'
+    # 2.7.0 以降、hook は hooks/hooks.json で plugin として登録される（settings.json に書く必要は無い）。
+    # **置いてあるだけでは 1 本も登録されない**（2.6.0 は hooks.json 無しで 14 本を配り実効 0 本だった）ので、
+    # hooks.json の登録本数と、参照先が実在して実行可能かを数える。
+    if [ -f "$INSTALL_PATH/hooks/hooks.json" ]; then
+      reg="$(python3 - "$INSTALL_PATH/hooks" <<'PY' 2>/dev/null
+import json, os, re, sys
+hd = sys.argv[1]
+try:
+    d = json.load(open(os.path.join(hd, "hooks.json")))
+except Exception:
+    print("PARSE"); sys.exit(0)
+n = miss = 0
+for ev in (d.get("hooks") or {}).values():
+    for e in ev:
+        for h in e.get("hooks", []):
+            n += 1
+            m = re.search(r"/hooks/([A-Za-z0-9._-]+\.sh)", h.get("command", ""))
+            f = os.path.join(hd, m.group(1)) if m else ""
+            if not (f and os.path.isfile(f) and os.access(f, os.X_OK)):
+                miss += 1
+print("%d %d" % (n, miss))
+PY
+)"
+      case "$reg" in
+        PARSE|"") c_bad "hooks/hooks.json が壊れている（parse 不能）— hook が 1 本も登録されない" ;;
+        *)
+          n_reg="${reg%% *}"; n_miss="${reg##* }"
+          if [ "$n_reg" -eq 0 ]; then
+            c_bad "hooks/hooks.json の登録が 0 本 — hook が 1 本も効かない"
+          elif [ "$n_miss" -gt 0 ]; then
+            c_bad "hooks/hooks.json … 登録 $n_reg 本のうち $n_miss 本の参照先が無い / 実行できない"
+          else
+            c_ok "hooks/hooks.json … $n_reg 本を登録（plugin を有効にすると Claude Code が登録する・settings.json に書く必要は無い）"
+          fi ;;
+      esac
+    else
+      c_bad "hooks/hooks.json が無い — hooks/*.sh を同梱していても 1 本も登録されない（2.7.0 以降の版に上げる）"
+    fi
   else
     c_bad "hooks/ が無い — 2.6.0 以降で同梱。上の版数比較を確認する"
   fi
@@ -196,12 +263,35 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# 4. 止める hook が本当に止めるか（安全な入力を 1 つずつ渡す・ファイルは作らない）
+# ---------------------------------------------------------------------------
+# 「登録されている」と「止める」は別。`.env` への Write を渡して exit 2、普通のファイルで exit 0 を見る。
+# hook に渡すだけで Write は実行されない。
+printf '\n[4] 止める hook の実挙動\n'
+PROTECT="${INSTALL_PATH:+$INSTALL_PATH/hooks/pre-file-protect.sh}"
+if [ -n "$PROTECT" ] && [ -x "$PROTECT" ]; then
+  PROBE_DIR="$(mktemp -d)"
+  printf '{"tool_name":"Write","tool_input":{"file_path":"%s/.env"}}' "$PROBE_DIR" \
+    | CLAUDE_PROJECT_DIR="$PROBE_DIR" bash "$PROTECT" >/dev/null 2>&1; rb=$?
+  printf '{"tool_name":"Write","tool_input":{"file_path":"%s/notes.md"}}' "$PROBE_DIR" \
+    | CLAUDE_PROJECT_DIR="$PROBE_DIR" bash "$PROTECT" >/dev/null 2>&1; rp=$?
+  rm -rf "$PROBE_DIR"
+  if [ "$rb" -eq 2 ] && [ "$rp" -eq 0 ]; then
+    c_ok "pre-file-protect.sh … .env への Write を止め（exit 2）、普通のファイルは通す（exit 0）"
+  else
+    c_bad "pre-file-protect.sh が期待どおりに動かない（.env → exit ${rb} / notes.md → exit ${rp}。期待 2 / 0）"
+  fi
+else
+  c_warn "pre-file-protect.sh が見つからない / 実行できない — 実挙動は測れていない（0 件ではなく不明）"
+fi
+
+# ---------------------------------------------------------------------------
 # 判定
 # ---------------------------------------------------------------------------
 printf '\n========================================\n'
 if [ "$PROBLEMS" -eq 0 ]; then
   printf '\033[32mHEALTHY\033[0m — 設定・実体ともに正常。\n'
-  printf 'セッションに未反映の場合は Claude Code を再起動して /build が通るか確認する。\n'
+  printf 'セッションに未反映の場合は Claude Code を再起動して /build が通るか確認する（hook は再起動で読み込まれる）。\n'
   exit 0
 fi
 
