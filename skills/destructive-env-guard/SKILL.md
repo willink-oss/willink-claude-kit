@@ -6,7 +6,7 @@ description: "破壊/env 変更コマンド（rm -rf・force push・reset --hard
 # Destructive / Env Guard（カバレッジ監査 + 提案のみ・適用は L3）
 
 > 破壊系・self-lockout 系コマンドの代表 canary を、既存の fail-closed フック
-> `.claude/hooks/pre-bash-safety.sh` に **read-only で通して** ブロック有無を観測し、
+> `.claude/willink-kit/hooks/pre-bash-safety.sh`（install.sh の配置・旧配置 `.claude/hooks/` も可）に **read-only で通して** ブロック有無を観測し、
 > 素通り＝gap（フックの穴）を検出して追加候補パターンを **印字だけ** する。
 > **この skill はフックを絶対に改変しない**（`settings.json` 登録・`.githooks` 設置もしない）。
 
@@ -54,7 +54,7 @@ bash scripts/destructive-audit.sh --self-test
 
 ## 参照
 
-- 監査対象フック: `.claude/hooks/pre-bash-safety.sh`（読むだけ・改変しない）
+- 監査対象フック: `.claude/willink-kit/hooks/pre-bash-safety.sh`（読むだけ・改変しない。旧配置 `.claude/hooks/` は `--hook` で指定）
 - スクリプト: `scripts/destructive-audit.sh`
 - 承認レベル: `docs/principles.md`（Level 3 = self-lockout: 権限/secret/監視/DNS/runtime env）
 - フック導入規約: `docs/incidents.md`（フック導入はセルフテスト必須 / BSD grep 互換）
