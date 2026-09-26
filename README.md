@@ -64,7 +64,16 @@ Claude Code / Codex / Antigravity 向け標準開発エージェント基盤。C
 > バージョンは marketplace 側の tag ref（`.claude-plugin/marketplace.json` の `ref`）で固定されるため、
 > `enabledPlugins` 側での pin は不要。
 
-導入後は `bash scripts/check-kit-enabled.sh` で「インストール済み」ではなく **実際にロードされているか** を確認できる。
+各メンバーは clone した後に 1 回、次の 2 つを打つ（**settings.json に書いても各自のマシンには自動では入らない**）:
+
+```bash
+claude plugin marketplace add willink-oss/willink-claude-kit   # まっさらな機では先に要る（無いと install が「not found in marketplace」で失敗する）
+claude plugin install willink-claude-kit@iwillink --scope project
+```
+
+どちらも 2 回打っても問題ない。リポの `make setup` などにまとめておくと打ち忘れない。
+
+導入後は、kit に同梱の診断 `scripts/check-kit-enabled.sh` で「インストール済み」ではなく **実際にロードされていて、止める hook が止めるか** を確認できる（実行の仕方は [docs/adoption-guide.md](docs/adoption-guide.md#導入できたかの確認)）。
 
 詳細は [docs/adoption-guide.md](docs/adoption-guide.md) を参照。
 

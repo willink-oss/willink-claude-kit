@@ -28,6 +28,15 @@
 >
 > なお `"2.2.0"` のような **string 直書きは schema 違反**で validator に弾かれる（`$schema` を宣言したリポでは特に）。
 
+各メンバーは clone した後に 1 回、次の 2 つを打つ（**settings.json に書いても各自のマシンには自動では入らない**）:
+
+```bash
+claude plugin marketplace add willink-oss/willink-claude-kit   # まっさらな機では先に要る（無いと install が「not found in marketplace」で失敗する）
+claude plugin install willink-claude-kit@iwillink --scope project
+```
+
+どちらも 2 回打っても問題ない。リポの `make setup` などにまとめておくと打ち忘れない。
+
 ### バージョンを固定したい場合
 
 `enabledPlugins` では pin しない。バージョンは **marketplace 側の tag ref** で固定する
@@ -42,13 +51,17 @@
 # kit repo を clone している場合
 bash scripts/check-kit-enabled.sh
 
-# marketplace 経由で導入した場合（インストール実体から実行）
-bash ~/.claude/plugins/cache/iwillink/willink-claude-kit/*/scripts/check-kit-enabled.sh
+# marketplace 経由で導入した場合: 版のフォルダ名を確かめてから、その版のものを導入先のリポの中で実行する
+ls ~/.claude/plugins/cache/iwillink/willink-claude-kit/
+bash ~/.claude/plugins/cache/iwillink/willink-claude-kit/<版>/scripts/check-kit-enabled.sh
 ```
 
-`enabledPlugins` の値型・インストール実体・commands/agents/skills の有無を検査し、
-問題があれば exit 1 と具体的な fix を返す。`/plugin` の表示だけでは上記の
-silently-disabled 状態を検出できないため、これを正とする。
+> ⚠️ `willink-claude-kit/*/scripts/...` のようなグロブで実行しない。cache に複数の版があると 2 つに展開され、
+> 2 本目がスクリプトへの引数になって、どの版を診断したのか分からなくなる。
+
+`enabledPlugins` の値型・インストール実体（このリポの project scope → user scope の順に記録を引く）・
+commands/agents/skills の有無・hooks.json の登録本数と参照先・止める hook の実挙動（`.env` への Write を止めるか）を検査し、
+問題があれば exit 1 と具体的な fix を返す。`/plugin` の表示だけでは上記の silently-disabled 状態を検出できないため、これを正とする。
 
 ## 2. project-standards を作成
 
