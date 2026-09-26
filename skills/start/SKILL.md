@@ -41,7 +41,7 @@ allowed-tools: Bash, Read, Glob, Grep
 | 仕様を対話で詰めながら進めたい。各 phase に人が居られる | **`/build`**（基本形） | in the loop |
 | 決定論のゴール（カバレッジ閾値・lint 0・特定テスト緑）を反復で詰めたい | **`/goal-loop`** | 停止は `--check` の exit code と `--max` |
 | 実装とレビューを分けて「test 緑 **かつ** 指摘 0」まで回したい | **`maker-checker-relay`** | Checker は読取専用 |
-| 仕様を細かく詰め終えていて、人はループの外から見守りたい | **`/oneshot`** — 設計済・**未実装** | on the loop |
+| 仕様を細かく詰め終えていて、人はループの外から見守りたい | **`/oneshot`**（`skills/oneshot/SKILL.md`） | on the loop |
 | 仕様が揺れたまま最小で速く | **`/mvp`** — 名称のみ・**未着手** | — |
 
 未実装の 2 つは、今日は `/build` + `goal-loop.sh --check` で同じ規律を手で回す（§6）。
@@ -58,7 +58,7 @@ allowed-tools: Bash, Read, Glob, Grep
 
 ## 5. 出す
 
-PR を開いて止まる。merge は人が押す。報告は必ず分母つき（「走査 N 件のうち M 件」。「0 件」は走査した証拠と一緒に）。
+PR を開いて止まる。merge は人が押す。報告は **4 段**（何を言われて何をやったか → 結論 → 詳細 → まとめ）で、件数は必ず分母つき（「走査 N 件のうち M 件」。「0 件」は走査した証拠と一緒に）、判断を仰ぐ項目は 5 点つきで 3 件まで。読む人はこの会話の経緯を覚えていない前提で、`scripts/report-shape-check.py` に通してから出す（`skills/report-shape/SKILL.md`）。
 
 ## 6. `/oneshot` までに揃える 6 つの材料
 
@@ -74,7 +74,9 @@ PR を開いて止まる。merge は人が押す。報告は必ず分母つき�
 | 5 | 新規の判定ごとに、**何を壊したら赤になるべきか** | 「壊す 1 手」を `sed` 等の決定論コマンドで言える |
 | 6 | いつまでに要るか・途中を見たいか・失敗が続いたらどうしたいか | 答えから試行回数 / 時間 / トークンを導く。**機械が既定値を先に出さない** |
 
-それまでの手動同等（`/oneshot` と同じ規律を `/build` の外側で回す）:
+材料が揃ったら `/oneshot`（`skills/oneshot/SKILL.md`）へ。6 問は Phase −1 で利用者と一緒に埋め、`scripts/oneshot-spec.py` が候補を出し、`scripts/oneshot-preflight.py check` が exit 0 になるまで無人区間に入らない。
+
+`/oneshot` を使わずに同じ規律だけを `/build` の外側で回すなら:
 
 ```sh
 bash "${CLAUDE_PLUGIN_ROOT:-.}/scripts/goal-loop.sh" --reset --state .goal-loop-state

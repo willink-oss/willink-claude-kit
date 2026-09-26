@@ -1,5 +1,5 @@
 {
-  "description": "willink-claude-kit のハーネス hook。plugin として有効化すると Claude Code が登録する。ブロックする 3 本（PreToolUse）と、fail-open の 7 本に分かれる。",
+  "description": "willink-claude-kit のハーネス hook。plugin として有効化すると Claude Code が登録する。ブロックする 3 本（PreToolUse）と、fail-open の 7 本、/oneshot の無人区間だけで働く 3 本（oneshot/state.json が無ければ何もしない）に分かれる。",
   "hooks": {
     "PreToolUse": [
       {
@@ -19,6 +19,12 @@
         "hooks": [
           { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-write-collision.sh\"" }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-oneshot-scope.sh\"" }
+        ]
       }
     ],
     "PostToolUse": [
@@ -37,6 +43,11 @@
       {
         "hooks": [
           { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/post-tool-log.sh\"" }
+        ]
+      },
+      {
+        "hooks": [
+          { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/post-oneshot-elapsed.sh\"" }
         ]
       }
     ],
@@ -63,6 +74,13 @@
       {
         "hooks": [
           { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/instructions-loaded-log.sh\"" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/stop-oneshot-continue.sh\"" }
         ]
       }
     ]
