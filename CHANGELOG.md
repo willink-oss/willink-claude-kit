@@ -4,6 +4,18 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`scripts/check-kit-enabled.sh`（doctor）を今の kit の実物に合わせた。**
+  - 古い表示「hooks は settings.json へ自動登録されない」をやめた（2.7.0 以降、hook は `hooks/hooks.json` で登録される）。代わりに hooks.json の登録本数と、参照先が実在して実行可能かを数える。hooks.json が無い・壊れている・参照先が欠けていれば NG。
+  - 止める hook の実挙動を確かめる段を足した（`pre-file-protect.sh` に `.env` への Write を渡して exit 2、普通のファイルで exit 0）。入力を渡すだけで、ファイルは作らない。
+  - `installed_plugins.json` を先頭の記録ではなく、このリポの project scope → user scope の順に引く。以前は先頭にあった別リポの古い project scope を拾い、効いている版を「旧版」と誤診することがあった。
+  - 未インストール時の直し方を `claude plugin marketplace add willink-oss/willink-claude-kit` → `claude plugin install … --scope project` にした。まっさらな機では add を先に打たないと、install が「Plugin not found in marketplace」で失敗する（Claude Code 2.1.283 で実測）。
+- **導入手順（`README.md`・`docs/adoption-guide.md`）。**
+  - 各メンバーが clone 後に 1 回 `marketplace add` → `install` を打つ手順を足した。settings.json に書いても各自のマシンには入らない。
+  - doctor を `willink-claude-kit/*/scripts/...` のグロブで実行させない形にした。cache に複数の版があると 2 つに展開されて壊れるため。
+  - 回帰テスト（`test_doctor_version_and_hooks.sh` +17・`test_install_docs.sh` +4）で固定した。
+
 ### Added
 
 - **`commands/build.md` — `/oneshot` の割り込みの受け口 `/build --from oneshot/state.json`。** 無人実行に人が割り込んだとき（`oneshot/STOP`・Ctrl-C・escalate）、worktree も途中の commit も捨てずに同じブランチで対話へ切り替える。state.json を 1 画面で要約し（未完了の dod・違反・blocker・割り込みの周と phase）、`phase` から再開する Phase を決める。無人用の常設指示は対話へ持ち込まない。
