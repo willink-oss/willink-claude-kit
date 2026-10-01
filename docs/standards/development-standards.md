@@ -501,7 +501,7 @@ grep -rlE '(gh[pous]_|github_pat_|sbp_|sk-[A-Za-z0-9]{20,})' \
 
 | 項目 | 標準 | 本PJの選択 | 理由 |
 |---|---|---|---|
-| DB | DynamoDB | Firestore | Firebase推奨ADR-001に基づく |
+| DB | DynamoDB | Firestore | Firebase 推奨 |
 ```
 ---
 
