@@ -4,6 +4,19 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.10.1] - 2026-10-01
+
+**Status**: 社内の販売文書が OSS に混ざっていたのを取り除き、開発標準を公開する。
+
+### Removed
+
+- **`docs/harness/product-readme.md` / `docs/harness/oss-vs-pro.md`** — 有料版の販売文書が、正本の export でディレクトリごと OSS に出ていた（v2.7.0 〜 v2.10.0）。中身も古く（「無料版は skill 17 本」など）、今の kit の実物と合っていなかった。正本では、公開してよいかをファイルごとに台帳で宣言し、宣言の無いファイルは出さない形にした。
+
+### Added
+
+- **`docs/standards/development-standards.md`** — 開発標準（汎用部）の公開用の版。社内の決定番号・役職名・社内のパスを落としてある。
+- **`docs/harness/export-files.txt`** — 正本から export した全ファイルの一覧（次の export で、外したファイルを公開先からも消すのに使う）。
+
 ## [2.10.0] - 2026-09-26
 
 **Status**: 細かく詰めた仕様 1 本から PR まで、人が外から見守る中で実装しきる **`/oneshot`** が入る。あわせて Claude Opus 5.5 の手引きに合わせた（途中報告で止まった手番を完了と扱わない・reviewer は merge を止める指摘だけ・`/build` の進め方）。
