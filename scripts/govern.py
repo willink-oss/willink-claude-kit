@@ -582,7 +582,7 @@ _L3_SIGNAL = re.compile(
     r"branch\s*protection|required\s*check|force[-\s]?push|\biam\b|"
     r"pause\s+project|監視停止|revoke", re.I)
 _APPROVAL_MARK = re.compile(
-    r"\[CEO承認\]|CEO承認|責任者 approval|L3\s*approved|承認済|事前承認|approved-by", re.I)
+    r"\[CEO承認\]|CEO承認|責任者 approval|L3\s*approved|承認済|事前承認|approved-by", re.I)  # oss-portable-ok: 承認印の語彙。CEO は一般の役職名で、既存の commit 慣習を読めるよう残す
 
 
 def _gather_commit_messages(root, days, log_file):
@@ -925,7 +925,7 @@ def st_adr_lint():
 def st_approval_audit():
     msgs = [
         "ops: rotate secret token for CI",
-        "feat: 価格改定 [CEO承認] 済み",
+        "feat: 価格改定 [CEO承認] 済み",  # oss-portable-ok: 上の承認印を通す self-test の入力
         "docs: update readme wording",
     ]
     rep = compute_approval_audit(msgs)
