@@ -4,6 +4,15 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [2.10.2] - 2026-10-02
+
+**Status**: 公開用の開発標準に、社内の決定番号が 1 件残っていたのを取り除く。
+
+### Fixed
+
+- **`docs/standards/development-standards.md`** — 和文に続けて書いた社内の決定番号（`Firebase推奨ADR-001に基づく`）が残っていた。正本の検査が漢字を英字と同じ「単語の一部」として扱い、番号の切れ目を見落としていたため。正本の検査と公開用の変換を直し、テストを足した。
+- **`scripts/govern.py`** — 承認印の語彙 `CEO承認` に、公開物に残す理由の注記を足した（動作は変わらない）。
+
 ## [2.10.1] - 2026-10-01
 
 **Status**: 社内の販売文書が OSS に混ざっていたのを取り除き、開発標準を公開する。
