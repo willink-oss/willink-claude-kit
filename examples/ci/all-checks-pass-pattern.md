@@ -2,7 +2,7 @@
 
 A single summary job that aggregates every CI job, meant to be the **only** required
 status check in branch protection. Battle-tested across Flutter, Next.js and monorepo
-CIs (willink-labs tsuu / fit-ai / clublink-platform, 2026-07).
+CIs (three internal repositories, 2026-07).
 
 ## Why one summary job instead of requiring each job
 
