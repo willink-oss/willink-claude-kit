@@ -19,10 +19,10 @@ task has yet been driven through it.
 
 | Stack | Status | Reference repo | Evidence |
 |---|---|---|---|
-| Flutter + Firebase | ✅ verified | `tsuu` | Day 7 Task 1 (PR #54 dev-reviewer) + Task 3 (`/build` full flow). Findings parity vs manual-preload baseline: HIGH 100% / LOW 75%. MEMORY auto-write produced 3 entries inside `/build`. |
-| Next.js + pnpm monorepo | ✅ verified | `fit-ai` | Day 7 Task 2 (4 dependabot PRs triaged in 1m31s, 49.4k tokens). Recommended merge order followed verbatim in same-day production merges. Coexists with existing `architecture-validator` / `security-reviewer` / `schema-sync-checker` / `test-generator`. |
-| Flutter + Supabase | 🟡 install-only | `clubhouse` | Install verified during scaffold review. No `/agents` or `/build` invocation has been driven on a real PR yet (deferred from Day 7+ window due to time budget). |
-| Next.js + Stripe | 🟡 install-only | `clublink-platform` | Same as above — installs cleanly, no end-to-end task driven yet. |
+| Flutter + Firebase | ✅ verified | internal app A | Day 7 Task 1 (PR #54 dev-reviewer) + Task 3 (`/build` full flow). Findings parity vs manual-preload baseline: HIGH 100% / LOW 75%. MEMORY auto-write produced 3 entries inside `/build`. |
+| Next.js + pnpm monorepo | ✅ verified | internal app B | Day 7 Task 2 (4 dependabot PRs triaged in 1m31s, 49.4k tokens). Recommended merge order followed verbatim in same-day production merges. Coexists with existing `architecture-validator` / `security-reviewer` / `schema-sync-checker` / `test-generator`. |
+| Flutter + Supabase | 🟡 install-only | internal app C | Install verified during scaffold review. No `/agents` or `/build` invocation has been driven on a real PR yet (deferred from Day 7+ window due to time budget). |
+| Next.js + Stripe | 🟡 install-only | internal app D | Same as above — installs cleanly, no end-to-end task driven yet. |
 
 ---
 
@@ -70,21 +70,21 @@ number, not adoption count.
 
 ## Promotion plan
 
-### Flutter + Supabase (`clubhouse`)
+### Flutter + Supabase (internal app C)
 
-- **Trigger**: Q3, when an open PR (or a small ad-hoc task) on `clubhouse`
+- **Trigger**: Q3, when an open PR (or a small ad-hoc task) on that app
   becomes a natural fit for `/agents dev-reviewer`.
 - **Time cost**: ~60 minutes (one session).
 - **Specific value to look for on this stack**: how kit's `dev-standards`
   treats Supabase Edge Function patterns, RLS policy review, and
-  Postgres-side migrations vs Firebase patterns observed on `tsuu`.
+  Postgres-side migrations vs Firebase patterns observed on internal app A.
 
-### Next.js + Stripe (`clublink-platform`)
+### Next.js + Stripe (internal app D)
 
 - **Trigger**: Q3, alongside any landing-page or pricing-section update.
 - **Time cost**: ~60 minutes (one session).
 - **Specific value to look for**: server-action / route-handler review
-  surface vs the SSR-heavy fit-ai admin patterns; Stripe API key handling
+  surface vs the SSR-heavy admin patterns of internal app B; Stripe API key handling
   in environment configuration.
 
 When both are promoted, the next minor release should reflect a fully
